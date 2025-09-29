@@ -2,7 +2,11 @@ import { console } from "node:inspector";
 import nodemailer from "nodemailer";
 import { Address } from "nodemailer/lib/mailer";
 
-export default function sendEmail(userEmail: string | Address | (string | Address)[] | undefined) {
+export default function sendEmail(
+  userEmail: string | Address | (string | Address)[] | undefined,
+  subject: string,
+  message: string,
+) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -14,8 +18,8 @@ export default function sendEmail(userEmail: string | Address | (string | Addres
   const mailOptions = {
     from: process.env.EMAIL,
     to: userEmail,
-    subject: "Test Email from Node.js",
-    text: "Hello, this is a test email sent from Node.js using nodemailer",
+    subject,
+    text: message,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
