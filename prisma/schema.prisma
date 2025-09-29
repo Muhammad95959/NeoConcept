@@ -14,14 +14,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  username  String
-  password  String?
-  googleId  String?  @unique
-  role      Role
-  deleted   Boolean  @default(false)
+  id                  Int       @id @default(autoincrement())
+  createdAt           DateTime  @default(now())
+  email               String    @unique
+  username            String
+  password            String?
+  googleId            String?   @unique
+  role                Role
+  emailConfirmed      Boolean   @default(false)
+  confirmEmailToken   String?
+  confirmEmailExpires DateTime?
+  deleted             Boolean   @default(false)
 }
 
 enum Role {

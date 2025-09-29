@@ -4,10 +4,10 @@ POST http://localhost:9595/api/v1/auth/signup
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "username": "test",
-  "password": "test",
-  "role": "STUDENT"
+  "email": "muhammadhefzey@gmail.com",
+  "username": "Muhammad Hefzey",
+  "password": "password",
+  "role": "INSTRUCTOR"
 }
 
 
@@ -17,6 +17,16 @@ POST http://localhost:9595/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "password": "test"
+  "email": "muhammadhefzey@gmail.com",
+  "password": "password"
+}
+
+
+### POST /api/v1/auth/resend-confirmation-email
+
+POST http://localhost:9595/api/v1/auth/resend-confirmation-email
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com"
 }

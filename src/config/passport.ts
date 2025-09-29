@@ -21,7 +21,7 @@ passport.use(
           if (!user.googleId) {
             user = await prisma.user.update({
               where: { id: user.id },
-              data: { googleId: profile.id },
+              data: { googleId: profile.id, emailConfirmed: true },
             });
           }
           return done(null, user);
@@ -31,6 +31,7 @@ passport.use(
               email: profile.emails?.[0].value!,
               username: profile.displayName,
               googleId: profile.id,
+              emailConfirmed: true,
               role,
             },
           });

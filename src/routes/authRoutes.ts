@@ -9,6 +9,10 @@ const router = express.Router();
 
 router.post("/signup", authController.signup);
 
+router.get("/confirm-email/:token", authController.confirmEmail)
+
+router.post("/resend-confirmation-email", authController.resendConfirmationEmail);
+
 router.post("/login", authController.login);
 
 router.get("/google", (req, res, next) => {
