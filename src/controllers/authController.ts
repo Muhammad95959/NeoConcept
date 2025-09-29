@@ -73,7 +73,7 @@ export async function resendConfirmationEmail(req: Request, res: Response) {
     });
     const message = `Click the link below to confirm your email address\n\n${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`;
     sendEmail(email, "LearnifyAI - Email Confirmation", message);
-    res.status(201).json({ status: "success", message: "New confirmation email sent" });
+    res.status(201).json({ status: "success", message: "New confirmation email was sent successfully" });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
@@ -88,7 +88,7 @@ export async function login(req: Request, res: Response) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.password) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
     const passwordIsValid = await bcrypt.compare(password, user.password);
-    if (!passwordIsValid) res.status(400).json({ status: "fail", message: "Invalid credentials" });
+    if (!passwordIsValid) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
     if (!user.emailConfirmed)
       return res.status(403).json({ status: "fail", message: "Please confirm your email first" });
     const token = signToken(user.id);
@@ -99,8 +99,56 @@ export async function login(req: Request, res: Response) {
   }
 }
 
-export async function forgotPassword(req: Request, res: Response) {}
+export async function forgotPassword(req: Request, res: Response) {
+  const { email } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
+    const resetPasswordToken = crypto.randomBytes(32).toString("hex");
+    const resetPasswordTokenHash = crypto.createHash("sha256").update(resetPasswordToken).digest("hex");
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: resetPasswordTokenHash,
+        resetPasswordExpires: new Date(Date.now() + 20 * 60 * 1000),
+      },
+    });
+    const message = `Click the link below to reset your password\n\n${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${resetPasswordToken}`;
+    sendEmail(email, "LearnifyAI - Password Reset", message);
+    res.status(201).json({ status: "success", message: "Password reset email was sent successfully" });
+  } catch (err) {
+    console.log((err as Error).message);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
 
-export async function resetPassword(req: Request, res: Response) {}
+export async function resetPassword(req: Request, res: Response) {
+  try {
+    const resetPasswordTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const user = await prisma.user.findFirst({
+      where: {
+        resetPasswordToken: resetPasswordTokenHash,
+        resetPasswordExpires: { gt: new Date() },
+      },
+    });
+    if (!user) return res.status(400).json({ status: "fail", message: "Invalid or expired token" });
+    const { newPassword } = req.body;
+    if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+        passwordChangedAt: new Date(),
+      },
+    });
+    res.status(200).json({ status: "success", message: "Password was reset successfully" });
+  } catch (err) {
+    console.log((err as Error).message);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
 
 export async function protect(req: Request, res: Response) {}

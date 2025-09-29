@@ -30,3 +30,24 @@ Content-Type: application/json
 {
   "email": "muhammadhefzey@gmail.com"
 }
+
+
+### POST /api/v1/auth/forgot-password
+
+POST http://localhost:9595/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com"
+}
+
+
+### POST /api/v1/auth/reset-password
+
+PATCH http://localhost:9595/api/v1/auth/reset-password/cf3382eb9cd291ffb9def5b97cb905099de0921a2244358db141524c790bb065
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com",
+  "newPassword": "newPassword"
+}
