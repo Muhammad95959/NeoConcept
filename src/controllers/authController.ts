@@ -26,7 +26,7 @@ export async function signup(req: Request, res: Response) {
       },
     });
     const message = `Click the link below to confirm your email address\n\n${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`;
-    sendEmail(email, "LearnifyAI - Email Confirmation", message);
+    sendEmail(email, "NeoConcept - Email Confirmation", message);
     res.status(201).json({ status: "success", message: "Please confirm your email" });
   } catch (err) {
     console.log((err as Error).message);
@@ -72,7 +72,7 @@ export async function resendConfirmationEmail(req: Request, res: Response) {
       },
     });
     const message = `Click the link below to confirm your email address\n\n${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`;
-    sendEmail(email, "LearnifyAI - Email Confirmation", message);
+    sendEmail(email, "NeoConcept - Email Confirmation", message);
     res.status(201).json({ status: "success", message: "New confirmation email was sent successfully" });
   } catch (err) {
     console.log((err as Error).message);
@@ -114,7 +114,7 @@ export async function forgotPassword(req: Request, res: Response) {
       },
     });
     const message = `Click the link below to reset your password\n\n${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${resetPasswordToken}`;
-    sendEmail(email, "LearnifyAI - Password Reset", message);
+    sendEmail(email, "NeoConcept - Password Reset", message);
     res.status(201).json({ status: "success", message: "Password reset email was sent successfully" });
   } catch (err) {
     console.log((err as Error).message);
