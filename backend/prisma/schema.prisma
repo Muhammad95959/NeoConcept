@@ -14,20 +14,69 @@ datasource db {
 }
 
 model User {
-  id                   Int       @id @default(autoincrement())
-  createdAt            DateTime  @default(now())
-  email                String    @unique
+  id                   Int           @id @default(autoincrement())
+  createdAt            DateTime      @default(now())
+  email                String        @unique
   username             String
   password             String?
-  googleId             String?   @unique
+  googleId             String?       @unique
   role                 Role
-  emailConfirmed       Boolean   @default(false)
+  emailConfirmed       Boolean       @default(false)
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
-  deleted              Boolean   @default(false)
+  deleted              Boolean       @default(false)
+  subjectRooms         SubjectRoom[]
+  memberShips          MemberShip[]
+  Resources            Resources[]
+  Post                 Post[]
+}
+
+model SubjectRoom {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime     @default(now())
+  createdBy   Int
+  creator     User         @relation(fields: [createdBy], references: [id])
+  memberShips MemberShip[]
+  Resources   Resources[]
+  Post        Post[]
+}
+
+model MemberShip {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  subjectId     Int
+  roleInSubject Role
+  joinedAt      DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id])
+  subject       SubjectRoom @relation(fields: [subjectId], references: [id])
+}
+
+model Resources {
+  id         Int         @id @default(autoincrement())
+  uploadedBy Int
+  subjectId  Int
+  uploadedAt DateTime    @default(now())
+  fileName   String
+  fileType   String
+  fileUrl    String
+  user       User        @relation(fields: [uploadedBy], references: [id])
+  subject    SubjectRoom @relation(fields: [subjectId], references: [id])
+}
+
+model Post {
+  id         Int         @id @default(autoincrement())
+  uploadedBy Int
+  subjectId  Int
+  title      String
+  content    String
+  createdAt  String
+  user       User        @relation(fields: [uploadedBy], references: [id])
+  subject    SubjectRoom @relation(fields: [subjectId], references: [id])
 }
 
 enum Role {
