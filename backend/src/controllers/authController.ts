@@ -1,10 +1,11 @@
 import signToken from "../utils/signToken";
 import bcrypt from "bcryptjs";
-import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response } from "express";
+import { PrismaClient, Role } from "@prisma/client";
 import safeUserData from "../utils/safeUserData";
 import sendEmail from "../utils/sendEmail";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -151,4 +152,37 @@ export async function resetPassword(req: Request, res: Response) {
   }
 }
 
-export async function protect(req: Request, res: Response) {}
+export async function protect(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer "))
+    return res.status(401).json({ status: "fail", message: "You are not logged in" });
+  const token = authHeader.split(" ")[1];
+  try {
+    if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const { id, iat } = decodedToken as { id: number; iat: number; exp: number };
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user)
+      return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });
+    if (user.passwordChangedAt) {
+      const isPasswordChanged = new Date(user.passwordChangedAt).getTime() / 1000 > iat;
+      if (isPasswordChanged)
+        return res
+          .status(401)
+          .json({ status: "fail", message: "User recently changed password! Please log in again." });
+    }
+    res.locals.user = user;
+    next();
+  } catch (err) {
+    console.log((err as Error).message);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
+
+export function restrict(...roles: Role[]) {
+  return function (_req: Request, res: Response, next: NextFunction) {
+    if (!roles.includes(res.locals.user.role))
+      return res.status(403).json({ status: "fail", message: "You do not have permission to perform this action" });
+    next();
+  };
+}
