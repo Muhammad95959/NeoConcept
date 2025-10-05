@@ -58,12 +58,15 @@ export async function updateRoom(req: Request, res: Response) {
     const room = await prisma.subjectRoom.findFirst({ where: { id: parseInt(id) } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
     const { name, description } = req.body;
+    const updatedData: any = {};
+    if (name) updatedData.name = name;
+    if (description) updatedData.description = description;
     const userRooms = await prisma.subjectRoom.findMany({ where: { createdBy: res.locals.user.id } });
     if (userRooms.some((room) => room.name === name))
       return res.status(400).json({ status: "fail", message: "Duplicate subject room name. Please choose another." });
     const updatedRoom = await prisma.subjectRoom.update({
       where: { id: parseInt(id) },
-      data: { name, description },
+      data: updatedData,
     });
     res.status(200).json({ status: "success", data: updatedRoom });
   } catch (err) {
