@@ -1,4 +1,4 @@
-### POST /api/v1/auth/signup
+### signup
 
 POST http://localhost:9595/api/v1/auth/signup
 Content-Type: application/json
@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 
-### POST /api/v1/auth/login
+### login
 
 POST http://localhost:9595/api/v1/auth/login
 Content-Type: application/json
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 
-### POST /api/v1/auth/resend-confirmation-email
+### resend-confirmation-email
 
 POST http://localhost:9595/api/v1/auth/resend-confirmation-email
 Content-Type: application/json
@@ -32,7 +32,7 @@ Content-Type: application/json
 }
 
 
-### POST /api/v1/auth/forgot-password
+### forgot-password
 
 POST http://localhost:9595/api/v1/auth/forgot-password
 Content-Type: application/json
@@ -42,7 +42,7 @@ Content-Type: application/json
 }
 
 
-### POST /api/v1/auth/reset-password
+### reset-password
 
 PATCH http://localhost:9595/api/v1/auth/reset-password/cf3382eb9cd291ffb9def5b97cb905099de0921a2244358db141524c790bb065
 Content-Type: application/json
@@ -51,3 +51,45 @@ Content-Type: application/json
   "email": "muhammadhefzey@gmail.com",
   "newPassword": "newPassword"
 }
+
+
+####################################################################################################
+
+
+### get-rooms
+
+GET http://localhost:9595/api/v1/subjects/get-rooms?search=cs
+
+
+### get-room
+
+GET http://localhost:9595/api/v1/subjects/get-room/1
+
+
+### create-room
+
+POST http://localhost:9595/api/v1/subjects/create-room
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+
+{
+  "name": "CS 101"
+}
+
+
+### update-room
+
+PATCH http://localhost:9595/api/v1/subjects/update-room/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+
+{
+  "name": "Math 101",
+  "description": "Math 101 - Updated"
+}
+
+
+### delete-room
+
+DELETE http://localhost:9595/api/v1/subjects/delete-room/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
