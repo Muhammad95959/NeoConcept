@@ -2,6 +2,7 @@ import express from "express";
 import passport from "passport";
 import authRouter from "./routes/authRoutes";
 import subjectsRouter from "./routes/subjectsRoutes";
+import postsRouter from "./routes/postsRoutes";
 import "./config/passport";
 
 const app = express();
@@ -11,5 +12,6 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/subjects", subjectsRouter);
+app.use("/api/v1/posts", postsRouter);
 
 app.listen(port, () => console.log("Server is running on http://localhost:" + port));
