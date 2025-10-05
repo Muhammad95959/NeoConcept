@@ -93,3 +93,46 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 
 DELETE http://localhost:9595/api/v1/subjects/delete-room/3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+
+
+####################################################################################################
+
+
+### get-posts
+
+GET http://localhost:9595/api/v1/posts/get-posts/1
+
+
+### get-post
+
+GET http://localhost:9595/api/v1/posts/get-post/1/1
+
+
+### create-post
+
+POST http://localhost:9595/api/v1/posts/create-post/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+
+{
+  "title": "post title",
+  "content": "post content"
+}
+
+
+### update-post
+
+PATCH http://localhost:9595/api/v1/posts/update-post/1/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+
+{
+  "title": "new post title",
+  "content": "new post content"
+}
+
+
+### delete-post
+
+DELETE http://localhost:9595/api/v1/posts/delete-post/1/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
