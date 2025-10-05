@@ -74,7 +74,7 @@ model Post {
   subjectId  Int
   title      String
   content    String
-  createdAt  String
+  createdAt  DateTime    @default(now())
   user       User        @relation(fields: [uploadedBy], references: [id])
   subject    SubjectRoom @relation(fields: [subjectId], references: [id])
 }
