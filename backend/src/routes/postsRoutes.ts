@@ -4,14 +4,14 @@ import * as authController from "../controllers/authController";
 import checkSubjectExists from "../middlewares/checkSubjectExists";
 import { Role } from "@prisma/client";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-router.get("/get-posts/:subjectId", checkSubjectExists, postsController.getPosts);
+router.get("/", checkSubjectExists, postsController.getPosts);
 
-router.get("/get-post/:subjectId/:id", checkSubjectExists, postsController.getPostById);
+router.get("/:id", checkSubjectExists, postsController.getPostById);
 
 router.post(
-  "/create-post/:subjectId",
+  "/create",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkSubjectExists,
@@ -19,7 +19,7 @@ router.post(
 );
 
 router.patch(
-  "/update-post/:subjectId/:id",
+  "/:id/update",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkSubjectExists,
@@ -27,7 +27,7 @@ router.patch(
 );
 
 router.delete(
-  "/delete-post/:subjectId/:id",
+  "/:id/delete",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkSubjectExists,
@@ -35,5 +35,3 @@ router.delete(
 );
 
 export default router;
-
-// TODO: these endpoints are ugly, do something like /api/v1/subjects/:subjectId/posts/:postId
