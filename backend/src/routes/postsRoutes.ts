@@ -35,3 +35,5 @@ router.delete(
 );
 
 export default router;
+
+// TODO: make sure the request is coming from someone who is from the subject room
