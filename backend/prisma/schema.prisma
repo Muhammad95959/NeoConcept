@@ -30,7 +30,7 @@ model User {
   deleted              Boolean       @default(false)
   subjectRooms         SubjectRoom[]
   memberShips          MemberShip[]
-  Resources            Resources[]
+  Resources            Resource[]
   Post                 Post[]
 }
 
@@ -42,7 +42,7 @@ model SubjectRoom {
   createdBy   Int
   creator     User         @relation(fields: [createdBy], references: [id])
   memberShips MemberShip[]
-  Resources   Resources[]
+  Resources   Resource[]
   Post        Post[]
 }
 
@@ -56,7 +56,7 @@ model MemberShip {
   subject       SubjectRoom @relation(fields: [subjectId], references: [id])
 }
 
-model Resources {
+model Resource {
   id         Int         @id @default(autoincrement())
   uploadedBy Int
   subjectId  Int
