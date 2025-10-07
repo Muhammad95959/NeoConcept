@@ -9,8 +9,25 @@ const roboto = Roboto({ subsets: ["latin"], weight: ["700"] });
 interface IProps {
 
 }
+const options = {
+  method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImlhdCI6MTc1OTg2NzkzOCwiZXhwIjoxNzYyNDU5OTM4fQ.KRGFpBcezIJIV55ueUYYN9OoTKmgAo1xoo7cfZ2sUNQ",
+        
+      },
+      body: JSON.stringify({name: "DSP"})
+}
 
 const Hero = ({}: IProps) => {
+  
+  const fetchDemo = async () => {
+    fetch('http://localhost:9595/api/v1/subjects/create', 
+      options
+    )
+    .then(res => res.json())
+    .then(data => console.log(data));
+  }
   return (
       <section className="container mx-auto flex flex-col md:flex-row md:justify-evenly md:items-center gap-4 text-white mb-16 md:mb-32">
         <motion.div
@@ -28,6 +45,7 @@ const Hero = ({}: IProps) => {
           <div className="flex gap-4">
             <Link href="signup" className="bg-secondary p-4 rounded">Get Started Free</Link>
             <Link href="/demo" className="bg-[#191F40]/70 p-4 rounded">Watch Demo</Link>
+            <button onClick={fetchDemo}>Fetch</button>
           </div>
         </motion.div>
         <motion.div
