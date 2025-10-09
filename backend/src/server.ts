@@ -3,6 +3,7 @@ import cors from "cors";
 import passport from "passport";
 import swaggerjsdoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
+import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import authRouter from "./routes/authRoutes";
 import subjectsRouter from "./routes/subjectsRoutes";
 import postsRouter from "./routes/postsRoutes";
@@ -28,6 +29,13 @@ const specs = swaggerjsdoc({
   },
   apis: ["./src/routes/*.ts"],
 });
-app.use("/api-docs", swaggerui.serve, swaggerui.setup(specs, { explorer: true }));
+app.use(
+  "/api-docs",
+  swaggerui.serve,
+  swaggerui.setup(specs, {
+    explorer: true,
+    customCss: new SwaggerTheme().getBuffer(SwaggerThemeNameEnum.DRACULA),
+  }),
+);
 
 app.listen(port, () => console.log("Server is running on http://localhost:" + port));
