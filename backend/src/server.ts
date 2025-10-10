@@ -24,7 +24,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, {
     explorer: true,
-    customCss: new SwaggerTheme().getBuffer(SwaggerThemeNameEnum.DARK),
+    customCss: new SwaggerTheme().getBuffer(SwaggerThemeNameEnum.DRACULA),
   }),
 );
 
