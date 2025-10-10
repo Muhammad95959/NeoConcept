@@ -1,0 +1,6 @@
+openapi: 3.0.0
+info:
+  title: NeoConcept API
+servers:
+  - url: /api/v1
+    description: Development server
