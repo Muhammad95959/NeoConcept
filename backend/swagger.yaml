@@ -177,7 +177,7 @@ paths:
           description: success
         '500':
           description: Something went wrong
-  /subjects/:id:
+  /subjects/{id}:
     get:
       tags:
         - Subjects
@@ -225,7 +225,7 @@ paths:
           description: Subject room name is required || Duplicate subject room name. Please choose another.
         '500':
           description: Something went wrong
-  /subjects/:id/update:
+  /subjects/{id}/update:
     patch:
       tags:
         - Subjects
@@ -260,7 +260,7 @@ paths:
           description: Room not found
         '500':
           description: Something went wrong
-  /subjects/:id/delete:
+  /subjects/{id}/delete:
     delete:
       tags:
         - Subjects
@@ -282,7 +282,7 @@ paths:
         '500':
           description: Something went wrong
 
-  /subjects/:subjectId/posts:
+  /subjects/{subjectId}/posts:
     get:
       tags:
         - Posts
@@ -305,7 +305,7 @@ paths:
           description: success
         '500':
           description: Something went wrong
-  /subjects/:subjectId/posts/:id:
+  /subjects/{subjectId}/posts/{id}:
     get:
       tags:
         - Posts
@@ -332,7 +332,7 @@ paths:
           description: Post not found
         '500':
           description: Something went wrong
-  /subjects/:subjectId/posts/create:
+  /subjects/{subjectId}/posts/create:
     post:
       tags:
         - Posts
@@ -364,7 +364,7 @@ paths:
           description: success
         '500':
           description: Something went wrong
-  /subjects/:subjectId/posts/:id/update:
+  /subjects/{subjectId}/posts/{id}/update:
     patch:
       tags:
         - Posts
@@ -403,7 +403,7 @@ paths:
           description: Post not found
         '500':
           description: Something went wrong
-  /subjects/:subjectId/posts/:id/delete:
+  /subjects/{subjectId}/posts/{id}/delete:
     delete:
       tags:
         - Posts
