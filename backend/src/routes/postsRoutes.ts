@@ -7,9 +7,15 @@ import { Role } from "@prisma/client";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", checkSubjectRoomExists, postsController.getPosts);
+router.get("/", authController.protect, checkSubjectRoomExists, verifySubjectRoomMember, postsController.getPosts);
 
-router.get("/:id", checkSubjectRoomExists, postsController.getPostById);
+router.get(
+  "/:id",
+  authController.protect,
+  checkSubjectRoomExists,
+  verifySubjectRoomMember,
+  postsController.getPostById,
+);
 
 router.post(
   "/create",
