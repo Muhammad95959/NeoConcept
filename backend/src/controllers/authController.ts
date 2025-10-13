@@ -94,7 +94,7 @@ export async function login(req: Request, res: Response) {
       return res.status(403).json({ status: "fail", message: "Please confirm your email first" });
     const token = signToken(user.id);
     res.cookie("jwt", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-    res.status(200).json({ status: "success", data: safeUserData(user) });
+    res.status(200).json({ status: "success", token, data: safeUserData(user) });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
