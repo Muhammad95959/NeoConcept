@@ -21,6 +21,15 @@ Content-Type: application/json
   "password": "password"
 }
 
+### logout
+
+GET http://localhost:9595/api/v1/auth/logout
+
+
+### authorize
+
+GET http://localhost:9595/api/v1/auth/authorize
+
 
 ### resend-confirmation-email
 
