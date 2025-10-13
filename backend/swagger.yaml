@@ -69,6 +69,14 @@ paths:
           description: Please confirm your email first
         '500':
           description: Something went wrong
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+      summary: logout a user
+      responses:
+        '200':
+          description: success
   /auth/resend-confirmation-email:
     post:
       tags:
@@ -202,7 +210,7 @@ paths:
         - Subjects
       summary: create a new subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       requestBody:
         required: true
         content: 
@@ -231,7 +239,7 @@ paths:
         - Subjects
       summary: update the info of a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: id
           in: path
@@ -266,7 +274,7 @@ paths:
         - Subjects
       summary: delete a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: id
           in: path
@@ -288,7 +296,7 @@ paths:
         - Posts
       summary: retrieve all the posts in a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: search
           in: query
@@ -311,7 +319,7 @@ paths:
         - Posts
       summary: retrieve a post by id in a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: subjectId
           in: path
@@ -338,7 +346,7 @@ paths:
         - Posts
       summary: create a new post in a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: subjectId
           in: path
@@ -370,7 +378,7 @@ paths:
         - Posts
       summary: update the info of a post in a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: subjectId
           in: path
@@ -409,7 +417,7 @@ paths:
         - Posts
       summary: delete a post in a subject room
       security:
-        - BearerAuth: []
+        - cookieAuth: []
       parameters:
         - name: subjectId
           in: path
@@ -430,10 +438,3 @@ paths:
           description: Post not found
         '500':
           description: Something went wrong
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
