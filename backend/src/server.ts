@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import passport from "passport";
+import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import yaml from "yamljs";
@@ -15,6 +16,7 @@ const app = express();
 const port = process.env.PORT || 9595;
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors()); // TODO: configure CORS properly in production
 app.use(passport.initialize());
 

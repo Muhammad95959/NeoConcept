@@ -70,7 +70,7 @@ GET http://localhost:9595/api/v1/subjects/1
 
 POST http://localhost:9595/api/v1/subjects/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 {
   "name": "CS 101"
@@ -81,7 +81,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 
 PATCH http://localhost:9595/api/v1/subjects/1/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 {
   "name": "Math 101",
@@ -92,7 +92,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 ### delete-subject
 
 DELETE http://localhost:9595/api/v1/subjects/7/delete
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 
 ####################################################################################################
@@ -101,20 +101,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 ### get-posts
 
 GET http://localhost:9595/api/v1/subjects/1/posts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 
 ### get-post
 
 GET http://localhost:9595/api/v1/subjects/1/posts/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 
 ### create-post
 
 POST http://localhost:9595/api/v1/subjects/1/posts/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 {
   "title": "post title",
@@ -126,7 +126,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 
 PATCH http://localhost:9595/api/v1/subjects/1/posts/1/update
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
 
 {
   "title": "new post title",
@@ -137,4 +137,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6M
 ### delete-post
 
 DELETE http://localhost:9595/api/v1/subjects/1/posts/4/delete
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc1OTY4MjczMiwiZXhwIjoxNzYyMjc0NzMyfQ.lVTW42rECQR4Jjg3qflvPiGmtnrGvDyBnkgfrGJxaRU
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly

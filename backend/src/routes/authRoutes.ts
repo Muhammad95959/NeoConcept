@@ -2,7 +2,6 @@ import express from "express";
 import * as authController from "../controllers/authController";
 import passport from "passport";
 import signToken from "../utils/signToken";
-import safeUserData from "../utils/safeUserData";
 import { User } from "@prisma/client";
 
 const router = express.Router();
@@ -14,6 +13,14 @@ router.get("/confirm-email/:token", authController.confirmEmail);
 router.post("/resend-confirmation-email", authController.resendConfirmationEmail);
 
 router.post("/login", authController.login);
+
+router.get("/logout", authController.logout);
+
+router.get("/authorize", authController.protect, authController.authorize);
+
+router.post("/forgot-password", authController.forgotPassword);
+
+router.patch("/reset-password/:token", authController.resetPassword);
 
 router.get("/google", (req, res, next) => {
   const role = String(req.query.instructor).toLowerCase() === "true" ? "INSTRUCTOR" : "STUDENT";
@@ -31,12 +38,9 @@ router.get(
   }),
   (req, res) => {
     const token = signToken((req.user as User).id);
-    res.status(200).json({ status: "success", token, data: safeUserData(req.user as User) });
+    res.cookie("jwt", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    res.redirect(process.env.FRONTEND_URL + "/login/success");
   },
 );
-
-router.post("/forgot-password", authController.forgotPassword);
-
-router.patch("/reset-password/:token", authController.resetPassword);
 
 export default router;

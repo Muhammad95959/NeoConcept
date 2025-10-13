@@ -1,11 +1,39 @@
 import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { PrismaClient } from "@prisma/client";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as JwtStrategy } from "passport-jwt";
+import { Request } from "express";
 
 const prisma = new PrismaClient();
 const clientID = process.env.GOOGLE_CLIENT_ID!;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
 const callbackURL = process.env.GOOGLE_CALLBACK_URL!;
+
+const cookieExtractor = (req: Request) => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["jwt"];
+  }
+  return token;
+};
+
+passport.use(
+  new JwtStrategy(
+    {
+      jwtFromRequest: cookieExtractor,
+      secretOrKey: process.env.JWT_SECRET!,
+    },
+    async (payload, done) => {
+      try {
+        const user = await prisma.user.findUnique({ where: { id: payload.id } });
+        if (user) return done(null, user);
+        return done(null, false);
+      } catch (err) {
+        return done(err, false);
+      }
+    },
+  ),
+);
 
 passport.use(
   new GoogleStrategy(

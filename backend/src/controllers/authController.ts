@@ -93,7 +93,8 @@ export async function login(req: Request, res: Response) {
     if (!user.emailConfirmed)
       return res.status(403).json({ status: "fail", message: "Please confirm your email first" });
     const token = signToken(user.id);
-    res.status(200).json({ status: "success", token, data: safeUserData(user) });
+    res.cookie("jwt", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    res.status(200).json({ status: "success", data: safeUserData(user) });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
@@ -153,10 +154,8 @@ export async function resetPassword(req: Request, res: Response) {
 }
 
 export async function protect(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer "))
-    return res.status(401).json({ status: "fail", message: "You are not logged in" });
-  const token = authHeader.split(" ")[1];
+  const token = req.cookies.jwt;
+  if (!token) return res.status(401).json({ status: "fail", message: "You are not logged in" });
   try {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -185,4 +184,13 @@ export function restrict(...roles: Role[]) {
       return res.status(403).json({ status: "fail", message: "You do not have permission to perform this action" });
     next();
   };
+}
+
+export function logout(_req: Request, res: Response) {
+  res.clearCookie("jwt");
+  res.status(200).json({ status: "success", message: "Logged out successfully" });
+}
+
+export function authorize(_req: Request, res: Response) {
+  res.status(200).json({ status: "success", data: safeUserData(res.locals.user) });
 }
