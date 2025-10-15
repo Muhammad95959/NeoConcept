@@ -25,7 +25,6 @@ model User {
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordOTP     String?
-  resetPasswordToken   String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   deleted              Boolean       @default(false)
