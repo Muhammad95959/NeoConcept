@@ -21,6 +21,7 @@ Content-Type: application/json
   "password": "password"
 }
 
+
 ### logout
 
 GET http://localhost:9595/api/v1/auth/logout
@@ -51,9 +52,20 @@ Content-Type: application/json
 }
 
 
+### verify-otp
+
+POST http://localhost:9595/api/v1/auth/verify-otp
+Content-Type: application/json
+
+{
+  "otp": "639330",
+  "email": "muhammadhefzey@gmail.com"
+}
+
+
 ### reset-password
 
-PATCH http://localhost:9595/api/v1/auth/reset-password/cf3382eb9cd291ffb9def5b97cb905099de0921a2244358db141524c790bb065
+PATCH http://localhost:9595/api/v1/auth/reset-password/639330
 Content-Type: application/json
 
 {

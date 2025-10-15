@@ -20,7 +20,9 @@ router.get("/authorize", authController.protect, authController.authorize);
 
 router.post("/forgot-password", authController.forgotPassword);
 
-router.patch("/reset-password/:token", authController.resetPassword);
+router.post("/verify-otp", authController.verifyOTP);
+
+router.patch("/reset-password/:otp", authController.resetPassword);
 
 router.get("/google", (req, res, next) => {
   const role = String(req.query.instructor).toLowerCase() === "true" ? "INSTRUCTOR" : "STUDENT";

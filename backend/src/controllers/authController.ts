@@ -7,6 +7,7 @@ import sendEmail from "../utils/sendEmail";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import fs from "fs";
+import createRandomOTP from "../utils/createRandomOTP";
 
 const prisma = new PrismaClient();
 
@@ -117,16 +118,16 @@ export async function forgotPassword(req: Request, res: Response) {
   try {
     const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
-    const resetPasswordToken = crypto.randomBytes(32).toString("hex");
-    const resetPasswordTokenHash = crypto.createHash("sha256").update(resetPasswordToken).digest("hex");
+    const otp = createRandomOTP(6);
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        resetPasswordToken: resetPasswordTokenHash,
+        resetPasswordOTP: otpHash,
         resetPasswordExpires: new Date(Date.now() + 20 * 60 * 1000),
       },
     });
-    const message = `Click the link below to reset your password\n\n${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${resetPasswordToken}`;
+    const message = `You can use the OTP below to reset your password\n\nOTP: ${otp}`;
     sendEmail(email, "NeoConcept - Password Reset", message);
     res.status(201).json({ status: "success", message: "Password reset email was sent successfully" });
   } catch (err) {
@@ -135,24 +136,43 @@ export async function forgotPassword(req: Request, res: Response) {
   }
 }
 
-export async function resetPassword(req: Request, res: Response) {
+export async function verifyOTP(req: Request, res: Response) {
+  const { otp, email } = req.body;
   try {
-    const resetPasswordTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
-    const user = await prisma.user.findFirst({
-      where: {
-        resetPasswordToken: resetPasswordTokenHash,
-        resetPasswordExpires: { gt: new Date() },
-      },
-    });
-    if (!user) return res.status(400).json({ status: "fail", message: "Invalid or expired token" });
-    const { newPassword } = req.body;
+    if (!otp) return res.status(400).json({ status: "fail", message: "Provide the OTP" });
+    if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date())
+      return res.status(400).json({ status: "fail", message: "OTP has expired" });
+    res.status(200).json({ status: "success", message: "OTP verified successfully" });
+  } catch (err) {
+    console.log((err as Error).message);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
+
+export async function resetPassword(req: Request, res: Response) {
+  const { otp } = req.params;
+  const { email, newPassword } = req.body;
+  try {
+    if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
     if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });
+    if (!otp) return res.status(400).json({ status: "fail", message: "Provide the OTP" });
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
+    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date())
+      return res.status(400).json({ status: "fail", message: "OTP has expired" });
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
-        resetPasswordToken: null,
+        resetPasswordOTP: null,
         resetPasswordExpires: null,
         passwordChangedAt: new Date(),
       },
