@@ -1,4 +1,3 @@
-import { console } from "node:inspector";
 import nodemailer from "nodemailer";
 import { Address } from "nodemailer/lib/mailer";
 
@@ -16,7 +15,7 @@ export default function sendEmail(
   });
 
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: process.env.GMAIL,
     to: userEmail,
     subject,
     text: message,
