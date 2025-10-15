@@ -6,6 +6,7 @@ import safeUserData from "../utils/safeUserData";
 import sendEmail from "../utils/sendEmail";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import fs from "fs";
 
 const prisma = new PrismaClient();
 
@@ -35,6 +36,7 @@ export async function signup(req: Request, res: Response) {
   }
 }
 
+// TODO: make a nicer confirmation html page
 export async function confirmEmail(req: Request, res: Response) {
   try {
     const confirmEmailTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
@@ -44,15 +46,24 @@ export async function confirmEmail(req: Request, res: Response) {
         confirmEmailExpires: { gt: new Date() },
       },
     });
-    if (!user) return res.status(400).json({ status: "fail", message: "Invalid or expired token" });
+    let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
+    html = html
+      .replace("%%COLOR_PLACEHOLDER%%", "#F38BA8")
+      .replace("%%MESSAGE_PLACEHOLDER%%", "Invalid or expired token");
+    if (!user) return res.status(400).send(html);
     await prisma.user.update({
       where: { id: user.id },
       data: { emailConfirmed: true, confirmEmailToken: null, confirmEmailExpires: null },
     });
-    res.status(200).json({ status: "success", message: "Email confirmed successfully" });
+    html = html
+      .replace("%%COLOR_PLACEHOLDER%%", "#A6E3A1")
+      .replace("%%MESSAGE_PLACEHOLDER%%", "Email confirmed successfully");
+    res.status(200).send(html);
   } catch (err) {
     console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
+    html = html.replace("%%COLOR_PLACEHOLDER%%", "#F38BA8").replace("%%MESSAGE_PLACEHOLDER%%", "Something went wrong");
+    res.status(500).send(html);
   }
 }
 
