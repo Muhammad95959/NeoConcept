@@ -48,18 +48,18 @@ export async function confirmEmail(req: Request, res: Response) {
       },
     });
     let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
-    html = html
+    const failHtml = html
       .replace("%%COLOR_PLACEHOLDER%%", "#F38BA8")
       .replace("%%MESSAGE_PLACEHOLDER%%", "Invalid or expired token");
-    if (!user) return res.status(400).send(html);
+    if (!user) return res.status(400).send(failHtml);
     await prisma.user.update({
       where: { id: user.id },
       data: { emailConfirmed: true, confirmEmailToken: null, confirmEmailExpires: null },
     });
-    html = html
+    const successHtml = html
       .replace("%%COLOR_PLACEHOLDER%%", "#A6E3A1")
       .replace("%%MESSAGE_PLACEHOLDER%%", "Email confirmed successfully");
-    res.status(200).send(html);
+    res.status(200).send(successHtml);
   } catch (err) {
     console.log((err as Error).message);
     let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
