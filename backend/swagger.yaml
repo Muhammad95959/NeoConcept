@@ -153,11 +153,44 @@ paths:
           description: User not found
         '500':
           description: Something went wrong
-  /auth/reset-password:
+  /auth/verify-otp:
+    post:
+      tags:
+        - Auth
+      summary: verify the otp sent to email for password reset
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                otp:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                  example: test@test.com
+      responses:
+        '200':
+          description: OTP verified successfully
+        '400':
+          description: Provide the OTP || Provide the email || Invalid OTP || OTP has expired
+        '404':
+          description: User not found
+        '500':
+          description: Something went wrong
+  /auth/reset-password/{otp}:
     patch:
       tags:
         - Auth
       summary: create a new password
+      parameters:
+        - name: otp
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content: 
@@ -176,7 +209,9 @@ paths:
         '200':
           description: Password was reset successfully
         '400':
-          description: Invalid or expired token || Provide a new password
+          description: Provide the email || Provide a new password || Invalid OTP || OTP has expired
+        '404':
+          description: User not found
         '500':
           description: Something went wrong
 
