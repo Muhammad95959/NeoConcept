@@ -14,27 +14,27 @@ datasource db {
 }
 
 model User {
-  id                   Int           @id @default(autoincrement())
-  createdAt            DateTime      @default(now())
-  email                String        @unique
+  id                   Int          @id @default(autoincrement())
+  createdAt            DateTime     @default(now())
+  email                String       @unique
   username             String
   password             String?
-  googleId             String?       @unique
+  googleId             String?      @unique
   role                 Role
-  emailConfirmed       Boolean       @default(false)
+  emailConfirmed       Boolean      @default(false)
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
-  deleted              Boolean       @default(false)
-  subjectRooms         SubjectRoom[]
+  deleted              Boolean      @default(false)
+  Courses              Course[]
   memberShips          MemberShip[]
   Resources            Resource[]
   Post                 Post[]
 }
 
-model SubjectRoom {
+model Course {
   id          Int          @id @default(autoincrement())
   name        String
   description String?
@@ -47,36 +47,36 @@ model SubjectRoom {
 }
 
 model MemberShip {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  subjectId     Int
-  roleInSubject Role
-  joinedAt      DateTime    @default(now())
-  user          User        @relation(fields: [userId], references: [id])
-  subject       SubjectRoom @relation(fields: [subjectId], references: [id])
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  courseId     Int
+  roleInCourse Role
+  joinedAt     DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+  course       Course   @relation(fields: [courseId], references: [id])
 }
 
 model Resource {
-  id         Int         @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   uploadedBy Int
-  subjectId  Int
-  uploadedAt DateTime    @default(now())
+  courseId   Int
+  uploadedAt DateTime @default(now())
   fileName   String
   fileType   String
   fileUrl    String
-  user       User        @relation(fields: [uploadedBy], references: [id])
-  subject    SubjectRoom @relation(fields: [subjectId], references: [id])
+  user       User     @relation(fields: [uploadedBy], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id])
 }
 
 model Post {
-  id         Int         @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   uploadedBy Int
-  subjectId  Int
+  courseId   Int
   title      String
   content    String
-  createdAt  DateTime    @default(now())
-  user       User        @relation(fields: [uploadedBy], references: [id])
-  subject    SubjectRoom @relation(fields: [subjectId], references: [id])
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [uploadedBy], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id])
 }
 
 enum Role {

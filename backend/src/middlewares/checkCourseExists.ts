@@ -3,10 +3,10 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function checkSubjectExists(req: Request, res: Response, next: Function) {
-  const { subjectId } = req.params;
+export default async function checkCourseExists(req: Request, res: Response, next: Function) {
+  const { courseId } = req.params;
   try {
-    const room = await prisma.subjectRoom.findUnique({ where: { id: parseInt(subjectId) } });
+    const room = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
     next();
   } catch (err) {

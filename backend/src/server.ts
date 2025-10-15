@@ -7,7 +7,7 @@ import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import yaml from "yamljs";
 import fs from "fs";
 import authRouter from "./routes/authRoutes";
-import subjectsRouter from "./routes/subjectsRoutes";
+import coursessRouter from "./routes/coursesRoutes";
 import postsRouter from "./routes/postsRoutes";
 import resourcesRouter from "./routes/resourcesRoutes";
 import "./config/passport";
@@ -29,8 +29,8 @@ app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFu
 });
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/subjects", subjectsRouter);
-app.use("/api/v1/subjects/:subjectId/posts", postsRouter);
-app.use("/api/v1/subjects/:subjectId/resources", resourcesRouter);
+app.use("/api/v1/courses", coursessRouter);
+app.use("/api/v1/courses/:courseId/posts", postsRouter);
+app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
 
 app.listen(port, () => console.log("Server is running on http://localhost:" + port));

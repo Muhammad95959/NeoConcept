@@ -7,7 +7,7 @@ servers:
 
 tags:
   - name: Auth
-  - name: Subjects
+  - name: Courses
   - name: Posts
 
 paths:
@@ -18,7 +18,7 @@ paths:
       summary: create a new user
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -37,9 +37,9 @@ paths:
                   type: string
                   enum: [STUDENT, INSTRUCTOR, ADMIN]
       responses:
-        '201':
+        "201":
           description: Please confirm your email
-        '500':
+        "500":
           description: Something went wrong
   /auth/login:
     post:
@@ -48,7 +48,7 @@ paths:
       summary: login a user
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -61,13 +61,13 @@ paths:
                   type: string
                   example: test
       responses:
-        '200':
+        "200":
           description: success
-        '400':
+        "400":
           description: Please provide email and password || Invalid credentials
-        '403':
+        "403":
           description: Please confirm your email first
-        '500':
+        "500":
           description: Something went wrong
   /auth/logout:
     get:
@@ -75,7 +75,7 @@ paths:
         - Auth
       summary: logout a user
       responses:
-        '200':
+        "200":
           description: success
   /auth/authorize:
     get:
@@ -83,9 +83,9 @@ paths:
         - Auth
       summary: check if the user is logged in
       responses:
-        '200':
+        "200":
           description: success
-        '401':
+        "401":
           description: You are not logged in
   /auth/resend-confirmation-email:
     post:
@@ -94,7 +94,7 @@ paths:
       summary: resend a confirmation email
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -104,13 +104,13 @@ paths:
                   format: email
                   example: test@test.com
       responses:
-        '201':
+        "201":
           description: success
-        '400':
+        "400":
           description: Email is required || Email already confirmed
-        '404':
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Something went wrong
   /auth/google:
     get:
@@ -128,7 +128,7 @@ paths:
             type: boolean
             example: false
       responses:
-        '302':
+        "302":
           description: Redirect to Google's consent screen
   /auth/forgot-password:
     post:
@@ -137,7 +137,7 @@ paths:
       summary: send a reset password email in case you forgot the password
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -147,11 +147,11 @@ paths:
                   format: email
                   example: test@test.com
       responses:
-        '201':
+        "201":
           description: Password reset email was sent successfully
-        '404':
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Something went wrong
   /auth/verify-otp:
     post:
@@ -160,7 +160,7 @@ paths:
       summary: verify the otp sent to email for password reset
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -172,13 +172,13 @@ paths:
                   format: email
                   example: test@test.com
       responses:
-        '200':
+        "200":
           description: OTP verified successfully
-        '400':
+        "400":
           description: Provide the OTP || Provide the email || Invalid OTP || OTP has expired
-        '404':
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Something went wrong
   /auth/reset-password/{otp}:
     patch:
@@ -193,7 +193,7 @@ paths:
             type: string
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -206,35 +206,35 @@ paths:
                   type: string
                   example: newPassword
       responses:
-        '200':
+        "200":
           description: Password was reset successfully
-        '400':
+        "400":
           description: Provide the email || Provide a new password || Invalid OTP || OTP has expired
-        '404':
+        "404":
           description: User not found
-        '500':
+        "500":
           description: Something went wrong
 
-  /subjects:
+  /courses:
     get:
       tags:
-        - Subjects
-      summary: retrieve all subject rooms
+        - Courses
+      summary: retrieve all courses
       parameters:
         - name: search
           in: query
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: success
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{id}:
+  /courses/{id}:
     get:
       tags:
-        - Subjects
-      summary: retrieve a subject room by id
+        - Courses
+      summary: retrieve a course by id
       parameters:
         - name: id
           in: path
@@ -243,46 +243,46 @@ paths:
             type: integer
             example: 1
       responses:
-        '200':
+        "200":
           description: success
-        '404':
+        "404":
           description: Room not found
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/create:
+  /courses/create:
     post:
       tags:
-        - Subjects
-      summary: create a new subject room
+        - Courses
+      summary: create a new course
       security:
         - cookieAuth: []
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
               properties:
                 name:
                   type: string
-                  example: test subject
+                  example: test course
                 descrition:
                   type: string
                   example: test description
               required:
                 - name
       responses:
-        '201':
+        "201":
           description: success
-        '400':
-          description: Subject room name is required || Duplicate subject room name. Please choose another.
-        '500':
+        "400":
+          description: course name is required || Duplicate course name. Please choose another.
+        "500":
           description: Something went wrong
-  /subjects/{id}/update:
+  /courses/{id}/update:
     patch:
       tags:
-        - Subjects
-      summary: update the info of a subject room
+        - Courses
+      summary: update the info of a course
       security:
         - cookieAuth: []
       parameters:
@@ -293,31 +293,31 @@ paths:
             type: integer
             example: 1
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               type: object
               properties:
                 name:
                   type: string
-                  example: new test subject
+                  example: new test course
                 descrition:
                   type: string
                   example: new test description
       responses:
-        '200':
+        "200":
           description: success
-        '400':
-          description: Duplicate subject room name. Please choose another.
-        '404':
+        "400":
+          description: Duplicate course name. Please choose another.
+        "404":
           description: Room not found
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{id}/delete:
+  /courses/{id}/delete:
     delete:
       tags:
-        - Subjects
-      summary: delete a subject room
+        - Courses
+      summary: delete a course
       security:
         - cookieAuth: []
       parameters:
@@ -328,18 +328,18 @@ paths:
             type: integer
             example: 1
       responses:
-        '200':
+        "200":
           description: Room deleted successfully
-        '404':
+        "404":
           description: Room not found
-        '500':
+        "500":
           description: Something went wrong
 
-  /subjects/{subjectId}/posts:
+  /courses/{courseId}/posts:
     get:
       tags:
         - Posts
-      summary: retrieve all the posts in a subject room
+      summary: retrieve all the posts in a course
       security:
         - cookieAuth: []
       parameters:
@@ -347,26 +347,26 @@ paths:
           in: query
           schema:
             type: string
-        - name: subjectId
+        - name: courseId
           in: path
           required: true
           schema:
             type: integer
             example: 1
       responses:
-        '200':
+        "200":
           description: success
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{subjectId}/posts/{id}:
+  /courses/{courseId}/posts/{id}:
     get:
       tags:
         - Posts
-      summary: retrieve a post by id in a subject room
+      summary: retrieve a post by id in a course
       security:
         - cookieAuth: []
       parameters:
-        - name: subjectId
+        - name: courseId
           in: path
           required: true
           schema:
@@ -379,21 +379,21 @@ paths:
             type: integer
             example: 1
       responses:
-        '200':
+        "200":
           description: success
-        '404':
+        "404":
           description: Post not found
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{subjectId}/posts/create:
+  /courses/{courseId}/posts/create:
     post:
       tags:
         - Posts
-      summary: create a new post in a subject room
+      summary: create a new post in a course
       security:
         - cookieAuth: []
       parameters:
-        - name: subjectId
+        - name: courseId
           in: path
           required: true
           schema:
@@ -401,7 +401,7 @@ paths:
             example: 1
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -413,19 +413,19 @@ paths:
                   type: string
                   example: test content
       responses:
-        '201':
+        "201":
           description: success
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{subjectId}/posts/{id}/update:
+  /courses/{courseId}/posts/{id}/update:
     patch:
       tags:
         - Posts
-      summary: update the info of a post in a subject room
+      summary: update the info of a post in a course
       security:
         - cookieAuth: []
       parameters:
-        - name: subjectId
+        - name: courseId
           in: path
           required: true
           schema:
@@ -438,7 +438,7 @@ paths:
             type: integer
             example: 1
       requestBody:
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -450,21 +450,21 @@ paths:
                   type: string
                   example: new test description
       responses:
-        '200':
+        "200":
           description: success
-        '404':
+        "404":
           description: Post not found
-        '500':
+        "500":
           description: Something went wrong
-  /subjects/{subjectId}/posts/{id}/delete:
+  /courses/{courseId}/posts/{id}/delete:
     delete:
       tags:
         - Posts
-      summary: delete a post in a subject room
+      summary: delete a post in a course
       security:
         - cookieAuth: []
       parameters:
-        - name: subjectId
+        - name: courseId
           in: path
           required: true
           schema:
@@ -477,9 +477,9 @@ paths:
             type: integer
             example: 1
       responses:
-        '200':
+        "200":
           description: Post deleted successfully
-        '404':
+        "404":
           description: Post not found
-        '500':
+        "500":
           description: Something went wrong

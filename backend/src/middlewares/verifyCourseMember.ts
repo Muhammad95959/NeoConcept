@@ -3,13 +3,13 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function verifySubjectRoomMember(req: Request, res: Response, next: Function) {
-  const { subjectId } = req.params;
+export default async function verifyCourseMember(req: Request, res: Response, next: Function) {
+  const { courseId } = req.params;
   try {
     const membership = await prisma.memberShip.findFirst({
-      where: { subjectId: parseInt(subjectId), userId: parseInt(res.locals.user.id) },
+      where: { courseId: parseInt(courseId), userId: parseInt(res.locals.user.id) },
     });
-    if (!membership) res.status(403).json({ status: "fail", message: "You are not a member of this subject room" });
+    if (!membership) res.status(403).json({ status: "fail", message: "You are not a member of this course" });
     next();
   } catch (err) {
     console.log((err as Error).message);

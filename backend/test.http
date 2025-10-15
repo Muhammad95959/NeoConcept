@@ -1,19 +1,19 @@
 ### signup
 
-POST http://localhost:9595/api/v1/auth/signup
+POST http://localhost:9595/api/v1/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
   "email": "muhammadhefzey@gmail.com",
-  "username": "Muhammad Hefzey",
   "password": "password",
-  "role": "INSTRUCTOR"
+  "role": "INSTRUCTOR",
+  "username": "Muhammad Hefzey"
 }
 
 
 ### login
 
-POST http://localhost:9595/api/v1/auth/login
+POST http://localhost:9595/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
@@ -24,17 +24,17 @@ Content-Type: application/json
 
 ### logout
 
-GET http://localhost:9595/api/v1/auth/logout
+GET http://localhost:9595/api/v1/auth/logout HTTP/1.1
 
 
 ### authorize
 
-GET http://localhost:9595/api/v1/auth/authorize
+GET http://localhost:9595/api/v1/auth/authorize HTTP/1.1
 
 
 ### resend-confirmation-email
 
-POST http://localhost:9595/api/v1/auth/resend-confirmation-email
+POST http://localhost:9595/api/v1/auth/resend-confirmation-email HTTP/1.1
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
 
 ### forgot-password
 
-POST http://localhost:9595/api/v1/auth/forgot-password
+POST http://localhost:9595/api/v1/auth/forgot-password HTTP/1.1
 Content-Type: application/json
 
 {
@@ -54,18 +54,18 @@ Content-Type: application/json
 
 ### verify-otp
 
-POST http://localhost:9595/api/v1/auth/verify-otp
+POST http://localhost:9595/api/v1/auth/verify-otp HTTP/1.1
 Content-Type: application/json
 
 {
-  "otp": "639330",
-  "email": "muhammadhefzey@gmail.com"
+  "email": "muhammadhefzey@gmail.com",
+  "otp": "639330"
 }
 
 
 ### reset-password
 
-PATCH http://localhost:9595/api/v1/auth/reset-password/639330
+PATCH http://localhost:9595/api/v1/auth/reset-password/639330 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -77,43 +77,43 @@ Content-Type: application/json
 ####################################################################################################
 
 
-### get-subjects
+### get-courses
 
-GET http://localhost:9595/api/v1/subjects
-
-
-### get-subject
-
-GET http://localhost:9595/api/v1/subjects/1
+GET http://localhost:9595/api/v1/courses HTTP/1.1
 
 
-### create-subject
+### get-course
 
-POST http://localhost:9595/api/v1/subjects/create
+GET http://localhost:9595/api/v1/courses/1 HTTP/1.1
+
+
+### create-course
+
+POST http://localhost:9595/api/v1/courses/create HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 {
   "name": "CS 101"
 }
 
 
-### update-subject
+### update-course
 
-PATCH http://localhost:9595/api/v1/subjects/1/update
+PATCH http://localhost:9595/api/v1/courses/1/update HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 {
-  "name": "Math 101",
-  "description": "Math 101 - Updated"
+  "description": "Math 101 - Updated",
+  "name": "Math 101"
 }
 
 
-### delete-subject
+### delete-course
 
-DELETE http://localhost:9595/api/v1/subjects/7/delete
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+DELETE http://localhost:9595/api/v1/courses/7/delete HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 
 ####################################################################################################
@@ -121,41 +121,41 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTE
 
 ### get-posts
 
-GET http://localhost:9595/api/v1/subjects/1/posts
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+GET http://localhost:9595/api/v1/courses/1/posts HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 
 ### get-post
 
-GET http://localhost:9595/api/v1/subjects/1/posts/1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+GET http://localhost:9595/api/v1/courses/1/posts/1 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 
 ### create-post
 
-POST http://localhost:9595/api/v1/subjects/1/posts/create
+POST http://localhost:9595/api/v1/courses/1/posts/create HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 {
-  "title": "post title",
-  "content": "post content"
+  "content": "post content",
+  "title": "post title"
 }
 
 
 ### update-post
 
-PATCH http://localhost:9595/api/v1/subjects/1/posts/1/update
+PATCH http://localhost:9595/api/v1/courses/1/posts/1/update HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
 
 {
-  "title": "new post title",
-  "content": "new post content"
+  "content": "new post content",
+  "title": "new post title"
 }
 
 
 ### delete-post
 
-DELETE http://localhost:9595/api/v1/subjects/1/posts/4/delete
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImlhdCI6MTc2MDM2MTExNSwiZXhwIjoxNzYyOTUzMTE1fQ.su1VdvZjY-5vUDCS5rF3mKYGgixAR572nsm9VSJ9x_s; Path=/; HttpOnly
+DELETE http://localhost:9595/api/v1/courses/1/posts/4/delete HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
