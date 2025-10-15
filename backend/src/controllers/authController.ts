@@ -160,7 +160,6 @@ export async function resetPassword(req: Request, res: Response) {
   try {
     if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
     if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });
-    if (!otp) return res.status(400).json({ status: "fail", message: "Provide the OTP" });
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
