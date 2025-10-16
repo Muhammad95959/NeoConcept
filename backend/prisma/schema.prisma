@@ -64,6 +64,7 @@ model Resource {
   fileName   String
   fileType   String
   fileUrl    String
+  fileKey    String
   user       User     @relation(fields: [uploadedBy], references: [id])
   course     Course   @relation(fields: [courseId], references: [id])
 }
