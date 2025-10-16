@@ -9,6 +9,7 @@ tags:
   - name: Auth
   - name: Courses
   - name: Posts
+  - name: Resources
 
 paths:
   /auth/signup:
@@ -481,5 +482,135 @@ paths:
           description: Post deleted successfully
         "404":
           description: Post not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/resources:
+    get:
+      tags:
+        - Resources
+      summary: retrieve all the resources in a course
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+  /courses/{courseId}/resources/{id}:
+    get:
+      tags:
+        - Resources
+      summary: retrieve all the resources in a course
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Resource does not belong to this course
+        "404":
+          description: Course not found || Resource not found
+        "500":
+          description: Something went wrong
+  /courses/{courseId}/resources/upload:
+    post:
+      tags:
+        - Resources
+      summary: upload a resource
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: success
+        "500":
+          description: Something went wrong
+  /courses/{courseId}/resources/{id}/download:
+    get:
+      tags:
+        - Resources
+      summary: download a resource
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Unexpected response type from S3 || Something went wrong
+  /courses/{courseId}/resources/{id}/delete:
+    delete:
+      tags:
+        - Resources
+      summary: upload a resource
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Resource deleted successfully
         "500":
           description: Something went wrong

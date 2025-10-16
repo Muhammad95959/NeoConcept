@@ -159,3 +159,24 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI
 
 DELETE http://localhost:9595/api/v1/courses/1/posts/4/delete HTTP/1.1
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
+
+
+####################################################################################################
+
+
+### get-resources
+
+GET http://localhost:9595/api/v1/courses/1/resources HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
+
+
+### get-resource
+
+GET http://localhost:9595/api/v1/courses/1/resources/1 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY; Path=/; HttpOnly
+
+
+### delete-resource
+
+DELETE http://localhost:9595/api/v1/courses/1/resources/1/delete HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzYwNTU5MzI5fQ.zyYEQPfxB9oH5Ruym9F_ILZw_IWJpGj9IQekltxM1AY
