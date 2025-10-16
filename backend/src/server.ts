@@ -13,7 +13,7 @@ import resourcesRouter from "./routes/resourcesRoutes";
 import "./config/passport";
 
 const app = express();
-const port = process.env.PORT || 9595;
+const port = Number(process.env.PORT) || 9595;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -33,4 +33,4 @@ app.use("/api/v1/courses", coursessRouter);
 app.use("/api/v1/courses/:courseId/posts", postsRouter);
 app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
 
-app.listen(port, () => console.log("Server is running on http://localhost:" + port));
+app.listen(port, "0.0.0.0", () => console.log("Server is running on http://localhost:" + port));
