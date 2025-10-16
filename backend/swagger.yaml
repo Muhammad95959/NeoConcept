@@ -510,7 +510,7 @@ paths:
     get:
       tags:
         - Resources
-      summary: retrieve all the resources in a course
+      summary: retrieve a resource by id
       security:
         - cookieAuth: []
       parameters:
@@ -593,7 +593,7 @@ paths:
     delete:
       tags:
         - Resources
-      summary: upload a resource
+      summary: delete a resource
       security:
         - cookieAuth: []
       parameters:
