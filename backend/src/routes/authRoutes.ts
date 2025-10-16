@@ -6,6 +6,8 @@ import { User } from "@prisma/client";
 
 const router = express.Router();
 
+router.get("/", authController.protect, authController.authorize);
+
 router.post("/signup", authController.signup);
 
 router.get("/confirm-email/:token", authController.confirmEmail);
@@ -15,8 +17,6 @@ router.post("/resend-confirmation-email", authController.resendConfirmationEmail
 router.post("/login", authController.login);
 
 router.get("/logout", authController.logout);
-
-router.get("/authorize", authController.protect, authController.authorize);
 
 router.post("/forgot-password", authController.forgotPassword);
 

@@ -12,6 +12,16 @@ tags:
   - name: Resources
 
 paths:
+  /auth:
+    get:
+      tags:
+        - Auth
+      summary: check if the user is logged in
+      responses:
+        "200":
+          description: success
+        "401":
+          description: You are not logged in
   /auth/signup:
     post:
       tags:
@@ -78,16 +88,6 @@ paths:
       responses:
         "200":
           description: success
-  /auth/authorize:
-    get:
-      tags:
-        - Auth
-      summary: check if the user is logged in
-      responses:
-        "200":
-          description: success
-        "401":
-          description: You are not logged in
   /auth/resend-confirmation-email:
     post:
       tags:
