@@ -131,6 +131,31 @@ paths:
       responses:
         "302":
           description: Redirect to Google's consent screen
+  /auth/google/mobile:
+    post:
+      tags:
+        - Auth
+      summary: redirect to Google for authentication (mobile)
+      parameters:
+        - name: instructor
+          in: query
+          schema:
+            type: boolean
+            example: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idToken:
+                  type: string
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Something went wrong
   /auth/forgot-password:
     post:
       tags:
