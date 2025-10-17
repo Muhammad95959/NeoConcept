@@ -1,9 +1,9 @@
+import { Role } from "@prisma/client";
 import express from "express";
-import * as resourcesController from "../controllers/resourcesController";
 import * as authController from "../controllers/authController";
+import * as resourcesController from "../controllers/resourcesController";
 import checkCourseExists from "../middlewares/checkCourseExists";
 import verifyCourseMember from "../middlewares/verifyCourseMember";
-import { Role } from "@prisma/client";
 
 const router = express.Router({ mergeParams: true });
 

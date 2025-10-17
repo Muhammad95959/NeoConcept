@@ -1,7 +1,7 @@
-import express from "express";
-import * as coursesController from "../controllers/coursesController";
-import * as authController from "../controllers/authController";
 import { Role } from "@prisma/client";
+import express from "express";
+import * as authController from "../controllers/authController";
+import * as coursesController from "../controllers/coursesController";
 
 const router = express.Router();
 

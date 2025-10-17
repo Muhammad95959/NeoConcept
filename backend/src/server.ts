@@ -1,16 +1,16 @@
-import express, { NextFunction, Request, Response } from "express";
-import cors from "cors";
-import passport from "passport";
 import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
-import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
-import yaml from "yamljs";
+import cors from "cors";
+import express, { NextFunction, Request, Response } from "express";
 import fs from "fs";
+import passport from "passport";
+import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
+import swaggerUi from "swagger-ui-express";
+import yaml from "yamljs";
+import "./config/passport";
 import authRouter from "./routes/authRoutes";
 import coursessRouter from "./routes/coursesRoutes";
 import postsRouter from "./routes/postsRoutes";
 import resourcesRouter from "./routes/resourcesRoutes";
-import "./config/passport";
 
 const app = express();
 const port = Number(process.env.PORT) || 9595;
