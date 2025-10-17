@@ -1,7 +1,6 @@
+import { Role } from "@prisma/client";
 import { Request, Response } from "express";
-import { PrismaClient, Role } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../config/db";
 
 export async function getRooms(req: Request, res: Response) {
   const { search } = req.query;

@@ -1,16 +1,16 @@
-import signToken from "../utils/signToken";
+import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { PrismaClient, Role } from "@prisma/client";
+import fs from "fs";
+import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
+import prisma from "../config/db";
+import createRandomOTP from "../utils/createRandomOTP";
 import safeUserData from "../utils/safeUserData";
 import sendEmail from "../utils/sendEmail";
-import crypto from "crypto";
-import jwt from "jsonwebtoken";
-import fs from "fs";
-import createRandomOTP from "../utils/createRandomOTP";
-import { OAuth2Client } from "google-auth-library";
+import signToken from "../utils/signToken";
 
-const prisma = new PrismaClient();
 const oauthClient = new OAuth2Client();
 
 // TODO: send a confirmation request to the admin to allow users with role instructor to be created

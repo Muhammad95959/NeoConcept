@@ -1,11 +1,9 @@
-import { Request, Response } from "express";
 import { DeleteObjectCommand, GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { Request, Response } from "express";
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { PrismaClient } from "@prisma/client";
 import { Readable } from "stream";
-
-const prisma = new PrismaClient();
+import prisma from "../config/db";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,

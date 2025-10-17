@@ -1,10 +1,9 @@
+import { Request } from "express";
 import passport from "passport";
-import { PrismaClient } from "@prisma/client";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JwtStrategy } from "passport-jwt";
-import { Request } from "express";
+import prisma from "../config/db";
 
-const prisma = new PrismaClient();
 const clientID = process.env.GOOGLE_CLIENT_ID!;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
 const callbackURL = process.env.GOOGLE_CALLBACK_URL!;
