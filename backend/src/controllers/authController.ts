@@ -8,8 +8,10 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import createRandomOTP from "../utils/createRandomOTP";
+import { OAuth2Client } from "google-auth-library";
 
 const prisma = new PrismaClient();
+const oauthClient = new OAuth2Client();
 
 // TODO: send a confirmation request to the admin to allow users with role instructor to be created
 export async function signup(req: Request, res: Response) {
@@ -228,4 +230,44 @@ export function logout(_req: Request, res: Response) {
 
 export function authorize(_req: Request, res: Response) {
   res.status(200).json({ status: "success", data: safeUserData(res.locals.user) });
+}
+
+export async function mobileGoogleAuth(req: Request, res: Response) {
+  const { idToken } = req.body;
+  const role = String(req.query.instructor).toLowerCase() === "true" ? Role.INSTRUCTOR : Role.STUDENT;
+  try {
+    const ticket = await oauthClient.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload) return res.status(400).json({ status: "fail", message: "Invalid token" });
+    const { email, name, sub: googleId } = payload;
+    let user = await prisma.user.findUnique({
+      where: { email: email?.toLowerCase() },
+    });
+    if (user) {
+      if (!user.googleId) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId, emailConfirmed: true },
+        });
+      }
+    } else {
+      user = await prisma.user.create({
+        data: {
+          email: email!,
+          username: name!,
+          googleId,
+          emailConfirmed: true,
+          role,
+        },
+      });
+    }
+    const token = signToken(user.id);
+    res.status(200).json({ status: "success", token, data: safeUserData(user) });
+  } catch (err) {
+    console.log((err as Error).message);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
 }

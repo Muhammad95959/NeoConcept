@@ -2,7 +2,7 @@ import express from "express";
 import * as authController from "../controllers/authController";
 import passport from "passport";
 import signToken from "../utils/signToken";
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 
 const router = express.Router();
 
@@ -24,8 +24,10 @@ router.post("/verify-otp", authController.verifyOTP);
 
 router.patch("/reset-password/:otp", authController.resetPassword);
 
+router.post("/google/mobile", authController.mobileGoogleAuth);
+
 router.get("/google", (req, res, next) => {
-  const role = String(req.query.instructor).toLowerCase() === "true" ? "INSTRUCTOR" : "STUDENT";
+  const role = String(req.query.instructor).toLowerCase() === "true" ? Role.INSTRUCTOR : Role.STUDENT;
   return passport.authenticate("google", { scope: ["profile", "email"], state: JSON.stringify({ instructor: role }) })(
     req,
     res,
