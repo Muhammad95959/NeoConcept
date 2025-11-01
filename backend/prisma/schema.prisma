@@ -32,6 +32,8 @@ model User {
   memberShips          MemberShip[]
   Resources            Resource[]
   Post                 Post[]
+
+  @@map("users")
 }
 
 model Course {
@@ -44,6 +46,8 @@ model Course {
   memberShips MemberShip[]
   Resources   Resource[]
   Post        Post[]
+
+  @@map("courses")
 }
 
 model MemberShip {
@@ -54,6 +58,8 @@ model MemberShip {
   joinedAt     DateTime @default(now())
   user         User     @relation(fields: [userId], references: [id])
   course       Course   @relation(fields: [courseId], references: [id])
+
+  @@map("memberships")
 }
 
 model Resource {
@@ -67,6 +73,8 @@ model Resource {
   fileKey    String
   user       User     @relation(fields: [uploadedBy], references: [id])
   course     Course   @relation(fields: [courseId], references: [id])
+
+  @@map("resources")
 }
 
 model Post {
@@ -78,6 +86,8 @@ model Post {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [uploadedBy], references: [id])
   course     Course   @relation(fields: [courseId], references: [id])
+
+  @@map("posts")
 }
 
 enum Role {
