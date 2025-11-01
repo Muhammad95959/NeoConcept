@@ -2,7 +2,7 @@ import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
-import fs from "fs";
+import { promises as fs } from "fs";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
 import prisma from "../config/db";
@@ -49,7 +49,7 @@ export async function confirmEmail(req: Request, res: Response) {
         confirmEmailExpires: { gt: new Date() },
       },
     });
-    let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
+    let html = await fs.readFile("public/emailConfirmationMessage.html", "utf8");
     const failHtml = html
       .replace("%%COLOR_PLACEHOLDER%%", "#F38BA8")
       .replace("%%MESSAGE_PLACEHOLDER%%", "Invalid or expired token");
@@ -64,7 +64,7 @@ export async function confirmEmail(req: Request, res: Response) {
     res.status(200).send(successHtml);
   } catch (err) {
     console.log((err as Error).message);
-    let html = fs.readFileSync("public/emailConfirmationMessage.html", "utf8");
+    let html = await fs.readFile("public/emailConfirmationMessage.html", "utf8");
     html = html.replace("%%COLOR_PLACEHOLDER%%", "#F38BA8").replace("%%MESSAGE_PLACEHOLDER%%", "Something went wrong");
     res.status(500).send(html);
   }
