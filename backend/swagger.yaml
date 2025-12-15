@@ -266,8 +266,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -316,8 +316,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         content:
           application/json:
@@ -351,8 +351,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: Room deleted successfully
@@ -402,8 +402,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -461,8 +461,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         content:
           application/json:
@@ -500,8 +500,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: Post deleted successfully
@@ -549,8 +549,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -607,8 +607,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -632,8 +632,8 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
-            example: 1
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: Resource deleted successfully
