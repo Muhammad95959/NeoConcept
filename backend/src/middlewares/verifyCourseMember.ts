@@ -5,7 +5,7 @@ export default async function verifyCourseMember(req: Request, res: Response, ne
   const { courseId } = req.params;
   try {
     const membership = await prisma.memberShip.findFirst({
-      where: { courseId: parseInt(courseId), userId: parseInt(res.locals.user.id) },
+      where: { courseId, userId: res.locals.user.id },
     });
     if (!membership) res.status(403).json({ status: "fail", message: "You are not a member of this course" });
     next();

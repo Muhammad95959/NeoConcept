@@ -4,7 +4,7 @@ import prisma from "../config/db";
 export default async function checkCourseExists(req: Request, res: Response, next: Function) {
   const { courseId } = req.params;
   try {
-    const room = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
+    const room = await prisma.course.findUnique({ where: { id: courseId } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
     next();
   } catch (err) {
