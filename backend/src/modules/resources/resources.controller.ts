@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import { Readable } from "stream";
-import prisma from "../config/db";
+import prisma from "../../config/db";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,

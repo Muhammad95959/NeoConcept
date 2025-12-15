@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import prisma from "../config/db";
+import prisma from "../../config/db";
 
 export async function getPosts(req: Request, res: Response) {
   const { search } = req.query;

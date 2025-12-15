@@ -1,8 +1,8 @@
 import { Role, User } from "@prisma/client";
 import express from "express";
 import passport from "passport";
-import * as authController from "../controllers/authController";
-import signToken from "../utils/signToken";
+import * as authController from "./auth.controller";
+import signToken from "../../utils/signToken";
 
 const router = express.Router();
 

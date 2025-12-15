@@ -7,10 +7,10 @@ import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
 import "./config/passport";
-import authRouter from "./routes/authRoutes";
-import coursessRouter from "./routes/coursesRoutes";
-import postsRouter from "./routes/postsRoutes";
-import resourcesRouter from "./routes/resourcesRoutes";
+import authRouter from "./modules/auth/auth.routes";
+import coursessRouter from "./modules/courses/courses.routes";
+import postsRouter from "./modules/posts/posts.routes";
+import resourcesRouter from "./modules/resources/resources.routes";
 
 const app = express();
 

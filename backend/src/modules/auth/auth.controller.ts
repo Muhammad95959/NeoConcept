@@ -5,11 +5,11 @@ import { NextFunction, Request, Response } from "express";
 import { promises as fs } from "fs";
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";
-import prisma from "../config/db";
-import createRandomOTP from "../utils/createRandomOTP";
-import safeUserData from "../utils/safeUserData";
-import sendEmail from "../utils/sendEmail";
-import signToken from "../utils/signToken";
+import prisma from "../../config/db";
+import createRandomOTP from "../../utils/createRandomOTP";
+import safeUserData from "../../utils/safeUserData";
+import sendEmail from "../../utils/sendEmail";
+import signToken from "../../utils/signToken";
 
 const oauthClient = new OAuth2Client();
 
