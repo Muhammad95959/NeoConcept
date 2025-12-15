@@ -5,6 +5,7 @@ export default function sendEmail(
   userEmail: string | Address | (string | Address)[] | undefined,
   subject: string,
   message: string,
+  html?: boolean
 ) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -18,7 +19,8 @@ export default function sendEmail(
     from: process.env.GMAIL,
     to: userEmail,
     subject,
-    text: message,
+    text: html ? undefined : message,
+    html: html ? message : undefined
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

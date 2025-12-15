@@ -16,6 +16,12 @@ const oauthClient = new OAuth2Client();
 // TODO: send a confirmation request to the admin to allow users with role instructor to be created
 export async function signup(req: Request, res: Response) {
   const { email, username, password, role } = req.body;
+  if (!email || !username || !password || !role) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Email, username, password and role are required",
+    });
+  }
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const confirmEmailToken = crypto.randomBytes(32).toString("hex");
@@ -30,8 +36,12 @@ export async function signup(req: Request, res: Response) {
         confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
-    const message = `Click the link below to confirm your email address\n\n${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`;
-    sendEmail(email, "NeoConcept - Email Confirmation", message);
+    const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
+    const message = rawMessage.replaceAll(
+      "%%CONFIRMATION_LINK%%",
+      `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
+    );
+    sendEmail(email, "NeoConcept - Email Confirmation", message, true);
     res.status(201).json({ status: "success", message: "Please confirm your email" });
   } catch (err) {
     console.log((err as Error).message);
@@ -39,34 +49,23 @@ export async function signup(req: Request, res: Response) {
   }
 }
 
-// TODO: make a nicer confirmation html page
 export async function confirmEmail(req: Request, res: Response) {
+  const failHtml = await fs.readFile("public/emailVerificationFailure.html", "utf-8");
   try {
     const confirmEmailTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
     const user = await prisma.user.findFirst({
-      where: {
-        confirmEmailToken: confirmEmailTokenHash,
-        confirmEmailExpires: { gt: new Date() },
-      },
+      where: { confirmEmailToken: confirmEmailTokenHash, confirmEmailExpires: { gt: new Date() } },
     });
-    let html = await fs.readFile("public/emailConfirmationMessage.html", "utf8");
-    const failHtml = html
-      .replace("%%COLOR_PLACEHOLDER%%", "#F38BA8")
-      .replace("%%MESSAGE_PLACEHOLDER%%", "Invalid or expired token");
     if (!user) return res.status(400).send(failHtml);
     await prisma.user.update({
       where: { id: user.id },
       data: { emailConfirmed: true, confirmEmailToken: null, confirmEmailExpires: null },
     });
-    const successHtml = html
-      .replace("%%COLOR_PLACEHOLDER%%", "#A6E3A1")
-      .replace("%%MESSAGE_PLACEHOLDER%%", "Email confirmed successfully");
+    const successHtml = await fs.readFile("public/emailVerificationSuccess.html", "utf-8");
     res.status(200).send(successHtml);
   } catch (err) {
-    console.log((err as Error).message);
-    let html = await fs.readFile("public/emailConfirmationMessage.html", "utf8");
-    html = html.replace("%%COLOR_PLACEHOLDER%%", "#F38BA8").replace("%%MESSAGE_PLACEHOLDER%%", "Something went wrong");
-    res.status(500).send(html);
+    console.log(err);
+    res.status(500).send(failHtml);
   }
 }
 
@@ -86,8 +85,12 @@ export async function resendConfirmationEmail(req: Request, res: Response) {
         confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
-    const message = `Click the link below to confirm your email address\n\n${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`;
-    sendEmail(email, "NeoConcept - Email Confirmation", message);
+    const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
+    const message = rawMessage.replaceAll(
+      "%%CONFIRMATION_LINK%%",
+      `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
+    );
+    sendEmail(email, "NeoConcept - Email Confirmation", message, true);
     res.status(201).json({ status: "success", message: "New confirmation email was sent successfully" });
   } catch (err) {
     console.log((err as Error).message);
@@ -107,7 +110,11 @@ export async function login(req: Request, res: Response) {
     if (!user.emailConfirmed)
       return res.status(403).json({ status: "fail", message: "Please confirm your email first" });
     const token = signToken(user.id);
-    res.cookie("jwt", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     res.status(200).json({ status: "success", token, data: safeUserData(user) });
   } catch (err) {
     console.log((err as Error).message);
@@ -129,8 +136,9 @@ export async function forgotPassword(req: Request, res: Response) {
         resetPasswordExpires: new Date(Date.now() + 20 * 60 * 1000),
       },
     });
-    const message = `You can use the OTP below to reset your password\n\nOTP: ${otp}`;
-    sendEmail(email, "NeoConcept - Password Reset", message);
+    const rawMessage = await fs.readFile("public/resetPasswordMessage.html", "utf-8");
+    const message = rawMessage.replace("%%OTP%%", otp);
+    sendEmail(email, "NeoConcept - Password Reset", message, true);
     res.status(201).json({ status: "success", message: "Password reset email was sent successfully" });
   } catch (err) {
     console.log((err as Error).message);
@@ -211,7 +219,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     next();
   } catch (err) {
     console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    res.status(401).json({ status: "fail", message: "Invalid or expired token" });
   }
 }
 
