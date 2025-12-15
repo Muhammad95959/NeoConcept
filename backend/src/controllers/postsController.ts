@@ -8,7 +8,7 @@ export async function getPosts(req: Request, res: Response) {
     if (search) {
       const posts = await prisma.post.findMany({
         where: {
-          courseId: parseInt(courseId),
+          courseId,
           OR: [
             { title: { contains: String(search), mode: "insensitive" } },
             { content: { contains: String(search), mode: "insensitive" } },
@@ -17,7 +17,7 @@ export async function getPosts(req: Request, res: Response) {
       });
       return res.status(200).json({ status: "success", data: posts });
     }
-    const posts = await prisma.post.findMany({ where: { courseId: parseInt(courseId) } });
+    const posts = await prisma.post.findMany({ where: { courseId } });
     res.status(200).json({ status: "success", data: posts });
   } catch (err) {
     console.log((err as Error).message);
@@ -29,7 +29,7 @@ export async function getPostById(req: Request, res: Response) {
   const { courseId, id } = req.params;
   try {
     const post = await prisma.post.findUnique({
-      where: { courseId: parseInt(courseId), id: parseInt(id) },
+      where: { courseId, id },
     });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
     res.status(200).json({ status: "success", data: post });
@@ -44,7 +44,7 @@ export async function createPost(req: Request, res: Response) {
   const { courseId } = req.params;
   try {
     const newPost = await prisma.post.create({
-      data: { title, content, courseId: parseInt(courseId), uploadedBy: res.locals.user.id },
+      data: { title, content, courseId, uploadedBy: res.locals.user.id },
     });
     res.status(201).json({ status: "success", data: newPost });
   } catch (err) {
@@ -57,7 +57,7 @@ export async function updatePost(req: Request, res: Response) {
   const { courseId, id } = req.params;
   try {
     const post = await prisma.post.findUnique({
-      where: { courseId: parseInt(courseId), id: parseInt(id) },
+      where: { courseId, id },
     });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
     const { title, content } = req.body;
@@ -65,7 +65,7 @@ export async function updatePost(req: Request, res: Response) {
     if (title) updatedData.title = title;
     if (content) updatedData.title = content;
     const updatedPost = await prisma.post.update({
-      where: { courseId: parseInt(courseId), id: parseInt(id) },
+      where: { courseId, id },
       data: updatedData,
     });
     res.status(200).json({ status: "success", data: updatedPost });
@@ -79,10 +79,10 @@ export async function deletePost(req: Request, res: Response) {
   const { courseId, id } = req.params;
   try {
     const post = await prisma.post.findUnique({
-      where: { courseId: parseInt(courseId), id: parseInt(id) },
+      where: { courseId, id },
     });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
-    await prisma.post.delete({ where: { courseId: parseInt(courseId), id: parseInt(id) } });
+    await prisma.post.delete({ where: { courseId, id } });
     res.status(200).json({ status: "success", message: "Post deleted successfully" });
   } catch (err) {
     console.log((err as Error).message);

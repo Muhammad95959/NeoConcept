@@ -14,8 +14,8 @@ const s3 = new S3Client({
 });
 
 async function verifyParams(res: Response, id: string, courseId: string) {
-  const course = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
-  const resource = await prisma.resource.findUnique({ where: { id: parseInt(id) } });
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  const resource = await prisma.resource.findUnique({ where: { id } });
   if (!course) {
     res.status(404).json({ status: "fail", message: "Course not found" });
     return null;
@@ -34,9 +34,9 @@ async function verifyParams(res: Response, id: string, courseId: string) {
 export async function getResources(req: Request, res: Response) {
   const { courseId } = req.params;
   try {
-    const course = await prisma.course.findUnique({ where: { id: parseInt(courseId) } });
+    const course = await prisma.course.findUnique({ where: { id: courseId } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    const resources = await prisma.resource.findMany({ where: { courseId: parseInt(courseId) } });
+    const resources = await prisma.resource.findMany({ where: { courseId } });
     res.status(200).json({ status: "success", data: resources.map((r) => ({ ...r, fileKey: undefined })) });
   } catch (err) {
     console.log((err as Error).message);
@@ -77,7 +77,7 @@ export async function uploadResource(req: Request, res: Response) {
         fileUrl: (file as any).location,
         fileKey: (file as any).key,
         uploadedBy: res.locals.user.id,
-        courseId: parseInt(courseId),
+        courseId,
       },
     });
     res.status(201).json({ status: "success", data: { ...resource, fileKey: undefined } });
@@ -128,7 +128,7 @@ export async function deleteResource(req: Request, res: Response) {
         Key: resource.fileKey,
       }),
     );
-    await prisma.resource.delete({ where: { id: parseInt(id) } });
+    await prisma.resource.delete({ where: { id } });
     res.status(200).json({ status: "success", message: "Resource deleted successfully" });
   } catch (err) {
     console.log((err as Error).message);

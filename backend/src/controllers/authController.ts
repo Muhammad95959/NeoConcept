@@ -204,7 +204,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
   try {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, iat } = decodedToken as { id: number; iat: number; exp: number };
+    const { id, iat } = decodedToken as { id: string; iat: number; exp: number };
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user)
       return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });

@@ -27,7 +27,7 @@ export async function getRooms(req: Request, res: Response) {
 export async function getRoomById(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const room = await prisma.course.findFirst({ where: { id: parseInt(id) } });
+    const room = await prisma.course.findFirst({ where: { id } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
     res.status(200).json({ status: "success", data: room });
   } catch (err) {
@@ -62,7 +62,7 @@ export async function createRoom(req: Request, res: Response) {
 export async function updateRoom(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const room = await prisma.course.findFirst({ where: { id: parseInt(id) } });
+    const room = await prisma.course.findFirst({ where: { id } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
     const { name, description } = req.body;
     const updatedData: any = {};
@@ -72,7 +72,7 @@ export async function updateRoom(req: Request, res: Response) {
     if (userRooms.some((room) => room.name === name))
       return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
     const updatedRoom = await prisma.course.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: updatedData,
     });
     res.status(200).json({ status: "success", data: updatedRoom });
@@ -85,9 +85,9 @@ export async function updateRoom(req: Request, res: Response) {
 export async function deleteRoom(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    const room = await prisma.course.findFirst({ where: { id: parseInt(id) } });
+    const room = await prisma.course.findFirst({ where: { id } });
     if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
-    await prisma.course.delete({ where: { id: parseInt(id) } });
+    await prisma.course.delete({ where: { id } });
     res.status(200).json({ status: "success", message: "Room deleted successfully" });
   } catch (err) {
     console.log((err as Error).message);
