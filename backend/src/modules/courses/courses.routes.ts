@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma/client";
 import express from "express";
 import * as authController from "../auth/auth.controller";
 import * as coursesController from "./courses.controller";

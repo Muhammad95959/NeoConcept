@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role } from "../../generated/prisma/client";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
