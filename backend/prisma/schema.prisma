@@ -23,29 +23,53 @@ model User {
   passwordChangedAt    DateTime?
   deleted              Boolean      @default(false)
   Courses              Course[]
-  memberShips          MemberShip[]
+  memberships          Membership[]
   Resources            Resource[]
   Post                 Post[]
+  userTracks           UserTrack[]
 
   @@map("users")
 }
 
+model Track {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  courses     Course[]
+  userTracks  UserTrack[]
+
+  @@map("tracks")
+}
+
+model UserTrack {
+  userId  String
+  trackId String
+  user    User   @relation(fields: [userId], references: [id])
+  track   Track  @relation(fields: [trackId], references: [id])
+
+  @@id([userId, trackId])
+  @@map("user_tracks")
+}
+
 model Course {
-  id          String          @id @default(uuid())
+  id          String       @id @default(uuid())
   name        String
   description String?
   createdAt   DateTime     @default(now())
   createdBy   String
+  trackId     String
   creator     User         @relation(fields: [createdBy], references: [id])
-  memberShips MemberShip[]
+  track       Track        @relation(fields: [trackId], references: [id])
+  memberships Membership[]
   Resources   Resource[]
   Post        Post[]
 
   @@map("courses")
 }
 
-model MemberShip {
-  id           String      @id @default(uuid())
+model Membership {
+  id           String   @id @default(uuid())
   userId       String
   courseId     String
   roleInCourse Role
@@ -57,7 +81,7 @@ model MemberShip {
 }
 
 model Resource {
-  id         String      @id @default(uuid())
+  id         String   @id @default(uuid())
   uploadedBy String
   courseId   String
   uploadedAt DateTime @default(now())
@@ -72,7 +96,7 @@ model Resource {
 }
 
 model Post {
-  id         String      @id @default(uuid())
+  id         String   @id @default(uuid())
   uploadedBy String
   courseId   String
   title      String
