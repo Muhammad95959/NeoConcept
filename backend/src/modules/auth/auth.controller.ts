@@ -208,6 +208,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user)
       return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });
+    if (user.deletedAt) return res.status(401).json({ status: "fail", message: "User was deleted" });
     if (user.passwordChangedAt) {
       const isPasswordChanged = new Date(user.passwordChangedAt).getTime() / 1000 > iat;
       if (isPasswordChanged)
