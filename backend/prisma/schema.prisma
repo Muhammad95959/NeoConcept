@@ -25,7 +25,6 @@ model User {
   currentTrack         Track?       @relation(fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
   userTracks           UserTrack[]
-  Courses              Course[]
   memberships          Membership[]
   Resources            Resource[]
   Post                 Post[]
@@ -47,10 +46,11 @@ model Track {
 }
 
 model UserTrack {
-  userId  String
-  trackId String
-  user    User   @relation(fields: [userId], references: [id])
-  track   Track  @relation(fields: [trackId], references: [id])
+  userId   String
+  trackId  String
+  joinedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  track    Track    @relation(fields: [trackId], references: [id])
 
   @@id([userId, trackId])
   @@map("user_tracks")
@@ -61,10 +61,9 @@ model Course {
   name        String
   description String?
   createdAt   DateTime     @default(now())
-  createdBy   String
   trackId     String
-  creator     User         @relation(fields: [createdBy], references: [id])
   track       Track        @relation(fields: [trackId], references: [id])
+  deletedAt   DateTime?
   memberships Membership[]
   Resources   Resource[]
   Post        Post[]
@@ -73,7 +72,6 @@ model Course {
 }
 
 model Membership {
-  id           String   @id @default(uuid())
   userId       String
   courseId     String
   roleInCourse Role
@@ -81,6 +79,7 @@ model Membership {
   user         User     @relation(fields: [userId], references: [id])
   course       Course   @relation(fields: [courseId], references: [id])
 
+  @@id([userId, courseId])
   @@map("memberships")
 }
 
