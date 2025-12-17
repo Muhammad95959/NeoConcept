@@ -12,7 +12,7 @@ router.get("/", authController.protect, checkCourseExists, verifyCourseMember, p
 router.get("/:id", authController.protect, checkCourseExists, verifyCourseMember, postsController.getPostById);
 
 router.post(
-  "/create",
+  "/",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkCourseExists,
@@ -21,7 +21,7 @@ router.post(
 );
 
 router.patch(
-  "/:id/update",
+  "/:id",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkCourseExists,
@@ -30,7 +30,7 @@ router.patch(
 );
 
 router.delete(
-  "/:id/delete",
+  "/:id",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR),
   checkCourseExists,
