@@ -38,6 +38,7 @@ model Track {
   name        String
   description String?
   createdAt   DateTime    @default(now())
+  deletedAt   DateTime?
   userTracks  UserTrack[]
   courses     Course[]
   users       User[]
