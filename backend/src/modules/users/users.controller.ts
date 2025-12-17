@@ -7,6 +7,7 @@ export async function updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const { password, username } = req.body;
     if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
+    if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
     if (!username?.trim() && !password)
       return res.status(400).json({ status: "fail", message: "Username or password is required" });
     const data: any = {};
@@ -30,8 +31,21 @@ export async function deleteUser(req: Request, res: Response) {
   try {
     const { id } = req.params;
     if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
+    if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
     await prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
     res.status(200).json({ status: "success", message: "User deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
+
+export async function getUserTracks(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
+    const tracks = await prisma.userTrack.findMany({ where: { userId: id } });
+    res.status(200).json({ status: "success", data: tracks });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
