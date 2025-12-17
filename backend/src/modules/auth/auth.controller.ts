@@ -165,8 +165,7 @@ export async function verifyOTP(req: Request, res: Response) {
 }
 
 export async function resetPassword(req: Request, res: Response) {
-  const { otp } = req.params;
-  const { email, newPassword } = req.body;
+  const { otp, email, newPassword } = req.body;
   try {
     if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
     if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });

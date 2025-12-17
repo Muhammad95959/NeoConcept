@@ -22,7 +22,7 @@ router.post("/forgot-password", authController.forgotPassword);
 
 router.post("/verify-otp", authController.verifyOTP);
 
-router.patch("/reset-password/:otp", authController.resetPassword);
+router.patch("/reset-password", authController.resetPassword);
 
 router.post("/google/mobile", authController.mobileGoogleAuth);
 
