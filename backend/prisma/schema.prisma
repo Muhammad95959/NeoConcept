@@ -21,6 +21,8 @@ model User {
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
+  currentTrackId       String?
+  currentTrack         Track?       @relation(fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
   userTracks           UserTrack[]
   Courses              Course[]
@@ -38,6 +40,7 @@ model Track {
   createdAt   DateTime    @default(now())
   userTracks  UserTrack[]
   courses     Course[]
+  users       User[]
 
   @@map("tracks")
 }
