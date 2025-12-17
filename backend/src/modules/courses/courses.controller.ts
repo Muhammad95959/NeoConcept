@@ -37,8 +37,9 @@ export async function getRoomById(req: Request, res: Response) {
 }
 
 export async function createRoom(req: Request, res: Response) {
-  const { name, description } = req.body;
+  const { name, description, trackId } = req.body;
   if (!name) return res.status(400).json({ status: "fail", message: "Course name is required" });
+  if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
   try {
     const userRooms = await prisma.course.findMany({ where: { createdBy: res.locals.user.id } });
     if (userRooms.some((room) => room.name === name))
@@ -46,9 +47,9 @@ export async function createRoom(req: Request, res: Response) {
     let newRoom;
     await prisma.$transaction(async (tx) => {
       newRoom = await tx.course.create({
-        data: { name, description, createdBy: res.locals.user.id },
+        data: { name, description, trackId, createdBy: res.locals.user.id },
       });
-      await tx.memberShip.create({
+      await tx.membership.create({
         data: { userId: res.locals.user.id, courseId: newRoom.id, roleInCourse: Role.INSTRUCTOR },
       });
     });

@@ -73,7 +73,7 @@ export async function resendConfirmationEmail(req: Request, res: Response) {
   const { email } = req.body;
   if (!email) return res.status(400).json({ status: "fail", message: "Email is required" });
   try {
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
     if (user.emailConfirmed) return res.status(400).json({ status: "fail", message: "Email already confirmed" });
     const confirmEmailToken = crypto.randomBytes(32).toString("hex");
@@ -103,7 +103,7 @@ export async function login(req: Request, res: Response) {
   if (!email || !password)
     return res.status(400).json({ status: "fail", message: "Please provide email and password" });
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
     if (!user || !user.password) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
@@ -125,7 +125,7 @@ export async function login(req: Request, res: Response) {
 export async function forgotPassword(req: Request, res: Response) {
   const { email } = req.body;
   try {
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
     const otp = createRandomOTP(6);
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
@@ -151,7 +151,7 @@ export async function verifyOTP(req: Request, res: Response) {
   try {
     if (!otp) return res.status(400).json({ status: "fail", message: "Provide the OTP" });
     if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
     if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
@@ -170,7 +170,7 @@ export async function resetPassword(req: Request, res: Response) {
   try {
     if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
     if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
     if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
     const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
     if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
@@ -251,8 +251,8 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
     const payload = ticket.getPayload();
     if (!payload) return res.status(400).json({ status: "fail", message: "Invalid token" });
     const { email, name, sub: googleId } = payload;
-    let user = await prisma.user.findUnique({
-      where: { email: email?.toLowerCase() },
+    let user = await prisma.user.findFirst({
+      where: { email: email?.toLowerCase(), deletedAt: null },
     });
     if (user) {
       if (!user.googleId) {

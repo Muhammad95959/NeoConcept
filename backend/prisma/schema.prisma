@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                   String       @id @default(uuid())
   createdAt            DateTime     @default(now())
-  email                String       @unique
+  email                String
   username             String
   password             String?
   googleId             String?      @unique
@@ -21,12 +21,12 @@ model User {
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
-  deleted              Boolean      @default(false)
+  deletedAt            DateTime?
+  userTracks           UserTrack[]
   Courses              Course[]
   memberships          Membership[]
   Resources            Resource[]
   Post                 Post[]
-  userTracks           UserTrack[]
 
   @@map("users")
 }
@@ -36,8 +36,8 @@ model Track {
   name        String
   description String?
   createdAt   DateTime    @default(now())
-  courses     Course[]
   userTracks  UserTrack[]
+  courses     Course[]
 
   @@map("tracks")
 }

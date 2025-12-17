@@ -295,8 +295,11 @@ paths:
                 descrition:
                   type: string
                   example: test description
+                trackId: string
+                example: 9c816942-585d-4d23-b44b-fcb0915558fc
               required:
                 - name
+                - trackId
       responses:
         "201":
           description: success
@@ -330,6 +333,8 @@ paths:
                 descrition:
                   type: string
                   example: new test description
+                trackId: string
+                example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
