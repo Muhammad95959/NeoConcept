@@ -11,9 +11,15 @@ export async function updateUser(req: Request, res: Response) {
       return res.status(400).json({ status: "fail", message: "Username or password is required" });
     const data: any = {};
     if (username?.trim()) data.username = username.trim();
-    if (password) data.password = await bcrypt.hash(password, 10);
+    if (password) {
+      data.password = await bcrypt.hash(password, 10);
+      data.passwordChangedAt = new Date();
+    }
     await prisma.user.update({ where: { id }, data });
-    res.status(200).json({ status: "success", message: "User updated successfully" });
+    res.status(200).json({
+      status: "success",
+      message: password ? "Password updated. Please log in again." : "User updated successfully",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
