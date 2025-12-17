@@ -1,95 +1,87 @@
-import { Role } from "../../generated/prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../config/db";
 
-export async function getRooms(req: Request, res: Response) {
-  const { search } = req.query;
+export async function getCourses(req: Request, res: Response) {
   try {
+    const { search } = req.query;
+    const where: any = { deletedAt: null };
     if (search) {
-      const rooms = await prisma.course.findMany({
-        where: {
-          OR: [
-            { name: { contains: String(search), mode: "insensitive" } },
-            { description: { contains: String(search), mode: "insensitive" } },
-          ],
-        },
-      });
-      return res.status(200).json({ status: "success", data: rooms });
+      where.OR = [
+        { name: { contains: String(search), mode: "insensitive" } },
+        { description: { contains: String(search), mode: "insensitive" } },
+      ];
     }
-    const rooms = await prisma.course.findMany();
-    res.status(200).json({ status: "success", data: rooms });
+    const courses = await prisma.course.findMany({ where });
+    res.status(200).json({ status: "success", data: courses });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
 }
 
-export async function getRoomById(req: Request, res: Response) {
-  const { id } = req.params;
+export async function getCourseById(req: Request, res: Response) {
   try {
-    const room = await prisma.course.findFirst({ where: { id } });
-    if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
-    res.status(200).json({ status: "success", data: room });
+    const { id } = req.params;
+    const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
+    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
+    res.status(200).json({ status: "success", data: course });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
 }
 
-export async function createRoom(req: Request, res: Response) {
-  const { name, description, trackId } = req.body;
-  if (!name) return res.status(400).json({ status: "fail", message: "Course name is required" });
-  if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
+export async function createCourse(req: Request, res: Response) {
   try {
-    const userRooms = await prisma.course.findMany({ where: { createdBy: res.locals.user.id } });
-    if (userRooms.some((room) => room.name === name))
-      return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
-    let newRoom;
-    await prisma.$transaction(async (tx) => {
-      newRoom = await tx.course.create({
-        data: { name, description, trackId, createdBy: res.locals.user.id },
-      });
-      await tx.membership.create({
-        data: { userId: res.locals.user.id, courseId: newRoom.id, roleInCourse: Role.INSTRUCTOR },
-      });
+    const { name, description, trackId } = req.body;
+    if (!name) return res.status(400).json({ status: "fail", message: "Course name is required" });
+    if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
+    const track = await prisma.track.findFirst({ where: { id: trackId, deletedAt: null } });
+    if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
+    const duplicate = await prisma.course.findFirst({
+      where: { trackId, deletedAt: null, name: { equals: name, mode: "insensitive" } },
     });
-    res.status(201).json({ status: "success", data: newRoom });
+    if (duplicate)
+      return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
+    const newCourse = await prisma.course.create({ data: { name, description, trackId } });
+    res.status(201).json({ status: "success", data: newCourse });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
 }
 
-export async function updateRoom(req: Request, res: Response) {
-  const { id } = req.params;
+export async function updateCourse(req: Request, res: Response) {
   try {
-    const room = await prisma.course.findFirst({ where: { id } });
-    if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
+    const { id } = req.params;
     const { name, description } = req.body;
-    const updatedData: any = {};
-    if (name) updatedData.name = name;
-    if (description) updatedData.description = description;
-    const userRooms = await prisma.course.findMany({ where: { createdBy: res.locals.user.id } });
-    if (userRooms.some((room) => room.name === name))
-      return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
-    const updatedRoom = await prisma.course.update({
-      where: { id },
-      data: updatedData,
+    const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
+    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
+    if (!name?.trim() && !description?.trim())
+      return res.status(400).json({ status: "fail", message: "Course name or description is required" });
+    const data: any = {};
+    if (name) data.name = name.trim();
+    if (description) data.description = description.trim();
+    const duplicate = await prisma.course.findFirst({
+      where: { trackId: course.trackId, deletedAt: null, name: { equals: name, mode: "insensitive" }, NOT: { id } },
     });
-    res.status(200).json({ status: "success", data: updatedRoom });
+    if (duplicate)
+      return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
+    const updatedCourse = await prisma.course.update({ where: { id }, data });
+    res.status(200).json({ status: "success", data: updatedCourse });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
 }
 
-export async function deleteRoom(req: Request, res: Response) {
-  const { id } = req.params;
+export async function deleteCourse(req: Request, res: Response) {
   try {
-    const room = await prisma.course.findFirst({ where: { id } });
-    if (!room) return res.status(404).json({ status: "fail", message: "Room not found" });
-    await prisma.course.delete({ where: { id } });
-    res.status(200).json({ status: "success", message: "Room deleted successfully" });
+    const { id } = req.params;
+    const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
+    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
+    await prisma.course.update({ where: { id }, data: { deletedAt: new Date() } });
+    res.status(200).json({ status: "success", message: "Course deleted successfully" });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
