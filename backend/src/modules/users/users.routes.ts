@@ -14,4 +14,10 @@ router.patch("/:id/select-track", authController.protect, usersController.select
 
 router.patch("/:id/quit-track", authController.protect, usersController.quitTrack);
 
+router.get("/:id/courses", authController.protect, usersController.getUserCourses);
+
+router.patch("/:id/join-course", authController.protect, usersController.joinCourse);
+
+router.patch("/:id/quit-course", authController.protect, usersController.quitCourse);
+
 export default router;
