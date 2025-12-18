@@ -7,6 +7,8 @@ servers:
 
 tags:
   - name: Auth
+  - name: Users
+  - name: Tracks
   - name: Courses
   - name: Posts
   - name: Resources
@@ -206,17 +208,11 @@ paths:
           description: User not found
         "500":
           description: Something went wrong
-  /auth/reset-password/{otp}:
+  /auth/reset-password:
     patch:
       tags:
         - Auth
       summary: create a new password
-      parameters:
-        - name: otp
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
@@ -224,6 +220,9 @@ paths:
             schema:
               type: object
               properties:
+                otp:
+                  type: string
+                  example: 123456
                 email:
                   type: string
                   format: email
@@ -238,6 +237,124 @@ paths:
           description: Provide the email || Provide a new password || Invalid OTP || OTP has expired
         "404":
           description: User not found
+        "500":
+          description: Something went wrong
+
+  /tracks:
+    get:
+      tags:
+        - Tracks
+      summary: retrieve all tracks
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Tracks
+      summary: create a new track
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: test track
+                description:
+                  type: string
+                  example: test description
+              required:
+                - name
+      responses:
+        "201":
+          description: success
+        "400":
+          description: track name is required || Duplicate track name. Please choose another.
+        "500":
+          description: Something went wrong
+  /tracks/{id}:
+    get:
+      tags:
+        - Tracks
+      summary: retrieve a track by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Track not found
+        "500":
+          description: Something went wrong
+    patch:
+      tags:
+        - Tracks
+      summary: update the info of a track
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: new test track
+                description:
+                  type: string
+                  example: new test description
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Track name or description is required || Duplicate track name. Please choose another.
+        "404":
+          description: Track not found
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Tracks
+      summary: delete a track
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: track deleted successfully
+        "404":
+          description: Track not found
         "500":
           description: Something went wrong
 
@@ -256,26 +373,6 @@ paths:
           description: success
         "500":
           description: Something went wrong
-  /courses/{id}:
-    get:
-      tags:
-        - Courses
-      summary: retrieve a course by id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "404":
-          description: Room not found
-        "500":
-          description: Something went wrong
-  /courses/create:
     post:
       tags:
         - Courses
@@ -292,11 +389,12 @@ paths:
                 name:
                   type: string
                   example: test course
-                descrition:
+                description:
                   type: string
                   example: test description
-                trackId: string
-                example: 9c816942-585d-4d23-b44b-fcb0915558fc
+                trackId: 
+                  type: string
+                  example: 9c816942-585d-4d23-b44b-fcb0915558fc
               required:
                 - name
                 - trackId
@@ -307,7 +405,25 @@ paths:
           description: course name is required || Duplicate course name. Please choose another.
         "500":
           description: Something went wrong
-  /courses/{id}/update:
+  /courses/{id}:
+    get:
+      tags:
+        - Courses
+      summary: retrieve a course by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
     patch:
       tags:
         - Courses
@@ -322,6 +438,7 @@ paths:
             type: string
             example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -330,7 +447,7 @@ paths:
                 name:
                   type: string
                   example: new test course
-                descrition:
+                description:
                   type: string
                   example: new test description
                 trackId: string
@@ -341,10 +458,9 @@ paths:
         "400":
           description: Duplicate course name. Please choose another.
         "404":
-          description: Room not found
+          description: Course not found
         "500":
           description: Something went wrong
-  /courses/{id}/delete:
     delete:
       tags:
         - Courses
@@ -360,9 +476,9 @@ paths:
             example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
-          description: Room deleted successfully
+          description: Course deleted successfully
         "404":
-          description: Room not found
+          description: Course not found
         "500":
           description: Something went wrong
 
@@ -389,34 +505,6 @@ paths:
           description: success
         "500":
           description: Something went wrong
-  /courses/{courseId}/posts/{id}:
-    get:
-      tags:
-        - Posts
-      summary: retrieve a post by id in a course
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "404":
-          description: Post not found
-        "500":
-          description: Something went wrong
-  /courses/{courseId}/posts/create:
     post:
       tags:
         - Posts
@@ -448,7 +536,33 @@ paths:
           description: success
         "500":
           description: Something went wrong
-  /courses/{courseId}/posts/{id}/update:
+  /courses/{courseId}/posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: retrieve a post by id in a course
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Post not found
+        "500":
+          description: Something went wrong
     patch:
       tags:
         - Posts
@@ -487,7 +601,6 @@ paths:
           description: Post not found
         "500":
           description: Something went wrong
-  /courses/{courseId}/posts/{id}/delete:
     delete:
       tags:
         - Posts
