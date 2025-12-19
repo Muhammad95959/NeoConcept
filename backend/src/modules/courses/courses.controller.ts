@@ -11,7 +11,7 @@ export async function getCourses(req: Request, res: Response) {
         { description: { contains: String(search), mode: "insensitive" } },
       ];
     }
-    const courses = await prisma.course.findMany({ where });
+    const courses = await prisma.course.findMany({ where, include: { track: true } });
     res.status(200).json({ status: "success", data: courses });
   } catch (err) {
     console.log(err);
@@ -22,7 +22,7 @@ export async function getCourses(req: Request, res: Response) {
 export async function getCourseById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
+    const course = await prisma.course.findFirst({ where: { id, deletedAt: null }, include: { track: true } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     res.status(200).json({ status: "success", data: course });
   } catch (err) {
