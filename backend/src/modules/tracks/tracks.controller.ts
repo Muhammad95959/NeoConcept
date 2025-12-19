@@ -11,7 +11,7 @@ export async function getTracks(req: Request, res: Response) {
         { description: { contains: String(search), mode: "insensitive" } },
       ];
     }
-    const tracks = await prisma.track.findMany({ where });
+    const tracks = await prisma.track.findMany({ where, include: { courses: true } });
     res.status(200).json({ status: "success", data: tracks });
   } catch (err) {
     console.log(err);
@@ -22,7 +22,7 @@ export async function getTracks(req: Request, res: Response) {
 export async function getTrackById(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const track = await prisma.track.findFirst({ where: { id, deletedAt: null } });
+    const track = await prisma.track.findFirst({ where: { id, deletedAt: null }, include: { courses: true } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     res.status(200).json({ status: "success", data: track });
   } catch (err) {
