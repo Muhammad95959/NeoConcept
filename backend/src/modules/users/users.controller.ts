@@ -44,7 +44,10 @@ export async function getUserTracks(req: Request, res: Response) {
   try {
     const { id } = req.params;
     if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
-    const tracks = await prisma.userTrack.findMany({ where: { userId: id }, include: { track: true } });
+    const tracks = await prisma.userTrack.findMany({
+      where: { userId: id },
+      include: { track: { include: { courses: true } } },
+    });
     res.status(200).json({ status: "success", data: tracks });
   } catch (err) {
     console.log(err);
@@ -100,7 +103,10 @@ export async function getUserCourses(req: Request, res: Response) {
   try {
     const { id } = req.params;
     if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
-    const courses = await prisma.membership.findMany({ where: { userId: id }, include: { course: true } });
+    const courses = await prisma.membership.findMany({
+      where: { userId: id },
+      include: { course: { include: { track: true } } },
+    });
     res.status(200).json({ status: "success", data: courses });
   } catch (err) {
     console.log(err);
