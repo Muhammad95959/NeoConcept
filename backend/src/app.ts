@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors()); // TODO: configure CORS properly in production
+app.use(cors({ origin: "http://localhost:3000", credentials: true })); // TODO: configure CORS properly in production
 app.use(passport.initialize());
 
 app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
