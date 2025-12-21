@@ -103,7 +103,10 @@ export async function login(req: Request, res: Response) {
   if (!email || !password)
     return res.status(400).json({ status: "fail", message: "Please provide email and password" });
   try {
-    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
+    const user = await prisma.user.findFirst({
+      where: { email, deletedAt: null },
+      include: { currentTrack: { include: { courses: true } } },
+    });
     if (!user || !user.password) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
@@ -204,7 +207,10 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const { id, iat } = decodedToken as { id: string; iat: number; exp: number };
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { currentTrack: { include: { courses: true } } },
+    });
     if (!user)
       return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });
     if (user.deletedAt) return res.status(401).json({ status: "fail", message: "User was deleted" });
@@ -253,12 +259,14 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
     const { email, name, sub: googleId } = payload;
     let user = await prisma.user.findFirst({
       where: { email: email?.toLowerCase(), deletedAt: null },
+      include: { currentTrack: { include: { courses: true } } },
     });
     if (user) {
       if (!user.googleId) {
         user = await prisma.user.update({
           where: { id: user.id },
           data: { googleId, emailConfirmed: true },
+          include: { currentTrack: { include: { courses: true } } },
         });
       }
     } else {
@@ -270,6 +278,7 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
           emailConfirmed: true,
           role,
         },
+        include: { currentTrack: { include: { courses: true } } },
       });
     }
     const token = signToken(user.id);
