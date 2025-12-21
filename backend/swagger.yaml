@@ -11,7 +11,7 @@ tags:
   - name: Tracks
   - name: Courses
   - name: Posts
-  - name: Resources
+  # - name: Resources
 
 paths:
   /auth:
@@ -35,6 +35,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - username
+                - email
+                - password
               properties:
                 username:
                   type: string
@@ -65,6 +69,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
@@ -101,6 +108,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
               properties:
                 email:
                   type: string
@@ -150,6 +159,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - idToken
               properties:
                 idToken:
                   type: string
@@ -169,6 +180,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
               properties:
                 email:
                   type: string
@@ -192,6 +205,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - otp
+                - email
               properties:
                 otp:
                   type: string
@@ -219,6 +235,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - otp
+                - email
+                - newPassword
               properties:
                 otp:
                   type: string
@@ -339,6 +359,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - trackId
               properties:
                 trackId:
                   type: string
@@ -374,6 +396,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - trackId
               properties:
                 trackId:
                   type: string
@@ -430,6 +454,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - courseId
               properties:
                 courseId:
                   type: string
@@ -465,6 +491,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - courseId
               properties:
                 courseId:
                   type: string
@@ -500,6 +528,7 @@ paths:
       tags:
         - Tracks
       summary: create a new track
+      description: restricted to admin
       security:
         - cookieAuth: []
       requestBody:
@@ -508,6 +537,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
               properties:
                 name:
                   type: string
@@ -515,8 +546,6 @@ paths:
                 description:
                   type: string
                   example: test description
-              required:
-                - name
       responses:
         "201":
           description: success
@@ -547,6 +576,7 @@ paths:
       tags:
         - Tracks
       summary: update the info of a track
+      description: restricted to admin
       security:
         - cookieAuth: []
       parameters:
@@ -582,6 +612,7 @@ paths:
       tags:
         - Tracks
       summary: delete a track
+      description: restricted to admin
       security:
         - cookieAuth: []
       parameters:
@@ -618,6 +649,7 @@ paths:
       tags:
         - Courses
       summary: create a new course
+      description: restricted to admin
       security:
         - cookieAuth: []
       requestBody:
@@ -626,6 +658,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - name
+                - trackId
               properties:
                 name:
                   type: string
@@ -636,9 +671,6 @@ paths:
                 trackId: 
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
-              required:
-                - name
-                - trackId
       responses:
         "201":
           description: success
@@ -669,6 +701,7 @@ paths:
       tags:
         - Courses
       summary: update the info of a course
+      description: restricted to admin
       security:
         - cookieAuth: []
       parameters:
@@ -684,6 +717,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - trackId
               properties:
                 name:
                   type: string
@@ -707,6 +742,7 @@ paths:
       tags:
         - Courses
       summary: delete a course
+      description: restricted to admin
       security:
         - cookieAuth: []
       parameters:
@@ -751,6 +787,7 @@ paths:
       tags:
         - Posts
       summary: create a new post in a course
+      description: restricted to instructor
       security:
         - cookieAuth: []
       parameters:
@@ -766,6 +803,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - title
+                - content
               properties:
                 title:
                   type: string
@@ -776,6 +816,8 @@ paths:
       responses:
         "201":
           description: success
+        "400":
+          description: Title and content are required
         "500":
           description: Something went wrong
   /courses/{courseId}/posts/{id}:
@@ -809,6 +851,7 @@ paths:
       tags:
         - Posts
       summary: update the info of a post in a course
+      description: restricted to instructor
       security:
         - cookieAuth: []
       parameters:
@@ -825,6 +868,7 @@ paths:
             type: string
             example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -847,6 +891,7 @@ paths:
       tags:
         - Posts
       summary: delete a post in a course
+      description: restricted to instructor
       security:
         - cookieAuth: []
       parameters:
@@ -870,132 +915,132 @@ paths:
         "500":
           description: Something went wrong
 
-  /courses/{courseId}/resources:
-    get:
-      tags:
-        - Resources
-      summary: retrieve all the resources in a course
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-      responses:
-        "200":
-          description: success
-        "404":
-          description: Course not found
-        "500":
-          description: Something went wrong
-  /courses/{courseId}/resources/{id}:
-    get:
-      tags:
-        - Resources
-      summary: retrieve a resource by id
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "400":
-          description: Resource does not belong to this course
-        "404":
-          description: Course not found || Resource not found
-        "500":
-          description: Something went wrong
-  /courses/{courseId}/resources/upload:
-    post:
-      tags:
-        - Resources
-      summary: upload a resource
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-      responses:
-        "201":
-          description: success
-        "500":
-          description: Something went wrong
-  /courses/{courseId}/resources/{id}/download:
-    get:
-      tags:
-        - Resources
-      summary: download a resource
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "500":
-          description: Unexpected response type from S3 || Something went wrong
-  /courses/{courseId}/resources/{id}/delete:
-    delete:
-      tags:
-        - Resources
-      summary: delete a resource
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: courseId
-          in: path
-          required: true
-          schema:
-            type: integer
-            example: 1
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: Resource deleted successfully
-        "500":
-          description: Something went wrong
+  # /courses/{courseId}/resources:
+  #   get:
+  #     tags:
+  #       - Resources
+  #     summary: retrieve all the resources in a course
+  #     security:
+  #       - cookieAuth: []
+  #     parameters:
+  #       - name: courseId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 1
+  #     responses:
+  #       "200":
+  #         description: success
+  #       "404":
+  #         description: Course not found
+  #       "500":
+  #         description: Something went wrong
+  # /courses/{courseId}/resources/{id}:
+  #   get:
+  #     tags:
+  #       - Resources
+  #     summary: retrieve a resource by id
+  #     security:
+  #       - cookieAuth: []
+  #     parameters:
+  #       - name: courseId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 1
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #           example: 9c816942-585d-4d23-b44b-fcb0915558fc
+  #     responses:
+  #       "200":
+  #         description: success
+  #       "400":
+  #         description: Resource does not belong to this course
+  #       "404":
+  #         description: Course not found || Resource not found
+  #       "500":
+  #         description: Something went wrong
+  # /courses/{courseId}/resources/upload:
+  #   post:
+  #     tags:
+  #       - Resources
+  #     summary: upload a resource
+  #     security:
+  #       - cookieAuth: []
+  #     parameters:
+  #       - name: courseId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 1
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         multipart/form-data:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               file:
+  #                 type: string
+  #                 format: binary
+  #     responses:
+  #       "201":
+  #         description: success
+  #       "500":
+  #         description: Something went wrong
+  # /courses/{courseId}/resources/{id}/download:
+  #   get:
+  #     tags:
+  #       - Resources
+  #     summary: download a resource
+  #     security:
+  #       - cookieAuth: []
+  #     parameters:
+  #       - name: courseId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 1
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #           example: 9c816942-585d-4d23-b44b-fcb0915558fc
+  #     responses:
+  #       "200":
+  #         description: success
+  #       "500":
+  #         description: Unexpected response type from S3 || Something went wrong
+  # /courses/{courseId}/resources/{id}/delete:
+  #   delete:
+  #     tags:
+  #       - Resources
+  #     summary: delete a resource
+  #     security:
+  #       - cookieAuth: []
+  #     parameters:
+  #       - name: courseId
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           example: 1
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #           example: 9c816942-585d-4d23-b44b-fcb0915558fc
+  #     responses:
+  #       "200":
+  #         description: Resource deleted successfully
+  #       "500":
+  #         description: Something went wrong
