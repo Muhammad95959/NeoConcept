@@ -59,9 +59,6 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
-      swagger-themes:
-        specifier: ^1.4.3
-        version: 1.4.3
       swagger-ui-express:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.1)
@@ -1763,9 +1760,6 @@ packages:
 
   strnum@2.1.2:
     resolution: {integrity: sha512-l63NF9y/cLROq/yqKXSLtcMeeyOfnSQlfMSlzFt/K73oIaD8DGaQWd7Z34X9GPiKqP5rbSh84Hl4bOlLcjiSrQ==}
-
-  swagger-themes@1.4.3:
-    resolution: {integrity: sha512-1G0CqJC1IBbNxkAOyJoREd9hfwXH1R6+3GOFxLhQho2w2i+AbaJqkF4mTJhkce4yhaEMUXvv4KKu1YO/qpe6nQ==}
 
   swagger-ui-dist@5.31.0:
     resolution: {integrity: sha512-zSUTIck02fSga6rc0RZP3b7J7wgHXwLea8ZjgLA3Vgnb8QeOl3Wou2/j5QkzSGeoz6HusP/coYuJl33aQxQZpg==}
@@ -4050,8 +4044,6 @@ snapshots:
       ansi-regex: 6.2.2
 
   strnum@2.1.2: {}
-
-  swagger-themes@1.4.3: {}
 
   swagger-ui-dist@5.31.0:
     dependencies:

@@ -3,7 +3,6 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import fs from "fs";
 import passport from "passport";
-import { SwaggerTheme, SwaggerThemeNameEnum } from "swagger-themes";
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
 import "./config/passport";
@@ -18,15 +17,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000", credentials: true })); // TODO: configure CORS properly in production
 app.use(passport.initialize());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
   const swaggerDocument = yaml.parse(fs.readFileSync("./swagger.yaml", "utf8"));
-  swaggerUi.setup(swaggerDocument, {
-    explorer: true,
-    customCss: new SwaggerTheme().getBuffer(SwaggerThemeNameEnum.DRACULA),
-  })(req, res, next);
+  swaggerUi.setup(swaggerDocument, { explorer: true })(req, res, next);
 });
 
 app.use("/api/v1/auth", authRouter);
