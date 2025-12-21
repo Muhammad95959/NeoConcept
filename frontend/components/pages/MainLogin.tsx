@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Roboto } from "next/font/google";
 import TextInput from "@/components/ui/TextInput";
 import { useRouter } from "next/navigation";
-
+import axios from "axios";
 const roboto = Roboto({ subsets: ["latin"], weight: ["300"] });
 
 const MainLogin = () => {
@@ -30,21 +30,17 @@ const MainLogin = () => {
 
       const res = await fetch("http://localhost:9595/api/v1/auth/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
+
       const data = await res.json();
       console.log(data);
-      if (res.ok) {
+      if (res.status === 200) {
         // ✅ احفظ التوكين في localStorage
-        localStorage.setItem("token", data.token);
-
-        // (اختياري) لو حابب تخزن بيانات المستخدم
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
-
+        router.push("/dashboard");
     
       } else {
         setError(data.message || "Invalid credentials.");
