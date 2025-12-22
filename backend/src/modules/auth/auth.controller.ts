@@ -103,10 +103,7 @@ export async function login(req: Request, res: Response) {
   if (!email || !password)
     return res.status(400).json({ status: "fail", message: "Please provide email and password" });
   try {
-    const user = await prisma.user.findFirst({
-      where: { email, deletedAt: null },
-      include: { currentTrack: { include: { courses: true } } },
-    });
+    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
     if (!user || !user.password) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
@@ -207,10 +204,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const { id, iat } = decodedToken as { id: string; iat: number; exp: number };
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: { currentTrack: { include: { courses: true } } },
-    });
+    const user = await prisma.user.findUnique({ where: { id } });
     if (!user)
       return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });
     if (user.deletedAt) return res.status(401).json({ status: "fail", message: "User was deleted" });
@@ -257,10 +251,7 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
     const payload = ticket.getPayload();
     if (!payload) return res.status(400).json({ status: "fail", message: "Invalid token" });
     const { email, name, sub: googleId } = payload;
-    let user = await prisma.user.findFirst({
-      where: { email: email?.toLowerCase(), deletedAt: null },
-      include: { currentTrack: { include: { courses: true } } },
-    });
+    let user = await prisma.user.findFirst({ where: { email: email?.toLowerCase(), deletedAt: null } });
     if (user) {
       if (!user.googleId) {
         user = await prisma.user.update({
