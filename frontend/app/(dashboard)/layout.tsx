@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "../globals.css";
-
+import './dashboard.css'
 const geistSans = Geist({
     variable: "--font-geist-sans",
     subsets: ["latin"],
@@ -31,7 +31,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className="bg-main"
+            className="bg-[#F2F2FF]"
         >
 
         {children}

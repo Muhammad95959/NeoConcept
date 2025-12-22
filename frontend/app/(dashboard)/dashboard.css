@@ -1,0 +1,42 @@
+/* dashboard.css - Dark Theme */
+
+:root {
+    --color-primary: #6B5BFF;
+    --color-secondary: #8A7BFF;
+    --color-accent: #8A7BFF;
+    --color-background: #1A1A2E;
+    --color-text: #E0E0FF;
+    --color-box: #252550;
+    --color-warning: #FF6B6B;
+}
+
+.dashboard-container {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+/* Cards / Boxes */
+.dashboard-container .card {
+    background-color: var(--color-box);
+    color: var(--color-text);
+}
+
+/* Buttons */
+.dashboard-container button {
+    background-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.dashboard-container button:hover {
+    background-color: var(--color-secondary);
+}
+
+/* Sidebar */
+.dashboard-container aside {
+    background-color: var(--color-primary);
+}
+
+.dashboard-container aside li:hover {
+    background-color: var(--color-secondary);
+}
