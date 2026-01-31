@@ -114,5 +114,6 @@ model Post {
 enum Role {
   ADMIN
   INSTRUCTOR
+  ASSISTANT
   STUDENT
 }
