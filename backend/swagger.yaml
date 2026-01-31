@@ -52,7 +52,7 @@ paths:
                   example: test
                 role:
                   type: string
-                  enum: [STUDENT, INSTRUCTOR, ADMIN]
+                  enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
       responses:
         "201":
           description: Please confirm your email
@@ -134,11 +134,11 @@ paths:
         This endpoint cannot be executed directly in Swagger UI
         because it performs an external redirect.
       parameters:
-        - name: instructor
+        - name: role
           in: query
           schema:
-            type: boolean
-            example: false
+            enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
+            example: ADMIN
       responses:
         "302":
           description: Redirect to Google's consent screen
@@ -148,11 +148,11 @@ paths:
         - Auth
       summary: redirect to Google for authentication (mobile)
       parameters:
-        - name: instructor
+        - name: role
           in: query
           schema:
-            type: boolean
-            example: false
+            enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
+            example: ADMIN
       requestBody:
         required: true
         content:
@@ -369,7 +369,7 @@ paths:
         "200":
           description: success
         "400":
-          description:  Track id is required
+          description: Track id is required
         "401":
           description: Unauthorized
         "404":
@@ -406,7 +406,7 @@ paths:
         "200":
           description: success
         "400":
-          description:  Track id is required
+          description: Track id is required
         "401":
           description: Unauthorized
         "404":
@@ -668,7 +668,7 @@ paths:
                 description:
                   type: string
                   example: test description
-                trackId: 
+                trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
@@ -726,7 +726,7 @@ paths:
                 description:
                   type: string
                   example: new test description
-                trackId: 
+                trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:

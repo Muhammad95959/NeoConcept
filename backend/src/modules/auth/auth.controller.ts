@@ -13,7 +13,6 @@ import signToken from "../../utils/signToken";
 
 const oauthClient = new OAuth2Client();
 
-// TODO: send a confirmation request to the admin to allow users with role instructor to be created
 export async function signup(req: Request, res: Response) {
   const { email, username, password, role } = req.body;
   if (!email || !username || !password || !role) {
@@ -242,7 +241,17 @@ export function authorize(_req: Request, res: Response) {
 
 export async function mobileGoogleAuth(req: Request, res: Response) {
   const { idToken } = req.body;
-  const role = String(req.query.instructor).toLowerCase() === "true" ? Role.INSTRUCTOR : Role.STUDENT;
+  let role: Role = Role.STUDENT;
+  switch (String(req.query.role).toUpperCase()) {
+    case Role.ADMIN:
+      role = Role.ADMIN;
+      break;
+    case Role.INSTRUCTOR:
+      role = Role.INSTRUCTOR;
+      break;
+    case Role.ASSISTANT:
+      role = Role.ASSISTANT;
+  }
   try {
     const ticket = await oauthClient.verifyIdToken({
       idToken,
@@ -253,6 +262,9 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
     const { email, name, sub: googleId } = payload;
     let user = await prisma.user.findFirst({ where: { email: email?.toLowerCase(), deletedAt: null } });
     if (user) {
+      if (role && user.role !== role) {
+        return res.status(400).json({ status: "fail", message: "Role mismatch" });
+      }
       if (!user.googleId) {
         user = await prisma.user.update({
           where: { id: user.id },

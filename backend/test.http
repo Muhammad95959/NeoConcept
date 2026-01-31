@@ -12,7 +12,7 @@ Content-Type: application/json
 {
   "email": "muhammadhefzey@gmail.com",
   "password": "password",
-  "role": "INSTRUCTOR",
+  "role": "ADMIN",
   "username": "Muhammad Hefzey"
 }
 

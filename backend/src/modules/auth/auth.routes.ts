@@ -27,7 +27,17 @@ router.patch("/reset-password", authController.resetPassword);
 router.post("/google/mobile", authController.mobileGoogleAuth);
 
 router.get("/google", (req, res, next) => {
-  const role = String(req.query.instructor).toLowerCase() === "true" ? Role.INSTRUCTOR : Role.STUDENT;
+  let role: Role = Role.STUDENT;
+  switch (String(req.query.role).toUpperCase()) {
+    case Role.ADMIN:
+      role = Role.ADMIN;
+      break;
+    case Role.INSTRUCTOR:
+      role = Role.INSTRUCTOR;
+      break;
+    case Role.ASSISTANT:
+      role = Role.ASSISTANT;
+  }
   return passport.authenticate("google", { scope: ["profile", "email"], state: JSON.stringify({ instructor: role }) })(
     req,
     res,
