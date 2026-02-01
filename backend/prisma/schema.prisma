@@ -22,9 +22,9 @@ model User {
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   currentTrackId       String?
-  currentTrack         Track?       @relation(fields: [currentTrackId], references: [id])
+  tracks               Track?       @relation("TrackCreator")
+  currentTrack         Track?       @relation("UserTrack", fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
-  userTracks           UserTrack[]
   memberships          Membership[]
   Resources            Resource[]
   Post                 Post[]
@@ -33,27 +33,17 @@ model User {
 }
 
 model Track {
-  id          String      @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   description String?
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime  @default(now())
   deletedAt   DateTime?
-  userTracks  UserTrack[]
+  creatorId   String    @unique
   courses     Course[]
-  users       User[]
+  creator     User      @relation("TrackCreator", fields: [creatorId], references: [id])
+  users       User[]    @relation("UserTrack")
 
   @@map("tracks")
-}
-
-model UserTrack {
-  userId   String
-  trackId  String
-  joinedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
-  track    Track    @relation(fields: [trackId], references: [id])
-
-  @@id([userId, trackId])
-  @@map("user_tracks")
 }
 
 model Course {

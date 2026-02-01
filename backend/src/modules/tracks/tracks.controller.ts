@@ -35,12 +35,18 @@ export async function createTrack(req: Request, res: Response) {
   try {
     const { name, description } = req.body;
     if (!name) return res.status(400).json({ status: "fail", message: "Track name is required" });
+    if (res.locals.user.currentTrackId)
+      return res.status(400).json({ status: "fail", message: "This account is already assigned to a track" });
     const duplicate = await prisma.track.findFirst({
       where: { deletedAt: null, name: { equals: name, mode: "insensitive" } },
     });
     if (duplicate)
       return res.status(400).json({ status: "fail", message: "Duplicate track name. Please choose another." });
-    const newTrack = await prisma.track.create({ data: { name: name.trim(), description: description?.trim() } });
+    let newTrack;
+    await prisma.$transaction(async (tx) => {
+      newTrack = await tx.track.create({ data: { name: name.trim(), description: description?.trim(), creatorId: res.locals.user.id } });
+      await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: newTrack.id } });
+    });
     res.status(201).json({ status: "success", data: newTrack });
   } catch (err) {
     console.log(err);

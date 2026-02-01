@@ -318,27 +318,6 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/tracks:
-    get:
-      tags:
-        - Users
-      summary: list all tracks of a user
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "401":
-          description: Unauthorized
-        "500":
-          description: Something went wrong
   /users/{id}/select-track:
     patch:
       tags:
@@ -372,6 +351,8 @@ paths:
           description: Track id is required
         "401":
           description: Unauthorized
+        "403":
+          description: Admins cannot select tracks
         "404":
           description: Track not found
         "500":
@@ -409,6 +390,8 @@ paths:
           description: Track id is required
         "401":
           description: Unauthorized
+        "403":
+          description: Admins cannot quit tracks
         "404":
           description: Track not found
         "500":
@@ -550,7 +533,7 @@ paths:
         "201":
           description: success
         "400":
-          description: track name is required || Duplicate track name. Please choose another.
+          description: track name is required || This account is already assigned to a track || Duplicate track name. Please choose another.
         "500":
           description: Something went wrong
   /tracks/{id}:
