@@ -7,7 +7,7 @@ export default async function verifyCourseMember(req: Request, res: Response, ne
     const membership = await prisma.courseUser.findUnique({
       where: { userId_courseId: { userId: res.locals.user.id, courseId } },
     });
-    if (!membership) res.status(403).json({ status: "fail", message: "You are not a member of this course" });
+    if (!membership) return res.status(403).json({ status: "fail", message: "You are not a member of this course" });
     next();
   } catch (err) {
     console.log((err as Error).message);
