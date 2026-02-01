@@ -387,7 +387,7 @@ paths:
         "200":
           description: success
         "400":
-          description: Track id is required
+          description: Track id is required || You are not enrolled in this track
         "401":
           description: Unauthorized
         "403":

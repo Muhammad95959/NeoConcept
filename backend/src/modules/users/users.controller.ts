@@ -69,6 +69,7 @@ export async function quitTrack(req: Request, res: Response) {
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
     if (trackId === res.locals.user.currentTrackId)
       await prisma.user.update({ where: { id }, data: { currentTrackId: null } });
+    else return res.status(400).json({ status: "fail", message: "You are not enrolled in this track" });
     return res.status(200).json({ status: "success", message: "Quitted track successfully" });
   } catch (err) {
     console.log(err);
