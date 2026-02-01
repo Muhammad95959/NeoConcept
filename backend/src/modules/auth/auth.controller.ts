@@ -31,8 +31,9 @@ export async function signup(req: Request, res: Response) {
         username,
         password: hashedPassword,
         role: role.toUpperCase(),
-        confirmEmailToken: confirmEmailTokenHash,
-        confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        emailConfirmed: process.env.NODE_ENV === "development" ? true : false,
+        confirmEmailToken: process.env.NODE_ENV === "development" ? confirmEmailTokenHash : null,
+        confirmEmailExpires: process.env.NODE_ENV === "development" ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null,
       },
     });
     const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
@@ -40,8 +41,14 @@ export async function signup(req: Request, res: Response) {
       "%%CONFIRMATION_LINK%%",
       `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
     );
-    sendEmail(email, "NeoConcept - Email Confirmation", message, true);
-    res.status(201).json({ status: "success", message: "Please confirm your email" });
+    if (process.env.NODE_ENV !== "development") sendEmail(email, "NeoConcept - Email Confirmation", message, true);
+    res.status(201).json({
+      status: "success",
+      message:
+        process.env.NODE_ENV === "development"
+          ? "api is running on development mode => email created & confirmed"
+          : "Please confirm your email",
+    });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
