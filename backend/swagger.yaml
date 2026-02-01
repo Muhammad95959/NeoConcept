@@ -665,6 +665,7 @@ paths:
               required:
                 - name
                 - trackId
+                - instructorIds
               properties:
                 name:
                   type: string
@@ -675,11 +676,21 @@ paths:
                 trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
+                instructorIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fc, 9c816942-585d-4d23-b44b-fcb0915558fd]
+                assistantIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fe, 9c816942-585d-4d23-b44b-fcb0915558ff]
       responses:
         "201":
           description: success
         "400":
-          description: course name is required || Duplicate course name. Please choose another.
+          description: course name is required || Duplicate course name. Please choose another. || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "500":
           description: Something went wrong
   /courses/{id}:
@@ -759,6 +770,46 @@ paths:
       responses:
         "200":
           description: Course deleted successfully
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+  /courses/{id}/staff:
+    put:
+      tags:
+        - Courses
+      summary: update the staff members of a course
+      description: restricted to admin
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - trackId
+                - instructorIds
+              properties:
+                trackId:
+                  type: string
+                  example: 9c816942-585d-4d23-b44b-fcb0915558fc
+                instructorIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fc, 9c816942-585d-4d23-b44b-fcb0915558fd]
+                assistantIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fe, 9c816942-585d-4d23-b44b-fcb0915558ff]
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Track id is required || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "404":
           description: Course not found
         "500":
