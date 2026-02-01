@@ -417,45 +417,45 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-    patch:
   /users/{id}/join-course:
-    tags:
-      - Users
-    summary: join a course for a user
-    security:
-      - cookieAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          example: 9c816942-585d-4d23-b44b-fcb0915558fc
-    requestBody:
-      required: true
-      content:
-        application/json:
+    patch:
+      tags:
+        - Users
+      summary: join a course for a user
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
           schema:
-            type: object
-            required:
-              - courseId
-            properties:
-              courseId:
-                type: string
-                example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
-    responses:
-      "200":
-        description: success
-      "400":
-        description: Course id is required
-      "401":
-        description: Unauthorized
-      "403":
-        description: Only students can join courses
-      "404":
-        description: Course not found
-      "500":
-        description: Something went wrong
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseId
+              properties:
+                courseId:
+                  type: string
+                  example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Course id is required
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only students can join courses
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
   /users/{id}/quit-course:
     patch:
       tags:
