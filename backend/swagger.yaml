@@ -52,7 +52,7 @@ paths:
                   example: test
                 role:
                   type: string
-                  enum: [STUDENT, INSTRUCTOR, ADMIN]
+                  enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
       responses:
         "201":
           description: Please confirm your email
@@ -134,11 +134,11 @@ paths:
         This endpoint cannot be executed directly in Swagger UI
         because it performs an external redirect.
       parameters:
-        - name: instructor
+        - name: role
           in: query
           schema:
-            type: boolean
-            example: false
+            enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
+            example: ADMIN
       responses:
         "302":
           description: Redirect to Google's consent screen
@@ -148,11 +148,11 @@ paths:
         - Auth
       summary: redirect to Google for authentication (mobile)
       parameters:
-        - name: instructor
+        - name: role
           in: query
           schema:
-            type: boolean
-            example: false
+            enum: [STUDENT, INSTRUCTOR, ASSISTANT, ADMIN]
+            example: ADMIN
       requestBody:
         required: true
         content:
@@ -318,27 +318,6 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/tracks:
-    get:
-      tags:
-        - Users
-      summary: list all tracks of a user
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      responses:
-        "200":
-          description: success
-        "401":
-          description: Unauthorized
-        "500":
-          description: Something went wrong
   /users/{id}/select-track:
     patch:
       tags:
@@ -369,9 +348,11 @@ paths:
         "200":
           description: success
         "400":
-          description:  Track id is required
+          description: Track id is required
         "401":
           description: Unauthorized
+        "403":
+          description: Admins cannot select tracks
         "404":
           description: Track not found
         "500":
@@ -406,9 +387,11 @@ paths:
         "200":
           description: success
         "400":
-          description:  Track id is required
+          description: Track id is required || You are not enrolled in this track
         "401":
           description: Unauthorized
+        "403":
+          description: Admins cannot quit tracks
         "404":
           description: Track not found
         "500":
@@ -434,43 +417,45 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/join-course:
     patch:
-      tags:
-        - Users
-      summary: join a course for a user
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
-      requestBody:
+  /users/{id}/join-course:
+    tags:
+      - Users
+    summary: join a course for a user
+    security:
+      - cookieAuth: []
+    parameters:
+      - name: id
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - courseId
-              properties:
-                courseId:
-                  type: string
-                  example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
-      responses:
-        "200":
-          description: success
-        "400":
-          description: Course id is required
-        "401":
-          description: Unauthorized
-        "404":
-          description: Course not found
-        "500":
-          description: Something went wrong
+        schema:
+          type: string
+          example: 9c816942-585d-4d23-b44b-fcb0915558fc
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - courseId
+            properties:
+              courseId:
+                type: string
+                example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+    responses:
+      "200":
+        description: success
+      "400":
+        description: Course id is required
+      "401":
+        description: Unauthorized
+      "403":
+        description: Only students can join courses
+      "404":
+        description: Course not found
+      "500":
+        description: Something went wrong
   /users/{id}/quit-course:
     patch:
       tags:
@@ -504,6 +489,8 @@ paths:
           description: Course id is required
         "401":
           description: Unauthorized
+        "403":
+          description: Only students can quit courses
         "404":
           description: Course not found
         "500":
@@ -550,7 +537,7 @@ paths:
         "201":
           description: success
         "400":
-          description: track name is required || Duplicate track name. Please choose another.
+          description: track name is required || This account is already assigned to a track || Duplicate track name. Please choose another.
         "500":
           description: Something went wrong
   /tracks/{id}:
@@ -629,6 +616,23 @@ paths:
           description: Track not found
         "500":
           description: Something went wrong
+  /tracks/{id}/staff:
+    get:
+      tags:
+        - Tracks
+      summary: list all staff members of a track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Something went wrong
 
   /courses:
     get:
@@ -661,6 +665,7 @@ paths:
               required:
                 - name
                 - trackId
+                - instructorIds
               properties:
                 name:
                   type: string
@@ -668,14 +673,24 @@ paths:
                 description:
                   type: string
                   example: test description
-                trackId: 
+                trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
+                instructorIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fc, 9c816942-585d-4d23-b44b-fcb0915558fd]
+                assistantIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fe, 9c816942-585d-4d23-b44b-fcb0915558ff]
       responses:
         "201":
           description: success
         "400":
-          description: course name is required || Duplicate course name. Please choose another.
+          description: course name is required || Duplicate course name. Please choose another. || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "500":
           description: Something went wrong
   /courses/{id}:
@@ -726,7 +741,7 @@ paths:
                 description:
                   type: string
                   example: new test description
-                trackId: 
+                trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
@@ -755,6 +770,46 @@ paths:
       responses:
         "200":
           description: Course deleted successfully
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+  /courses/{id}/staff:
+    put:
+      tags:
+        - Courses
+      summary: update the staff members of a course
+      description: restricted to admin
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - trackId
+                - instructorIds
+              properties:
+                trackId:
+                  type: string
+                  example: 9c816942-585d-4d23-b44b-fcb0915558fc
+                instructorIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fc, 9c816942-585d-4d23-b44b-fcb0915558fd]
+                assistantIds:
+                  type: array
+                  items:
+                    type: string
+                  example: [9c816942-585d-4d23-b44b-fcb0915558fe, 9c816942-585d-4d23-b44b-fcb0915558ff]
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Track id is required || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "404":
           description: Course not found
         "500":

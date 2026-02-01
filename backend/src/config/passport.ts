@@ -40,11 +40,14 @@ passport.use(
     async (req, _accessToken, _refreshToken, profile, done) => {
       const role = JSON.parse(String(req.query.state)).instructor;
       try {
-        let user = await prisma.user.findUnique({
+        let user = await prisma.user.findFirst({
           where: { email: profile.emails?.[0].value.toLowerCase() },
         });
         if (user) {
           // Attach the Google ID to an existing user
+          if (role && user.role !== role) {
+            return done(new Error("Role mismatch"));
+          }
           if (!user.googleId) {
             user = await prisma.user.update({
               where: { id: user.id },

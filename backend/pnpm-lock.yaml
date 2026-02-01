@@ -20,6 +20,9 @@ importers:
       '@prisma/client-runtime-utils':
         specifier: ^7.2.0
         version: 7.2.0
+      '@types/ms':
+        specifier: ^2.1.0
+        version: 2.1.0
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3

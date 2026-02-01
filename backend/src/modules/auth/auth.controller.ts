@@ -13,7 +13,6 @@ import signToken from "../../utils/signToken";
 
 const oauthClient = new OAuth2Client();
 
-// TODO: send a confirmation request to the admin to allow users with role instructor to be created
 export async function signup(req: Request, res: Response) {
   const { email, username, password, role } = req.body;
   if (!email || !username || !password || !role) {
@@ -32,8 +31,9 @@ export async function signup(req: Request, res: Response) {
         username,
         password: hashedPassword,
         role: role.toUpperCase(),
-        confirmEmailToken: confirmEmailTokenHash,
-        confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        emailConfirmed: process.env.NODE_ENV === "development" ? true : false,
+        confirmEmailToken: process.env.NODE_ENV === "development" ? confirmEmailTokenHash : null,
+        confirmEmailExpires: process.env.NODE_ENV === "development" ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null,
       },
     });
     const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
@@ -41,8 +41,14 @@ export async function signup(req: Request, res: Response) {
       "%%CONFIRMATION_LINK%%",
       `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
     );
-    sendEmail(email, "NeoConcept - Email Confirmation", message, true);
-    res.status(201).json({ status: "success", message: "Please confirm your email" });
+    if (process.env.NODE_ENV !== "development") sendEmail(email, "NeoConcept - Email Confirmation", message, true);
+    res.status(201).json({
+      status: "success",
+      message:
+        process.env.NODE_ENV === "development"
+          ? "api is running on development mode => email created & confirmed"
+          : "Please confirm your email",
+    });
   } catch (err) {
     console.log((err as Error).message);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
@@ -242,7 +248,17 @@ export function authorize(_req: Request, res: Response) {
 
 export async function mobileGoogleAuth(req: Request, res: Response) {
   const { idToken } = req.body;
-  const role = String(req.query.instructor).toLowerCase() === "true" ? Role.INSTRUCTOR : Role.STUDENT;
+  let role: Role = Role.STUDENT;
+  switch (String(req.query.role).toUpperCase()) {
+    case Role.ADMIN:
+      role = Role.ADMIN;
+      break;
+    case Role.INSTRUCTOR:
+      role = Role.INSTRUCTOR;
+      break;
+    case Role.ASSISTANT:
+      role = Role.ASSISTANT;
+  }
   try {
     const ticket = await oauthClient.verifyIdToken({
       idToken,
@@ -253,6 +269,9 @@ export async function mobileGoogleAuth(req: Request, res: Response) {
     const { email, name, sub: googleId } = payload;
     let user = await prisma.user.findFirst({ where: { email: email?.toLowerCase(), deletedAt: null } });
     if (user) {
+      if (role && user.role !== role) {
+        return res.status(400).json({ status: "fail", message: "Role mismatch" });
+      }
       if (!user.googleId) {
         user = await prisma.user.update({
           where: { id: user.id },
