@@ -4,6 +4,7 @@ import MainInstructorDashboard from "@/components/pages/MainInstructorDashboard"
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
+
 const UserDashboardPage = () => {
     const router = useRouter();
     const [role, setRole] = useState<'INSTRUCTOR' | 'STUDENT' | null>(null);
@@ -24,7 +25,12 @@ const UserDashboardPage = () => {
 
             if (res.status === 200) {
                 const userData = await res.json();
-                setRole(userData.role);
+
+                if(userData.data.currentTrackId === null) {
+                    router.push('/choose-track');
+                }
+                setRole(userData.data.role);
+                console.log(userData.data);
 
                 setIsLoading(false);
             } else if (res.status === 401) {
@@ -72,17 +78,19 @@ const UserDashboardPage = () => {
     }
 
     // Render based on role
+
     if (role === 'STUDENT') {
         return <MainStudentDashboard />;
     } else if (role === 'INSTRUCTOR') {
         return <MainInstructorDashboard />;
     } else {
-        console.log("role: ", role);
+        router.push("/login");
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <h1 className="text-xl text-gray-700">You are not logged in</h1>
             </div>
         );
+
     }
 };
 

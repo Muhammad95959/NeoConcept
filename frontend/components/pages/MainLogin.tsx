@@ -39,7 +39,7 @@ const MainLogin = () => {
       const data = await res.json();
       console.log(data);
       if (res.status === 200) {
-        // ✅ احفظ التوكين في localStorage
+
         router.push("/dashboard");
     
       } else {
