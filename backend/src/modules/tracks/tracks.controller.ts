@@ -1,5 +1,7 @@
-import prisma from "../../config/db";
 import { Request, Response } from "express";
+import prisma from "../../config/db";
+import { Role } from "../../generated/prisma";
+import safeUserData from "../../utils/safeUserData";
 
 export async function getTracks(req: Request, res: Response) {
   try {
@@ -31,6 +33,24 @@ export async function getTrackById(req: Request, res: Response) {
   }
 }
 
+export async function getTrackStaff(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const staff = await prisma.user.findMany({
+      where: { currentTrackId: id, role: { in: [Role.INSTRUCTOR, Role.ASSISTANT] }, deletedAt: null },
+    });
+    const safeStaffData = staff
+      .filter((user) => user.emailConfirmed === true)
+      .map((user) => {
+        return { ...safeUserData(user), googleId: undefined, emailConfirmed: undefined, deletedAt: undefined };
+      });
+    res.status(200).json({ status: "success", data: safeStaffData });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
+
 export async function createTrack(req: Request, res: Response) {
   try {
     const { name, description } = req.body;
@@ -44,7 +64,9 @@ export async function createTrack(req: Request, res: Response) {
       return res.status(400).json({ status: "fail", message: "Duplicate track name. Please choose another." });
     let newTrack;
     await prisma.$transaction(async (tx) => {
-      newTrack = await tx.track.create({ data: { name: name.trim(), description: description?.trim(), creatorId: res.locals.user.id } });
+      newTrack = await tx.track.create({
+        data: { name: name.trim(), description: description?.trim(), creatorId: res.locals.user.id },
+      });
       await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: newTrack.id } });
     });
     res.status(201).json({ status: "success", data: newTrack });

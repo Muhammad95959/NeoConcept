@@ -9,6 +9,8 @@ router.get("/", tracksController.getTracks);
 
 router.get("/:id", tracksController.getTrackById);
 
+router.get("/:id/staff", authController.protect, authController.restrict(Role.ADMIN), tracksController.getTrackStaff);
+
 router.post("/", authController.protect, authController.restrict(Role.ADMIN), tracksController.createTrack);
 
 router.patch("/:id", authController.protect, authController.restrict(Role.ADMIN), tracksController.updateTrack);

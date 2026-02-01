@@ -616,6 +616,23 @@ paths:
           description: Track not found
         "500":
           description: Something went wrong
+  /tracks/{id}/staff:
+    get:
+      tags:
+        - Tracks
+      summary: list all staff members of a track
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Something went wrong
 
   /courses:
     get:
