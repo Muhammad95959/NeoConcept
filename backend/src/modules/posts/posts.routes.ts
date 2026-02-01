@@ -4,6 +4,7 @@ import * as authController from "../auth/auth.controller";
 import * as postsController from "./posts.controller";
 import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
+import verifyPostOwner from "../../middlewares/verifyPostOwner";
 
 const router = express.Router({ mergeParams: true });
 
@@ -14,7 +15,7 @@ router.get("/:id", authController.protect, checkCourseExists, verifyCourseMember
 router.post(
   "/",
   authController.protect,
-  authController.restrict(Role.INSTRUCTOR),
+  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   checkCourseExists,
   verifyCourseMember,
   postsController.createPost,
@@ -23,18 +24,20 @@ router.post(
 router.patch(
   "/:id",
   authController.protect,
-  authController.restrict(Role.INSTRUCTOR),
+  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   checkCourseExists,
   verifyCourseMember,
+  verifyPostOwner,
   postsController.updatePost,
 );
 
 router.delete(
   "/:id",
   authController.protect,
-  authController.restrict(Role.INSTRUCTOR),
+  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   checkCourseExists,
   verifyCourseMember,
+  verifyPostOwner,
   postsController.deletePost,
 );
 
