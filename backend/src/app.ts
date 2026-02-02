@@ -1,7 +1,9 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
+import rateLimit from "express-rate-limit";
 import fs from "fs";
+import helmet from "helmet";
 import passport from "passport";
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
@@ -15,7 +17,16 @@ import usersRouter from "./modules/users/users.routes";
 
 const app = express();
 
-app.use(express.json());
+app.use(helmet());
+
+const limiter = rateLimit({
+  limit: 150,
+  windowMs: 15 * 60 * 1000,
+  message: "Too many requests from this IP, please try again later.",
+});
+app.use("/api", limiter);
+
+app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
