@@ -318,6 +318,27 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
+  /users/{id}/tracks:
+    get:
+      tags:
+        - Users
+      summary: list all tracks of a user
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
   /users/{id}/select-track:
     patch:
       tags:
