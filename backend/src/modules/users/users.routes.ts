@@ -1,6 +1,7 @@
 import express from "express";
 import * as authController from "../auth/auth.controller";
 import * as usersController from "./users.controller";
+import verifyCurrentTrack from "../../middlewares/verifyCurrentTrack";
 
 const router = express.Router();
 
@@ -8,7 +9,9 @@ router.patch("/:id", authController.protect, usersController.updateUser);
 
 router.delete("/:id", authController.protect, usersController.deleteUser);
 
-router.patch("/:id/select-track", authController.protect, usersController.selectTrack);
+router.get("/:id/tracks", authController.protect, usersController.getUserTracks);
+
+router.patch("/:id/select-track", authController.protect, verifyCurrentTrack, usersController.selectTrack);
 
 router.patch("/:id/quit-track", authController.protect, usersController.quitTrack);
 

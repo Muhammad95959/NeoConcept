@@ -25,7 +25,7 @@ export async function getCourses(req: Request, res: Response) {
 
 export async function getCourseById(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const course = await prisma.course.findFirst({
       where: { id, deletedAt: null },
       include: { track: true, courseUsers: true },
@@ -87,7 +87,7 @@ export async function createCourse(req: Request, res: Response) {
           return { courseId: newCourse.id, userId: id, roleInCourse: Role.ASSISTANT };
         });
       const data = [...instructorsData, ...assistantsData];
-      await tx.courseUser.createMany({ data });
+      await tx.userCourse.createMany({ data });
     });
     res.status(201).json({ status: "success", data: newCourse });
   } catch (err) {
@@ -98,7 +98,7 @@ export async function createCourse(req: Request, res: Response) {
 
 export async function updateCourse(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const { name, description } = req.body;
     const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
@@ -122,7 +122,7 @@ export async function updateCourse(req: Request, res: Response) {
 
 export async function updateCourseStaff(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const { trackId, instructorIds, assistantIds } = req.body;
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
     const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
@@ -152,7 +152,7 @@ export async function updateCourseStaff(req: Request, res: Response) {
         .status(400)
         .json({ status: "fail", message: "One or more assistants is not assigned to the specified track" });
     await prisma.$transaction(async (tx) => {
-      await tx.courseUser.deleteMany({ where: { courseId: id } });
+      await tx.userCourse.deleteMany({ where: { courseId: id } });
       const instructorsData = instructorIds.map((id: string) => {
         return { courseId: course.id, userId: id, roleInCourse: Role.INSTRUCTOR };
       });
@@ -162,7 +162,7 @@ export async function updateCourseStaff(req: Request, res: Response) {
           return { courseId: course.id, userId: id, roleInCourse: Role.ASSISTANT };
         });
       const data = [...instructorsData, ...assistantsData];
-      await tx.courseUser.createMany({ data });
+      await tx.userCourse.createMany({ data });
     });
     res.status(200).json({ status: "success", message: "Course staff updated successfully" });
   } catch (err) {
@@ -173,7 +173,7 @@ export async function updateCourseStaff(req: Request, res: Response) {
 
 export async function deleteCourse(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     await prisma.course.update({ where: { id }, data: { deletedAt: new Date() } });

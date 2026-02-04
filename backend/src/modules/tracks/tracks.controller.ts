@@ -23,7 +23,7 @@ export async function getTracks(req: Request, res: Response) {
 
 export async function getTrackById(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const track = await prisma.track.findFirst({ where: { id, deletedAt: null }, include: { courses: true } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     res.status(200).json({ status: "success", data: track });
@@ -35,7 +35,7 @@ export async function getTrackById(req: Request, res: Response) {
 
 export async function getTrackStaff(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const staff = await prisma.user.findMany({
       where: { currentTrackId: id, role: { in: [Role.INSTRUCTOR, Role.ASSISTANT] }, deletedAt: null },
     });
@@ -68,6 +68,9 @@ export async function createTrack(req: Request, res: Response) {
         data: { name: name.trim(), description: description?.trim(), creatorId: res.locals.user.id },
       });
       await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: newTrack.id } });
+      await tx.userTrack.create({
+        data: { userId: res.locals.user.id, trackId: newTrack.id },
+      });
     });
     res.status(201).json({ status: "success", data: newTrack });
   } catch (err) {
@@ -78,7 +81,7 @@ export async function createTrack(req: Request, res: Response) {
 
 export async function updateTrack(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const { name, description } = req.body;
     if (!name?.trim() && !description?.trim())
       return res.status(400).json({ status: "fail", message: "Track name or description is required" });
@@ -102,7 +105,7 @@ export async function updateTrack(req: Request, res: Response) {
 
 export async function deleteTrack(req: Request, res: Response) {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
     const track = await prisma.track.findFirst({ where: { id, deletedAt: null } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     await prisma.track.update({ where: { id }, data: { deletedAt: new Date() } });

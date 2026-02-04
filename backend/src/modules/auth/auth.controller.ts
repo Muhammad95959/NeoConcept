@@ -58,7 +58,10 @@ export async function signup(req: Request, res: Response) {
 export async function confirmEmail(req: Request, res: Response) {
   const failHtml = await fs.readFile("public/emailVerificationFailure.html", "utf-8");
   try {
-    const confirmEmailTokenHash = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const confirmEmailTokenHash = crypto
+      .createHash("sha256")
+      .update(req.params.token as string)
+      .digest("hex");
     const user = await prisma.user.findFirst({
       where: { confirmEmailToken: confirmEmailTokenHash, confirmEmailExpires: { gt: new Date() } },
     });

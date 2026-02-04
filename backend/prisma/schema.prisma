@@ -22,28 +22,41 @@ model User {
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   currentTrackId       String?
-  tracks               Track?       @relation("TrackCreator")
+  createdTrack         Track?       @relation("TrackCreator")
   currentTrack         Track?       @relation("UserTrack", fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
-  courseUsers          CourseUser[]
+  courseUsers          UserCourse[]
   Resources            Resource[]
   Post                 Post[]
+  userTracks           UserTrack[]
 
   @@map("users")
 }
 
 model Track {
-  id          String    @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
   description String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime    @default(now())
   deletedAt   DateTime?
-  creatorId   String    @unique
+  creatorId   String      @unique
+  creator     User        @relation("TrackCreator", fields: [creatorId], references: [id])
+  users       User[]      @relation("UserTrack")
   courses     Course[]
-  creator     User      @relation("TrackCreator", fields: [creatorId], references: [id])
-  users       User[]    @relation("UserTrack")
+  userTracks  UserTrack[]
 
   @@map("tracks")
+}
+
+model UserTrack {
+  userId   String
+  trackId  String
+  joinedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  track    Track    @relation(fields: [trackId], references: [id])
+
+  @@id([userId, trackId])
+  @@map("user_tracks")
 }
 
 model Course {
@@ -54,14 +67,14 @@ model Course {
   trackId     String
   track       Track        @relation(fields: [trackId], references: [id])
   deletedAt   DateTime?
-  courseUsers CourseUser[]
+  courseUsers UserCourse[]
   Resources   Resource[]
   Post        Post[]
 
   @@map("courses")
 }
 
-model CourseUser {
+model UserCourse {
   userId       String
   courseId     String
   roleInCourse Role
@@ -70,7 +83,7 @@ model CourseUser {
   course       Course   @relation(fields: [courseId], references: [id])
 
   @@id([userId, courseId])
-  @@map("course_users")
+  @@map("user_courses")
 }
 
 model Resource {

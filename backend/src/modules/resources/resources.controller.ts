@@ -32,7 +32,7 @@ async function verifyParams(res: Response, id: string, courseId: string) {
 }
 
 export async function getResources(req: Request, res: Response) {
-  const { courseId } = req.params;
+  const { courseId } = req.params as { courseId: string };
   try {
     const course = await prisma.course.findUnique({ where: { id: courseId } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
@@ -45,7 +45,7 @@ export async function getResources(req: Request, res: Response) {
 }
 
 export async function getResourceById(req: Request, res: Response) {
-  const { courseId, id } = req.params;
+  const { courseId, id } = req.params as { courseId: string; id: string };
   try {
     const { resource } = (await verifyParams(res, id, courseId))!;
     res.status(200).json({ status: "success", data: { ...resource, fileKey: undefined } });
@@ -67,7 +67,7 @@ export function uploadToS3() {
 }
 
 export async function uploadResource(req: Request, res: Response) {
-  const { courseId } = req.params;
+  const { courseId } = req.params as { courseId: string };
   const file = req.file!;
   try {
     const resource = await prisma.resource.create({
@@ -99,7 +99,7 @@ export async function uploadResource(req: Request, res: Response) {
 }
 
 export async function downloadResource(req: Request, res: Response) {
-  const { courseId, id } = req.params;
+  const { courseId, id } = req.params as { courseId: string; id: string };
   try {
     const { resource } = (await verifyParams(res, id, courseId))!;
     const command = new GetObjectCommand({
@@ -119,7 +119,7 @@ export async function downloadResource(req: Request, res: Response) {
 }
 
 export async function deleteResource(req: Request, res: Response) {
-  const { courseId, id } = req.params;
+  const { courseId, id } = req.params as { courseId: string; id: string };
   try {
     const { resource } = (await verifyParams(res, id, courseId))!;
     await s3.send(

@@ -4,7 +4,7 @@ import prisma from "../../config/db";
 export async function getPosts(req: Request, res: Response) {
   try {
     const { search } = req.query;
-    const { courseId } = req.params;
+    const { courseId } = req.params as { courseId: string };
     const where: any = { courseId, course: { deletedAt: null } };
     if (search) {
       where.OR = [
@@ -22,7 +22,7 @@ export async function getPosts(req: Request, res: Response) {
 
 export async function getPostById(req: Request, res: Response) {
   try {
-    const { courseId, id } = req.params;
+    const { courseId, id } = req.params as { courseId: string; id: string };
     const post = await prisma.post.findFirst({ where: { courseId, id, course: { deletedAt: null } } });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
     res.status(200).json({ status: "success", data: post });
@@ -34,7 +34,7 @@ export async function getPostById(req: Request, res: Response) {
 
 export async function createPost(req: Request, res: Response) {
   try {
-    const { courseId } = req.params;
+    const { courseId } = req.params as { courseId: string };
     const { title, content } = req.body;
     const course = await prisma.course.findFirst({ where: { id: courseId, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
@@ -52,7 +52,7 @@ export async function createPost(req: Request, res: Response) {
 
 export async function updatePost(req: Request, res: Response) {
   try {
-    const { courseId, id } = req.params;
+    const { courseId, id } = req.params as { courseId: string; id: string };
     const { title, content } = req.body;
     const post = await prisma.post.findFirst({ where: { courseId, id, course: { deletedAt: null } } });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
@@ -73,7 +73,7 @@ export async function updatePost(req: Request, res: Response) {
 
 export async function deletePost(req: Request, res: Response) {
   try {
-    const { courseId, id } = req.params;
+    const { courseId, id } = req.params as { courseId: string; id: string };
     const post = await prisma.post.findFirst({ where: { courseId, id, course: { deletedAt: null } } });
     if (!post) return res.status(404).json({ status: "fail", message: "Post not found" });
     if (post.uploadedBy !== res.locals.user.id)
