@@ -29,6 +29,7 @@ model User {
   Resources            Resource[]
   Post                 Post[]
   userTracks           UserTrack[]
+  requests             Request[]
 
   @@map("users")
 }
@@ -70,6 +71,7 @@ model Course {
   courseUsers UserCourse[]
   Resources   Resource[]
   Post        Post[]
+  requests    Request[]
 
   @@map("courses")
 }
@@ -84,6 +86,19 @@ model UserCourse {
 
   @@id([userId, courseId])
   @@map("user_courses")
+}
+
+model Request {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  message   String?
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@map("requests")
 }
 
 model Resource {
@@ -119,4 +134,10 @@ enum Role {
   INSTRUCTOR
   ASSISTANT
   STUDENT
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
 }
