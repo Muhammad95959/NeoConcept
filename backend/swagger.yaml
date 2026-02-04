@@ -11,6 +11,7 @@ tags:
   - name: Tracks
   - name: Courses
   - name: Posts
+  - name: Requests
   # - name: Resources
 
 paths:
@@ -516,6 +517,27 @@ paths:
           description: Course not found
         "500":
           description: Something went wrong
+  /users/{id}/requests:
+    get:
+      tags:
+        - Users
+      summary: list all requests of a user
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
 
   /tracks:
     get:
@@ -852,7 +874,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
       responses:
         "200":
@@ -871,7 +893,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
       requestBody:
         required: true
@@ -908,7 +930,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
@@ -935,7 +957,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
@@ -975,7 +997,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
             example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
@@ -988,6 +1010,162 @@ paths:
           description: Post deleted successfully
         "404":
           description: Post not found
+        "500":
+          description: Something went wrong
+
+  /requests:
+    get:
+      tags:
+        - Requests
+      summary: retrieve all requests made by staff members in admin's track
+      description: restricted to admin
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: success
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Requests
+      summary: create a new request to join a course
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseId
+              properties:
+                courseId:
+                  type: string
+                  example: d19a9c4c-cd39-4f8c-8b7b-5b850378c678
+                message:
+                  type: string
+                  example: test message
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Course ID is required || You already have a pending request for this course
+        "500":
+          description: Something went wrong
+  /requests/{id}:
+    get:
+      tags:
+        - Requests
+      summary: retrieve a request by id
+      description: restricted to admin
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "404":
+          description: Request not found
+        "500":
+          description: Something went wrong
+    patch:
+      tags:
+        - Requests
+      summary: update the message of your request
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: new test message
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Provide the new message || Only pending requests can be updated
+        "401":
+          description: You can only update your own requests
+        "404":
+          description: Request not found
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Requests
+      summary: delete your request
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: Request deleted successfully
+        "400":
+          description: Only pending requests can be deleted
+        "401":
+          description: You can only delete your own requests
+        "404":
+          description: Request not found
+        "500":
+          description: Something went wrong
+  /requests/{id}/answer:
+    patch:
+      tags:
+        - Requests
+      summary: approve or reject a request
+      description: restricted to admin
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid status || Request already answered
+        "404":
+          description: Request not found
         "500":
           description: Something went wrong
 

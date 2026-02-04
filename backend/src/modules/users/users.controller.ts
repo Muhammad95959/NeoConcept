@@ -153,3 +153,15 @@ export async function quitCourse(req: Request, res: Response) {
     res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
 }
+
+export async function getUserRequests(req: Request, res: Response) {
+  try {
+    const { id } = req.params as { id: string };
+    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
+    const requests = await prisma.request.findMany({ where: { userId: id }, include: { course: true } });
+    res.status(200).json({ status: "success", data: requests });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
