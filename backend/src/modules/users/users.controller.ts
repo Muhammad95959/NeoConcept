@@ -47,7 +47,21 @@ export async function getUserTracks(req: Request, res: Response) {
     if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     const tracks = await prisma.userTrack.findMany({
       where: { userId: id },
-      include: { track: { include: { courses: true } } },
+      include: {
+        track: {
+          include: {
+            courses: {
+              where: { deletedAt: null, courseUsers: { some: { userId: id } } },
+              include: {
+                courseUsers: {
+                  where: { roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
+                  select: { roleInCourse: true, joinedAt: true, user: true },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     res.status(200).json({ status: "success", data: tracks });
   } catch (err) {
