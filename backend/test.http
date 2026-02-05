@@ -1,7 +1,7 @@
 ### authorize
 
 GET http://localhost:9595/api/v1/auth HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDI2Njk3MiwiZXhwIjoxNzcwMzUzMzcyfQ.8SDxZunSPRAsHsz46TNBIPqLVt_4obQdVjJ1mp_QdAY; Path=/; HttpOnly; SameSite=Lax
 
 
 ### signup
@@ -23,7 +23,7 @@ POST http://localhost:9595/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "student@gmail.com",
+  "email": "instructor2@gmail.com",
   "password": "password"
 }
 
@@ -225,24 +225,20 @@ GET http://localhost:9595/api/v1/courses/1e6dfde7-aa4c-4f4b-9b1c-85a3b68947a0 HT
 
 POST http://localhost:9595/api/v1/courses HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDIxODExNiwiZXhwIjoxNzcwMzA0NTE2fQ.aMhKnbzM5lMJcwNJAeHOqhDwdBUZqQNj6zsmeOMKrv4; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDI2Njk3MiwiZXhwIjoxNzcwMzUzMzcyfQ.8SDxZunSPRAsHsz46TNBIPqLVt_4obQdVjJ1mp_QdAY; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "assistantIds": [
-    "fb8391d5-ee14-47fd-9c23-95bae4d3b4fb"
-  ],
+  "assistantIds": [],
   "description": "a test course",
-  "instructorIds": [
-    "e15fd1f7-f924-4f88-a602-23ac5ea3ead5"
-  ],
-  "name": "test course",
+  "instructorIds": [],
+  "name": "test course 3",
   "trackId": "f20f2083-9fe2-4e22-85d5-b67efbdbb946"
 }
 
 
 ### update-course
 
-PATCH http://localhost:9595/api/v1/courses/27e2bffc-4662-49cc-955a-560f48b87aeb HTTP/1.1
+PATCH http://localhost:9595/api/v1/courses/0ca32d70-81f9-46a1-ac07-d823a568251e HTTP/1.1
 Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
 
@@ -254,16 +250,16 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJ
 
 ### update-course-staff
 
-PUT http://localhost:9595/api/v1/courses/dcc2096b-82a9-413d-a871-7bbd18e7de33/staff HTTP/1.1
+PUT http://localhost:9595/api/v1/courses/46ffb1c8-395a-4895-a7e7-f07c9903c09d/staff HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDI2Njk3MiwiZXhwIjoxNzcwMzUzMzcyfQ.8SDxZunSPRAsHsz46TNBIPqLVt_4obQdVjJ1mp_QdAY; Path=/; HttpOnly; SameSite=Lax
 
 {
   "assistantIds": [
-    "0c44bcbc-d909-4e1e-8c31-1e7ee2d0a816"
+    "0cbd8dbb-dc50-4658-8862-8391416fff01"
   ],
   "instructorIds": [
-    "c2a599b9-2cda-4a61-b6f5-45364e419f6a"
+    "757d4cbb-eed8-4eee-809b-336b97f53dce"
   ],
   "trackId": "d080583d-1fc8-4e80-9c2f-74f149f93e87"
 }
