@@ -14,7 +14,7 @@ import postsRouter from "./modules/posts/posts.routes";
 import requestsRouter from "./modules/requests/requests.routes";
 import resourcesRouter from "./modules/resources/resources.routes";
 import tracksRouter from "./modules/tracks/tracks.routes";
-import usersRouter from "./modules/users/users.routes";
+import userRouter from "./modules/user/user.routes";
 
 const app = express();
 
@@ -38,7 +38,7 @@ app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFu
 });
 
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/tracks", tracksRouter);
 app.use("/api/v1/courses", coursessRouter);
 app.use("/api/v1/requests", requestsRouter);

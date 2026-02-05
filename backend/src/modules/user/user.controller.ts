@@ -5,9 +5,7 @@ import { Role } from "../../generated/prisma";
 
 export async function updateUser(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
     const { password, username } = req.body;
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
     if (!username?.trim() && !password)
       return res.status(400).json({ status: "fail", message: "Username or password is required" });
@@ -17,7 +15,7 @@ export async function updateUser(req: Request, res: Response) {
       data.password = await bcrypt.hash(password, 10);
       data.passwordChangedAt = new Date();
     }
-    await prisma.user.update({ where: { id }, data });
+    await prisma.user.update({ where: { id: res.locals.user.id }, data });
     res.status(200).json({
       status: "success",
       message: password ? "Password updated. Please log in again." : "User updated successfully",
@@ -30,10 +28,8 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
-    await prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
+    await prisma.user.update({ where: { id: res.locals.user.id }, data: { deletedAt: new Date() } });
     res.status(200).json({ status: "success", message: "User deleted successfully" });
   } catch (err) {
     console.log(err);
@@ -43,15 +39,13 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function getUserTracks(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     const tracks = await prisma.userTrack.findMany({
-      where: { userId: id },
+      where: { userId: res.locals.user.id },
       include: {
         track: {
           include: {
             courses: {
-              where: { deletedAt: null, courseUsers: { some: { userId: id } } },
+              where: { deletedAt: null, courseUsers: { some: { userId: res.locals.user.id } } },
               include: {
                 courseUsers: {
                   where: { roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
@@ -72,9 +66,7 @@ export async function getUserTracks(req: Request, res: Response) {
 
 export async function selectTrack(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
     const { trackId } = req.body;
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.role === Role.ADMIN)
       return res.status(403).json({ status: "fail", message: "Admins cannot select tracks" });
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
@@ -82,11 +74,11 @@ export async function selectTrack(req: Request, res: Response) {
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     await prisma.$transaction(async (tx) => {
       await tx.userTrack.upsert({
-        where: { userId_trackId: { userId: id, trackId } },
+        where: { userId_trackId: { userId: res.locals.user.id, trackId } },
         update: {},
-        create: { userId: id, trackId },
+        create: { userId: res.locals.user.id, trackId },
       });
-      await tx.user.update({ where: { id }, data: { currentTrackId: trackId } });
+      await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: trackId } });
     });
     return res.status(200).json({ status: "success", message: "Selected track successfully" });
   } catch (err) {
@@ -97,17 +89,15 @@ export async function selectTrack(req: Request, res: Response) {
 
 export async function quitTrack(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
     const { trackId } = req.body;
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.role === Role.ADMIN)
       return res.status(403).json({ status: "fail", message: "Admins cannot quit tracks" });
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
     await prisma.$transaction(async (tx) => {
-      const { count } = await tx.userTrack.deleteMany({ where: { userId: id, trackId } });
+      const { count } = await tx.userTrack.deleteMany({ where: { userId: res.locals.user.id, trackId } });
       if (count === 0) throw new Error("TRACK_NOT_FOUND");
       if (trackId === res.locals.user.currentTrackId)
-        await tx.user.update({ where: { id }, data: { currentTrackId: null } });
+        await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: null } });
     });
     return res.status(200).json({ status: "success", message: "Quitted track successfully" });
   } catch (err) {
@@ -120,10 +110,8 @@ export async function quitTrack(req: Request, res: Response) {
 
 export async function getUserCourses(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     const courses = await prisma.userCourse.findMany({
-      where: { userId: id },
+      where: { userId: res.locals.user.id },
       include: { course: { include: { track: true } } },
     });
     res.status(200).json({ status: "success", data: courses });
@@ -135,15 +123,15 @@ export async function getUserCourses(req: Request, res: Response) {
 
 export async function joinCourse(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
     const { courseId } = req.body;
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.role !== Role.STUDENT)
       return res.status(403).json({ status: "fail", message: "Only students can join courses" });
     if (!courseId) return res.status(400).json({ status: "fail", message: "course id is required" });
     const course = await prisma.course.findFirst({ where: { id: courseId } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    await prisma.userCourse.create({ data: { userId: id, courseId, roleInCourse: res.locals.user.role } });
+    await prisma.userCourse.create({
+      data: { userId: res.locals.user.id, courseId, roleInCourse: res.locals.user.role },
+    });
     return res.status(200).json({ status: "success", message: "Joined course successfully" });
   } catch (err) {
     console.log(err);
@@ -153,13 +141,11 @@ export async function joinCourse(req: Request, res: Response) {
 
 export async function quitCourse(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
     const { courseId } = req.body;
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
     if (res.locals.user.role !== Role.STUDENT)
       return res.status(403).json({ status: "fail", message: "Only students can quit courses" });
     if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
-    const { count } = await prisma.userCourse.deleteMany({ where: { userId: id, courseId } });
+    const { count } = await prisma.userCourse.deleteMany({ where: { userId: res.locals.user.id, courseId } });
     if (count === 0) return res.status(404).json({ status: "fail", message: "Course not found" });
     return res.status(200).json({ status: "success", message: "Quitted course successfully" });
   } catch (err) {
@@ -170,9 +156,10 @@ export async function quitCourse(req: Request, res: Response) {
 
 export async function getUserRequests(req: Request, res: Response) {
   try {
-    const { id } = req.params as { id: string };
-    if (id !== res.locals.user.id) return res.status(401).json({ status: "fail", message: "Unauthorized" });
-    const requests = await prisma.request.findMany({ where: { userId: id }, include: { course: true } });
+    const requests = await prisma.request.findMany({
+      where: { userId: res.locals.user.id },
+      include: { course: true },
+    });
     res.status(200).json({ status: "success", data: requests });
   } catch (err) {
     console.log(err);
