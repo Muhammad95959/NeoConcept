@@ -7,7 +7,7 @@ servers:
 
 tags:
   - name: Auth
-  - name: Users
+  - name: User
   - name: Tracks
   - name: Courses
   - name: Posts
@@ -261,20 +261,13 @@ paths:
         "500":
           description: Something went wrong
 
-  /users/{id}:
+  /user:
     patch:
       tags:
-        - Users
+        - User
       summary: update the info of a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         required: true
         content:
@@ -299,17 +292,10 @@ paths:
           description: Something went wrong
     delete:
       tags:
-        - Users
+        - User
       summary: delete logged in user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -319,20 +305,13 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/tracks:
+  /user/tracks:
     get:
       tags:
-        - Users
+        - User
       summary: list all tracks of a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -340,20 +319,13 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/select-track:
+  /user/select-track:
     patch:
       tags:
-        - Users
+        - User
       summary: select a track for a user (new or existing)
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         required: true
         content:
@@ -379,20 +351,13 @@ paths:
           description: Track not found
         "500":
           description: Something went wrong
-  /users/{id}/quit-track:
+  /user/quit-track:
     patch:
       tags:
-        - Users
+        - User
       summary: quit a track for a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         required: true
         content:
@@ -418,20 +383,13 @@ paths:
           description: Track not found
         "500":
           description: Something went wrong
-  /users/{id}/courses:
+  /user/courses:
     get:
       tags:
-        - Users
+        - User
       summary: list all courses of a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -439,20 +397,13 @@ paths:
           description: Unauthorized
         "500":
           description: Something went wrong
-  /users/{id}/join-course:
+  /user/join-course:
     patch:
       tags:
-        - Users
+        - User
       summary: join a course for a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         required: true
         content:
@@ -478,20 +429,13 @@ paths:
           description: Course not found
         "500":
           description: Something went wrong
-  /users/{id}/quit-course:
+  /user/quit-course:
     patch:
       tags:
-        - Users
+        - User
       summary: quit a course for a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       requestBody:
         required: true
         content:
@@ -517,20 +461,13 @@ paths:
           description: Course not found
         "500":
           description: Something went wrong
-  /users/{id}/requests:
+  /user/requests:
     get:
       tags:
-        - Users
+        - User
       summary: list all requests of a user
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 9c816942-585d-4d23-b44b-fcb0915558fc
       responses:
         "200":
           description: success
@@ -733,7 +670,7 @@ paths:
         "201":
           description: success
         "400":
-          description: course name is required || Duplicate course name. Please choose another. || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
+          description: course name is required || Duplicate course name. Please choose another. || Instructor ids must be an array || Assistant ids must be an array || One or more instructorIds are invalid || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more assistantIds are invalid || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "500":
           description: Something went wrong
   /courses/{id}:
@@ -852,7 +789,7 @@ paths:
         "201":
           description: success
         "400":
-          description: Track id is required || Instructor ids must be an array || At least one instructor is required || Assistant ids must be an array || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
+          description: Track id is required || Instructor ids must be an array || Assistant ids must be an array || One or more instructorIds are invalid || One or more users in instructorIds is not an instructor || One or more instructors is not assigned to the specified track || One or more assistantIds are invalid || One or more users in assistantIds is not an assistant || One or more assistants is not assigned to the specified track
         "404":
           description: Course not found
         "500":
