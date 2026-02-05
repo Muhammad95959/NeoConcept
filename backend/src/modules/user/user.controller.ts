@@ -127,8 +127,13 @@ export async function joinCourse(req: Request, res: Response) {
     if (res.locals.user.role !== Role.STUDENT)
       return res.status(403).json({ status: "fail", message: "Only students can join courses" });
     if (!courseId) return res.status(400).json({ status: "fail", message: "course id is required" });
-    const course = await prisma.course.findFirst({ where: { id: courseId } });
+    const course = await prisma.course.findFirst({
+      where: { id: courseId },
+      include: { courseUsers: { where: { roleInCourse: Role.INSTRUCTOR } } },
+    });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
+    if (course.courseUsers.length === 0)
+      return res.status(400).json({ status: "fail", message: "Course has no instructor, can't join" });
     await prisma.userCourse.create({
       data: { userId: res.locals.user.id, courseId, roleInCourse: res.locals.user.role },
     });
