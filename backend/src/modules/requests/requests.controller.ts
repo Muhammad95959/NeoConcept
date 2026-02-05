@@ -79,12 +79,14 @@ export async function answerRequest(req: Request, res: Response) {
     if (!request) return res.status(404).json({ status: "fail", message: "Request not found" });
     if (request.status !== Status.PENDING)
       return res.status(400).json({ status: "fail", message: "Request already answered" });
-    await prisma.request.update({ where: { id }, data: { status } });
-    if (status === Status.APPROVED) {
-      await prisma.userCourse.create({
-        data: { userId: request.userId, courseId: request.courseId, roleInCourse: request.user.role },
-      });
-    }
+    await prisma.$transaction(async (tx) => {
+      await tx.request.update({ where: { id }, data: { status } });
+      if (status === Status.APPROVED) {
+        await tx.userCourse.create({
+          data: { userId: request.userId, courseId: request.courseId, roleInCourse: request.user.role },
+        });
+      }
+    });
     res.status(200).json({ status: "success", message: `Request ${status.toLowerCase()} successfully` });
   } catch (err) {
     console.log(err);
