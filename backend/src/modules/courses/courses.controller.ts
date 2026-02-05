@@ -4,7 +4,7 @@ import { Role } from "../../generated/prisma";
 
 export async function getCourses(req: Request, res: Response) {
   try {
-    const { search } = req.query;
+    const { search, track } = req.query;
     const where: any = { deletedAt: null };
     if (search) {
       where.OR = [
@@ -12,6 +12,7 @@ export async function getCourses(req: Request, res: Response) {
         { description: { contains: String(search), mode: "insensitive" } },
       ];
     }
+    if (track) where.trackId = String(track);
     const courses = await prisma.course.findMany({ where, include: { track: true, courseUsers: true } });
     const data = courses.map((course) => {
       return { ...course, staff: course.courseUsers, courseUsers: undefined };

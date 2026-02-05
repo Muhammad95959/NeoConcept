@@ -213,7 +213,7 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJ
 
 ### get-courses
 
-GET http://localhost:9595/api/v1/courses HTTP/1.1
+GET http://localhost:9595/api/v1/courses?track=3a6ab996-5845-4052-8518-664e2b1e30f1 HTTP/1.1
 
 
 ### get-course
