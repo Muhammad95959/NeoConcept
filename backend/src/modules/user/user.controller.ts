@@ -57,7 +57,20 @@ export async function getUserTracks(_req: Request, res: Response) {
         },
       },
     });
-    res.status(200).json({ status: "success", data: tracks });
+    const userCourses = await prisma.userCourse.findMany({
+      where: { userId: res.locals.user.id },
+      select: { courseId: true },
+    });
+    const userCourseIds = new Set(userCourses.map((uc) => uc.courseId));
+    const formattedTracks = tracks.map((userTrack) => {
+      return {
+        ...userTrack.track,
+        courses: userTrack.track.courses.map((course) => {
+          return { ...course, hasJoined: userCourseIds.has(course.id) };
+        }),
+      };
+    });
+    res.status(200).json({ status: "success", data: formattedTracks });
   } catch (err) {
     console.log(err);
     res.status(500).json({ status: "fail", message: "Something went wrong" });
