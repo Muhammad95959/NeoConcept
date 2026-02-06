@@ -26,7 +26,7 @@ export async function updateUser(req: Request, res: Response) {
   }
 }
 
-export async function deleteUser(req: Request, res: Response) {
+export async function deleteUser(_req: Request, res: Response) {
   try {
     if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
     await prisma.user.update({ where: { id: res.locals.user.id }, data: { deletedAt: new Date() } });
@@ -37,7 +37,7 @@ export async function deleteUser(req: Request, res: Response) {
   }
 }
 
-export async function getUserTracks(req: Request, res: Response) {
+export async function getUserTracks(_req: Request, res: Response) {
   try {
     const tracks = await prisma.userTrack.findMany({
       where: { userId: res.locals.user.id },
@@ -45,7 +45,7 @@ export async function getUserTracks(req: Request, res: Response) {
         track: {
           include: {
             courses: {
-              where: { deletedAt: null, courseUsers: { some: { userId: res.locals.user.id } } },
+              where: { deletedAt: null },
               include: {
                 courseUsers: {
                   where: { roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
@@ -108,7 +108,7 @@ export async function quitTrack(req: Request, res: Response) {
   }
 }
 
-export async function getUserCourses(req: Request, res: Response) {
+export async function getUserCourses(_req: Request, res: Response) {
   try {
     const courses = await prisma.userCourse.findMany({
       where: { userId: res.locals.user.id },
@@ -159,7 +159,7 @@ export async function quitCourse(req: Request, res: Response) {
   }
 }
 
-export async function getUserRequests(req: Request, res: Response) {
+export async function getUserRequests(_req: Request, res: Response) {
   try {
     const requests = await prisma.request.findMany({
       where: { userId: res.locals.user.id },
