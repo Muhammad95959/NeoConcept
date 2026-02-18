@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import prisma from "../config/db";
 
 export default async function verifyCourseMember(req: Request, res: Response, next: Function) {
-  const { courseId } = req.params;
+  const { courseId } = req.params as { courseId: string };
   try {
-    const membership = await prisma.courseUser.findUnique({
+    const membership = await prisma.userCourse.findUnique({
       where: { userId_courseId: { userId: res.locals.user.id, courseId } },
     });
     if (!membership) return res.status(403).json({ status: "fail", message: "You are not a member of this course" });

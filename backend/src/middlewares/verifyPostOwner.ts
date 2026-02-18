@@ -3,7 +3,7 @@ import prisma from "../config/db";
 
 export default async function verifyPostOwner(req: Request, res: Response, next: NextFunction) {
   try {
-    const { courseId, id } = req.params;
+    const { courseId, id } = req.params as { courseId: string; id: string };
     const post = await prisma.post.findUnique({ where: { id } });
     if (!post || post.courseId !== courseId) return res.status(404).json({ status: "fail", message: "Post not found" });
     if (post.uploadedBy !== res.locals.user.id)
