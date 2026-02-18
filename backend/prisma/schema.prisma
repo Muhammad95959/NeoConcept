@@ -8,28 +8,29 @@ datasource db {
 }
 
 model User {
-  id                   String       @id @default(uuid())
-  createdAt            DateTime     @default(now())
+  id                   String           @id @default(uuid())
+  createdAt            DateTime         @default(now())
   email                String
   username             String
   password             String?
-  googleId             String?      @unique
+  googleId             String?          @unique
   role                 Role
-  emailConfirmed       Boolean      @default(false)
+  emailConfirmed       Boolean          @default(false)
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   currentTrackId       String?
-  createdTrack         Track?       @relation("TrackCreator")
-  currentTrack         Track?       @relation("UserTrack", fields: [currentTrackId], references: [id])
+  createdTrack         Track?           @relation("TrackCreator")
+  currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
   courseUsers          UserCourse[]
   Resources            Resource[]
   Post                 Post[]
   userTracks           UserTrack[]
-  requests             Request[]
+  staffRequests        StaffRequest[]
+  studentRequests      StudentRequest[]
 
   @@map("users")
 }
@@ -61,17 +62,19 @@ model UserTrack {
 }
 
 model Course {
-  id          String       @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime     @default(now())
-  trackId     String
-  track       Track        @relation(fields: [trackId], references: [id])
-  deletedAt   DateTime?
-  courseUsers UserCourse[]
-  Resources   Resource[]
-  Post        Post[]
-  requests    Request[]
+  id            String         @id @default(uuid())
+  name          String
+  description   String?
+  protected     Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  trackId       String
+  track         Track          @relation(fields: [trackId], references: [id])
+  deletedAt     DateTime?
+  courseUsers   UserCourse[]
+  Resources     Resource[]
+  Post          Post[]
+  staffRequests StaffRequest[]
+  studentRequests StudentRequest[]
 
   @@map("courses")
 }
@@ -88,7 +91,7 @@ model UserCourse {
   @@map("user_courses")
 }
 
-model Request {
+model StaffRequest {
   id        String   @id @default(uuid())
   userId    String
   courseId  String
@@ -98,7 +101,19 @@ model Request {
   user      User     @relation(fields: [userId], references: [id])
   course    Course   @relation(fields: [courseId], references: [id])
 
-  @@map("requests")
+  @@map("staff_requests")
+}
+
+model StudentRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+
+  @@map("student_requests")
 }
 
 model Resource {

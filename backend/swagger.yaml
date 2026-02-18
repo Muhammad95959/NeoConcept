@@ -11,7 +11,8 @@ tags:
   - name: Tracks
   - name: Courses
   - name: Posts
-  - name: Requests
+  - name: Staff-Requests
+  - name: Student-Requests
   # - name: Resources
 
 paths:
@@ -420,11 +421,11 @@ paths:
         "200":
           description: success
         "400":
-          description: Course id is required
+          description: Course id is required || You're already enrolled in this course || 
         "401":
           description: Unauthorized
         "403":
-          description: Only students can join courses
+          description: Only students can join courses || This course is protected, please submit a student request to join
         "404":
           description: Course not found
         "500":
@@ -461,18 +462,50 @@ paths:
           description: Course not found
         "500":
           description: Something went wrong
-  /user/requests:
+  /user/staff-requests:
     get:
       tags:
         - User
-      summary: list all requests of a user
+      summary: list all staff requests of a user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
       security:
         - cookieAuth: []
       responses:
         "200":
           description: success
+        "400":
+          description: Invalid status
         "401":
           description: Unauthorized
+        "403":
+          description: Only instructors and assistants can have staff requests
+        "500":
+          description: Something went wrong
+  /user/stuedent-requests:
+    get:
+      tags:
+        - User
+      summary: list all student requests of a user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid status
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only students can have student requests
         "500":
           description: Something went wrong
 
@@ -954,10 +987,10 @@ paths:
         "500":
           description: Something went wrong
 
-  /requests:
+  /staff-requests:
     get:
       tags:
-        - Requests
+        - Staff-Requests
       summary: retrieve all requests made by staff members in admin's track
       description: restricted to admin
       security:
@@ -969,7 +1002,7 @@ paths:
           description: Something went wrong
     post:
       tags:
-        - Requests
+        - Staff-Requests
       summary: create a new request to join a course
       description: restricted to instructor or assistant
       security:
@@ -1003,10 +1036,10 @@ paths:
           description: Course ID is required || You already have a pending request for this course
         "500":
           description: Something went wrong
-  /requests/{id}:
+  /staff-requests/{id}:
     get:
       tags:
-        - Requests
+        - Staff-Requests
       summary: retrieve a request by id
       description: restricted to admin
       security:
@@ -1027,7 +1060,7 @@ paths:
           description: Something went wrong
     patch:
       tags:
-        - Requests
+        - Staff-Requests
       summary: update the message of your request
       description: restricted to instructor or assistant
       security:
@@ -1062,7 +1095,7 @@ paths:
           description: Something went wrong
     delete:
       tags:
-        - Requests
+        - Staff-Requests
       summary: delete your request
       description: restricted to instructor or assistant
       security:
@@ -1085,10 +1118,10 @@ paths:
           description: Request not found
         "500":
           description: Something went wrong
-  /requests/{id}/answer:
+  /staff-requests/{id}/answer:
     patch:
       tags:
-        - Requests
+        - Staff-Requests
       summary: approve or reject a request
       description: restricted to admin
       security:
@@ -1105,6 +1138,152 @@ paths:
           description: success
         "400":
           description: Invalid status || Request already answered
+        "404":
+          description: Request not found
+        "500":
+          description: Something went wrong
+
+  /student-requests:
+    get:
+      tags:
+        - Student-Requests
+      summary: retrieve all requests in a course
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED]
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Course id is required || Invalid status
+        "403":
+          description: You're not a staff member of this course
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Student-Requests
+      summary: create a new request to join a course
+      description: restricted to student
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseId
+              properties:
+                courseId:
+                  type: string
+                  example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Course id is required || You're already enrolled in this course || This course is not protected, you can join it directly || You have already submitted a request for this course
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+  /student-requests/{id}:
+    get:
+      tags:
+        - Student-Requests
+      summary: retrieve a student request by id
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "403":
+          description: You're not a staff member of this course
+        "404":
+          description: Student request not found
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Student-Requests
+      summary: delete your request
+      description: restricted to student
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: Request deleted successfully
+        "400":
+          description: Only pending requests can be deleted
+        "403":
+          description: You can only delete your own requests
+        "404":
+          description: Request not found
+        "500":
+          description: Something went wrong
+  /student-requests/{id}/answer:
+    patch:
+      tags:
+        - Student-Requests
+      summary: approve or reject a student request
+      description: restricted to instructor or assistant
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [APPROVED, REJECTED]
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid status || Request already answered
+        "403":
+          description: You're not a staff member of this course
         "404":
           description: Request not found
         "500":

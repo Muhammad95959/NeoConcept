@@ -21,6 +21,8 @@ router.patch("/join-course", authController.protect, usersController.joinCourse)
 
 router.patch("/quit-course", authController.protect, usersController.quitCourse);
 
-router.get("/requests", authController.protect, usersController.getUserRequests);
+router.get("/staff-requests", authController.protect, usersController.getUserStaffRequests);
+
+router.get("/student-requests", authController.protect, usersController.getUserStudentRequests);
 
 export default router;

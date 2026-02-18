@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import prisma from "../../config/db";
-import { Role } from "../../generated/prisma";
+import { Role, Status } from "../../generated/prisma";
 
 export async function updateUser(req: Request, res: Response) {
   try {
@@ -147,6 +147,13 @@ export async function joinCourse(req: Request, res: Response) {
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     if (course.courseUsers.length === 0)
       return res.status(400).json({ status: "fail", message: "Course has no instructor, can't join" });
+    const isEnrolled = await prisma.userCourse.findFirst({ where: { courseId, userId: res.locals.user.id } });
+    if (isEnrolled) return res.status(400).json({ status: "fail", message: "You're already enrolled in this course" });
+    if (course.protected)
+      return res.status(403).json({
+        status: "fail",
+        message: "This course is protected, please submit a student request to join",
+      });
     await prisma.userCourse.create({
       data: { userId: res.locals.user.id, courseId, roleInCourse: res.locals.user.role },
     });
@@ -172,10 +179,35 @@ export async function quitCourse(req: Request, res: Response) {
   }
 }
 
-export async function getUserRequests(_req: Request, res: Response) {
+export async function getUserStaffRequests(req: Request, res: Response) {
   try {
-    const requests = await prisma.request.findMany({
-      where: { userId: res.locals.user.id },
+    const { status } = req.query as { status?: string };
+    if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
+      return res.status(400).json({ status: "fail", message: "Invalid status" });
+    if (res.locals.user.role !== (Role.INSTRUCTOR || Role.ASSISTANT))
+      return res
+        .status(403)
+        .json({ status: "fail", message: "Only instructors and assistants can have staff requests" });
+    const requests = await prisma.staffRequest.findMany({
+      where: { userId: res.locals.user.id, status: status?.toUpperCase() as Status | undefined },
+      include: { course: true },
+    });
+    res.status(200).json({ status: "success", data: requests });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  }
+}
+
+export async function getUserStudentRequests(req: Request, res: Response) {
+  try {
+    const { status } = req.query as { status?: string };
+    if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
+      return res.status(400).json({ status: "fail", message: "Invalid status" });
+    if (res.locals.user.role !== Role.STUDENT)
+      return res.status(403).json({ status: "fail", message: "Only students can have student requests" });
+    const requests = await prisma.studentRequest.findMany({
+      where: { userId: res.locals.user.id, status: status?.toUpperCase() as Status | undefined },
       include: { course: true },
     });
     res.status(200).json({ status: "success", data: requests });

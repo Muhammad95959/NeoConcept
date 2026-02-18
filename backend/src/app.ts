@@ -11,8 +11,9 @@ import "./config/passport";
 import authRouter from "./modules/auth/auth.routes";
 import coursessRouter from "./modules/courses/courses.routes";
 import postsRouter from "./modules/posts/posts.routes";
-import requestsRouter from "./modules/requests/requests.routes";
 import resourcesRouter from "./modules/resources/resources.routes";
+import staffRequestsRouter from "./modules/staffRequests/staffRequests.routes";
+import studentRequestsRouter from "./modules/studentRequests/studentRequests.routes";
 import tracksRouter from "./modules/tracks/tracks.routes";
 import userRouter from "./modules/user/user.routes";
 
@@ -41,7 +42,8 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/tracks", tracksRouter);
 app.use("/api/v1/courses", coursessRouter);
-app.use("/api/v1/requests", requestsRouter);
+app.use("/api/v1/staff-requests", staffRequestsRouter);
+app.use("/api/v1/student-requests", studentRequestsRouter);
 app.use("/api/v1/courses/:courseId/posts", postsRouter);
 app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
 
