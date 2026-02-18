@@ -62,11 +62,33 @@ export async function getUserTracks(_req: Request, res: Response) {
       select: { courseId: true },
     });
     const userCourseIds = new Set(userCourses.map((uc) => uc.courseId));
+    const studentRequests = await prisma.studentRequest.findMany({
+      where: { userId: res.locals.user.id },
+      select: { courseId: true, status: true },
+    });
+    const studentRequestMap = new Map(studentRequests.map((sr) => [sr.courseId, sr.status]));
+    const staffRequests = await prisma.staffRequest.findMany({
+      where: { userId: res.locals.user.id },
+      select: { courseId: true, status: true },
+    });
+    const staffRequestMap = new Map(staffRequests.map((sr) => [sr.courseId, sr.status]));
     const formattedTracks = tracks.map((userTrack) => {
       return {
         ...userTrack.track,
         courses: userTrack.track.courses.map((course) => {
-          return { ...course, hasJoined: userCourseIds.has(course.id) };
+          if (res.locals.user.role === Role.STUDENT) {
+            return {
+              ...course,
+              hasJoined: userCourseIds.has(course.id),
+              studentRequestStatus: studentRequestMap.get(course.id) || null,
+            };
+          } else {
+            return {
+              ...course,
+              hasJoined: userCourseIds.has(course.id),
+              staffRequestStatus: staffRequestMap.get(course.id) || null,
+            };
+          }
         }),
       };
     });

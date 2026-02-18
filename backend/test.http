@@ -100,7 +100,7 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBjMzQwMDQ0LWFlMTEtNDE
 ### get-user-tracks
 
 GET http://localhost:9595/api/v1/user/tracks HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTE4NDQ1NiwiZXhwIjoxNzcxMjcwODU2fQ.nKWZTl1WxS9VXZBCX2Y1MI0S9DEXNmWDyJc7gh0tlXQ; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTQ0Njg1NywiZXhwIjoxNzcxNTMzMjU3fQ.Y76HoU_kqRYp7iK4meO8iGpUBRAeICRDU43Bzr-naMw; Path=/; HttpOnly; SameSite=Lax
 
 
 ### select-track
@@ -128,7 +128,7 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQ
 ### get-user-courses
 
 GET http://localhost:9595/api/v1/user/courses HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTE4NDQ1NiwiZXhwIjoxNzcxMjcwODU2fQ.nKWZTl1WxS9VXZBCX2Y1MI0S9DEXNmWDyJc7gh0tlXQ; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTQ0Njg1NywiZXhwIjoxNzcxNTMzMjU3fQ.Y76HoU_kqRYp7iK4meO8iGpUBRAeICRDU43Bzr-naMw; Path=/; HttpOnly; SameSite=Lax
 
 
 ### join-course
