@@ -10,9 +10,9 @@ POST http://localhost:9595/api/v1/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "student2@gmail.com",
+  "email": "admin3@gmail.com",
   "password": "password",
-  "role": "student",
+  "role": "admin",
   "username": "Muhammad Hefzey"
 }
 
@@ -23,7 +23,7 @@ POST http://localhost:9595/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "student@gmail.com",
+  "email": "admin3@gmail.com",
   "password": "password"
 }
 
@@ -188,11 +188,19 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJ
 
 POST http://localhost:9595/api/v1/tracks HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDIzNDkwMSwiZXhwIjoxNzcwMzIxMzAxfQ.vZ7Rk5TWBl1Zpw35wx6gB9_inflWygqxh-2rd-0ooBs; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTQ3MzU1MCwiZXhwIjoxNzcxNTU5OTUwfQ.0VROTFVzin_pAmhOOMu9X_UvaRFr1UawDpP7uoqu5qM; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "description": "a test track 2",
-  "name": "track 2"
+  "domain": "test",
+  "language": "test",
+  "learningOutcomes": ["test"],
+  "level": "test",
+  "longDescription": "test",
+  "name": "track 3",
+  "pricingModel": "test",
+  "relatedJobs": ["test"],
+  "shortDescription": "test",
+  "targetAudience": "test"
 }
 
 
@@ -420,7 +428,7 @@ POST http://localhost:9595/api/v1/student-requests HTTP/1.1
 Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTE4NDQ1NiwiZXhwIjoxNzcxMjcwODU2fQ.nKWZTl1WxS9VXZBCX2Y1MI0S9DEXNmWDyJc7gh0tlXQ; Path=/; HttpOnly; SameSite=Lax
 
-{ 
+{
   "courseId": "fb108099-66c7-4baf-a035-4eb54b42e962"
 }
 
@@ -431,7 +439,7 @@ PATCH http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a2
 Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImUxNWZkMWY3LWY5MjQtNGY4OC1hNjAyLTIzYWM1ZWEzZWFkNSIsImlhdCI6MTc3MTM4OTYwNiwiZXhwIjoxNzcxNDc2MDA2fQ.MH1bkt-nGKqRpc1vJe7sc3zkd25F5sQlHRiXQNk9O5c; Path=/; HttpOnly; SameSite=Lax
 
-{ 
+{
   "status": "APPROVED"
 }
 

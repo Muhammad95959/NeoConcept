@@ -10,7 +10,8 @@ export async function getTracks(req: Request, res: Response) {
     if (search) {
       where.OR = [
         { name: { contains: String(search), mode: "insensitive" } },
-        { description: { contains: String(search), mode: "insensitive" } },
+        { shortDescription: { contains: String(search), mode: "insensitive" } },
+        { longDescription: { contains: String(search), mode: "insensitive" } },
       ];
     }
     const tracks = await prisma.track.findMany({ where, include: { courses: true } });
@@ -53,8 +54,23 @@ export async function getTrackStaff(req: Request, res: Response) {
 
 export async function createTrack(req: Request, res: Response) {
   try {
-    const { name, description } = req.body;
+    const {
+      name,
+      shortDescription,
+      longDescription,
+      domain,
+      level,
+      language,
+      targetAudience,
+      learningOutcomes,
+      relatedJobs,
+      pricingModel,
+    } = req.body;
     if (!name) return res.status(400).json({ status: "fail", message: "Track name is required" });
+    if (learningOutcomes && !Array.isArray(learningOutcomes))
+      return res.status(400).json({ status: "fail", message: "Learning outcomes must be an array of strings" });
+    if (relatedJobs && !Array.isArray(relatedJobs))
+      return res.status(400).json({ status: "fail", message: "Related jobs must be an array of strings" });
     if (res.locals.user.currentTrackId)
       return res.status(400).json({ status: "fail", message: "This account is already assigned to a track" });
     const duplicate = await prisma.track.findFirst({
@@ -65,7 +81,19 @@ export async function createTrack(req: Request, res: Response) {
     let newTrack;
     await prisma.$transaction(async (tx) => {
       newTrack = await tx.track.create({
-        data: { name: name.trim(), description: description?.trim(), creatorId: res.locals.user.id },
+        data: {
+          relatedJobs,
+          learningOutcomes,
+          name: name.trim(),
+          shortDescription: shortDescription.trim(),
+          longDescription: longDescription.trim(),
+          domain: domain.trim(),
+          level: level.trim(),
+          language: language.trim(),
+          targetAudience: targetAudience.trim(),
+          pricingModel: pricingModel.trim(),
+          creatorId: res.locals.user.id,
+        },
       });
       await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: newTrack.id } });
       await tx.userTrack.create({
@@ -82,9 +110,37 @@ export async function createTrack(req: Request, res: Response) {
 export async function updateTrack(req: Request, res: Response) {
   try {
     const { id } = req.params as { id: string };
-    const { name, description } = req.body;
-    if (!name?.trim() && !description?.trim())
-      return res.status(400).json({ status: "fail", message: "Track name or description is required" });
+    const {
+      name,
+      shortDescription,
+      longDescription,
+      domain,
+      level,
+      language,
+      targetAudience,
+      learningOutcomes,
+      relatedJobs,
+      pricingModel,
+    } = req.body;
+
+    if (learningOutcomes && !Array.isArray(learningOutcomes))
+      return res.status(400).json({ status: "fail", message: "Learning outcomes must be an array of strings" });
+    if (relatedJobs && !Array.isArray(relatedJobs))
+      return res.status(400).json({ status: "fail", message: "Related jobs must be an array of strings" });
+
+    if (
+      !name?.trim() &&
+      !shortDescription?.trim() &&
+      !longDescription?.trim() &&
+      !domain?.trim() &&
+      !level?.trim() &&
+      !language?.trim() &&
+      !targetAudience?.trim() &&
+      (!learningOutcomes || learningOutcomes.length === 0) &&
+      (!relatedJobs || relatedJobs.length === 0) &&
+      !pricingModel?.trim()
+    )
+      return res.status(400).json({ status: "fail", message: "You didn't provide any field to update" });
     const track = await prisma.track.findFirst({ where: { id, deletedAt: null } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     const duplicate = await prisma.track.findFirst({
@@ -94,7 +150,15 @@ export async function updateTrack(req: Request, res: Response) {
       return res.status(400).json({ status: "fail", message: "Duplicate track name. Please choose another." });
     const data: any = {};
     if (name) data.name = name.trim();
-    if (description) data.description = description.trim();
+    if (shortDescription) data.shortDescription = shortDescription.trim();
+    if (longDescription) data.longDescription = longDescription.trim();
+    if (domain) data.domain = domain.trim();
+    if (level) data.level = level.trim();
+    if (language) data.language = language.trim();
+    if (targetAudience) data.targetAudience = targetAudience.trim();
+    if (learningOutcomes) data.learningOutcomes = learningOutcomes;
+    if (relatedJobs) data.relatedJobs = relatedJobs;
+    if (pricingModel) data.pricingModel = pricingModel.trim();
     const updatedTrack = await prisma.track.update({ where: { id }, data });
     res.status(200).json({ status: "success", data: updatedTrack });
   } catch (err) {

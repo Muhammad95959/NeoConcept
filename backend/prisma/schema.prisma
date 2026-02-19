@@ -36,16 +36,24 @@ model User {
 }
 
 model Track {
-  id          String      @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime    @default(now())
-  deletedAt   DateTime?
-  creatorId   String      @unique
-  creator     User        @relation("TrackCreator", fields: [creatorId], references: [id])
-  users       User[]      @relation("UserTrack")
-  courses     Course[]
-  userTracks  UserTrack[]
+  id               String      @id @default(uuid())
+  name             String
+  shortDescription String?
+  longDescription  String?
+  domain           String?
+  level            String?
+  language         String?
+  targetAudience   String?
+  learningOutcomes String[]
+  relatedJobs      String[]
+  pricingModel     String?
+  createdAt        DateTime    @default(now())
+  deletedAt        DateTime?
+  creatorId        String      @unique
+  creator          User        @relation("TrackCreator", fields: [creatorId], references: [id])
+  users            User[]      @relation("UserTrack")
+  courses          Course[]
+  userTracks       UserTrack[]
 
   @@map("tracks")
 }
@@ -62,18 +70,18 @@ model UserTrack {
 }
 
 model Course {
-  id            String         @id @default(uuid())
-  name          String
-  description   String?
-  protected     Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  trackId       String
-  track         Track          @relation(fields: [trackId], references: [id])
-  deletedAt     DateTime?
-  courseUsers   UserCourse[]
-  Resources     Resource[]
-  Post          Post[]
-  staffRequests StaffRequest[]
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  protected       Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  trackId         String
+  track           Track            @relation(fields: [trackId], references: [id])
+  deletedAt       DateTime?
+  courseUsers     UserCourse[]
+  Resources       Resource[]
+  Post            Post[]
+  staffRequests   StaffRequest[]
   studentRequests StudentRequest[]
 
   @@map("courses")

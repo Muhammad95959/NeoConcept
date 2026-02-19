@@ -543,14 +543,42 @@ paths:
                 name:
                   type: string
                   example: test track
-                description:
+                shortDescription:
                   type: string
-                  example: test description
+                  example: test short description
+                longDescription:
+                  type: string
+                  example: test long description
+                domain:
+                  type: string
+                  example: Engineering
+                level:
+                  type: string
+                  example: Intermediate
+                language:
+                  type: string
+                  example: English
+                targetAudience:
+                  type: string
+                  example: Undergraduates
+                learningOutcomes:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Outcome 1", "Outcome 2"]
+                relatedJobs:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Job 1", "Job 2"]
+                pricingModel:
+                  type: string
+                  example: Paid
       responses:
         "201":
           description: success
         "400":
-          description: track name is required || This account is already assigned to a track || Duplicate track name. Please choose another.
+          description: track name is required || This account is already assigned to a track || Duplicate track name. Please choose another. || Learning outcomes must be an array of strings || Related jobs must be an array of strings
         "500":
           description: Something went wrong
   /tracks/{id}:
@@ -596,14 +624,42 @@ paths:
                 name:
                   type: string
                   example: new test track
-                description:
+                shortDescription:
                   type: string
-                  example: new test description
+                  example: new test short description
+                longDescription:
+                  type: string
+                  example: new test long description
+                domain:
+                  type: string
+                  example: new Engineering
+                level:
+                  type: string
+                  example: new Intermediate
+                language:
+                  type: string
+                  example: new English
+                targetAudience:
+                  type: string
+                  example: new Undergraduates
+                learningOutcomes:
+                  type: array
+                  items:
+                    type: string
+                  example: ["new Outcome 1", "new Outcome 2"]
+                relatedJobs:
+                  type: array
+                  items:
+                    type: string
+                  example: ["new Job 1", "new Job 2"]
+                pricingModel:
+                  type: string
+                  example: new Paid
       responses:
         "200":
           description: success
         "400":
-          description: Track name or description is required || Duplicate track name. Please choose another.
+          description: You didn't provide any field to update || Duplicate track name. Please choose another. || Learning outcomes must be an array of strings || Related jobs must be an array of strings
         "404":
           description: Track not found
         "500":
