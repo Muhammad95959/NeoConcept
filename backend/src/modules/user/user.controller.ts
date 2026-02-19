@@ -113,7 +113,7 @@ export async function selectTrack(req: Request, res: Response) {
     if (res.locals.user.role === Role.ADMIN)
       return res.status(403).json({ status: "fail", message: "Admins cannot select tracks" });
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
-    const track = await prisma.track.findFirst({ where: { id: trackId } });
+    const track = await prisma.track.findFirst({ where: { id: trackId, deletedAt: null } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     await prisma.$transaction(async (tx) => {
       await tx.userTrack.upsert({
@@ -171,7 +171,7 @@ export async function joinCourse(req: Request, res: Response) {
       return res.status(403).json({ status: "fail", message: "Only students can join courses" });
     if (!courseId) return res.status(400).json({ status: "fail", message: "course id is required" });
     const course = await prisma.course.findFirst({
-      where: { id: courseId },
+      where: { id: courseId, deletedAt: null },
       include: { courseUsers: { where: { roleInCourse: Role.INSTRUCTOR } } },
     });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });

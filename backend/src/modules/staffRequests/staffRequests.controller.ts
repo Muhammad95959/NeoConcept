@@ -35,7 +35,7 @@ export async function createStaffRequest(req: Request, res: Response) {
     const user: User = res.locals.user;
     const { courseId, message } = req.body;
     if (!courseId) return res.status(400).json({ status: "fail", message: "Course ID is required" });
-    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     const existingRequest = await prisma.staffRequest.findFirst({
       where: { userId: user.id, courseId, status: Status.PENDING },

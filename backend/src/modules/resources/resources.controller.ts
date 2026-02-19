@@ -14,7 +14,7 @@ const s3 = new S3Client({
 });
 
 async function verifyParams(res: Response, id: string, courseId: string) {
-  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
   const resource = await prisma.resource.findUnique({ where: { id } });
   if (!course) {
     res.status(404).json({ status: "fail", message: "Course not found" });
@@ -34,7 +34,7 @@ async function verifyParams(res: Response, id: string, courseId: string) {
 export async function getResources(req: Request, res: Response) {
   const { courseId } = req.params as { courseId: string };
   try {
-    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     const resources = await prisma.resource.findMany({ where: { courseId } });
     res.status(200).json({ status: "success", data: resources.map((r) => ({ ...r, fileKey: undefined })) });

@@ -9,7 +9,7 @@ export async function getCourseStudentRequests(req: Request, res: Response) {
     if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
       return res.status(400).json({ status: "fail", message: "Invalid status" });
     const user = res.locals.user;
-    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     const isStaff = await prisma.userCourse.findFirst({
       where: { courseId, userId: user.id, roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
@@ -47,7 +47,7 @@ export async function createStudentRequest(req: Request, res: Response) {
     const { courseId } = req.body as { courseId: string };
     if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
     const user = res.locals.user;
-    const course = await prisma.course.findUnique({ where: { id: courseId } });
+    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     const isEnrolled = await prisma.userCourse.findFirst({ where: { courseId, userId: user.id } });
     if (isEnrolled) return res.status(400).json({ status: "fail", message: "You're already enrolled in this course" });

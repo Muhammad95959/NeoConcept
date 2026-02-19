@@ -52,7 +52,7 @@ export async function createCourse(req: Request, res: Response) {
     const track = await prisma.track.findFirst({ where: { id: trackId, deletedAt: null } });
     let instructors: any[] = [];
     if (instructorIds && instructorIds.length > 0)
-      instructors = await prisma.user.findMany({ where: { id: { in: instructorIds } } });
+      instructors = await prisma.user.findMany({ where: { id: { in: instructorIds }, deletedAt: null } });
     if (instructors.length !== instructorIds.length)
       return res.status(400).json({ status: "fail", message: "One or more instructorIds are invalid" });
     if (instructors.some((user) => user.role !== Role.INSTRUCTOR))
@@ -65,7 +65,7 @@ export async function createCourse(req: Request, res: Response) {
         .json({ status: "fail", message: "One or more instructors is not assigned to the specified track" });
     let assistants: any[] = [];
     if (assistantIds && assistantIds.length > 0)
-      assistants = await prisma.user.findMany({ where: { id: { in: assistantIds } } });
+      assistants = await prisma.user.findMany({ where: { id: { in: assistantIds }, deletedAt: null } });
     if (assistants.length !== assistantIds.length)
       return res.status(400).json({ status: "fail", message: "One or more assistantIds are invalid" });
     if (assistants.some((user) => user.role !== Role.ASSISTANT))
@@ -140,7 +140,7 @@ export async function updateCourseStaff(req: Request, res: Response) {
       return res.status(400).json({ status: "fail", message: "Assistant ids must be an array" });
     let instructors: any[] = [];
     if (instructorIds && instructorIds.length > 0)
-      instructors = await prisma.user.findMany({ where: { id: { in: instructorIds } } });
+      instructors = await prisma.user.findMany({ where: { id: { in: instructorIds }, deletedAt: null } });
     if (instructors.length !== instructorIds.length)
       return res.status(400).json({ status: "fail", message: "One or more instructorIds are invalid" });
     if (instructors.some((user) => user.role !== Role.INSTRUCTOR))
@@ -153,7 +153,7 @@ export async function updateCourseStaff(req: Request, res: Response) {
         .json({ status: "fail", message: "One or more instructors is not assigned to the specified track" });
     let assistants: any[] = [];
     if (assistantIds && assistantIds.length > 0)
-      assistants = await prisma.user.findMany({ where: { id: { in: assistantIds } } });
+      assistants = await prisma.user.findMany({ where: { id: { in: assistantIds }, deletedAt: null } });
     if (assistants.length !== assistantIds.length)
       return res.status(400).json({ status: "fail", message: "One or more assistantIds are invalid" });
     if (assistants.some((user) => user.role !== Role.ASSISTANT))
