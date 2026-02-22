@@ -49,8 +49,8 @@ model Track {
   pricingModel     String?
   createdAt        DateTime    @default(now())
   deletedAt        DateTime?
-  creatorId        String      @unique
-  creator          User        @relation("TrackCreator", fields: [creatorId], references: [id])
+  creatorId        String?     @unique
+  creator          User?       @relation("TrackCreator", fields: [creatorId], references: [id])
   users            User[]      @relation("UserTrack")
   courses          Course[]
   userTracks       UserTrack[]
@@ -59,11 +59,12 @@ model Track {
 }
 
 model UserTrack {
-  userId   String
-  trackId  String
-  joinedAt DateTime @default(now())
-  user     User     @relation(fields: [userId], references: [id])
-  track    Track    @relation(fields: [trackId], references: [id])
+  userId    String
+  trackId   String
+  joinedAt  DateTime  @default(now())
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+  track     Track     @relation(fields: [trackId], references: [id])
 
   @@id([userId, trackId])
   @@map("user_tracks")
@@ -91,9 +92,10 @@ model UserCourse {
   userId       String
   courseId     String
   roleInCourse Role
-  joinedAt     DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id])
-  course       Course   @relation(fields: [courseId], references: [id])
+  joinedAt     DateTime  @default(now())
+  deletedAt    DateTime?
+  user         User      @relation(fields: [userId], references: [id])
+  course       Course    @relation(fields: [courseId], references: [id])
 
   @@id([userId, courseId])
   @@map("user_courses")

@@ -12,7 +12,11 @@ export async function getCourses(req: Request, res: Response) {
         { description: { contains: String(search), mode: "insensitive" } },
       ];
     }
-    if (track) where.trackId = String(track);
+    if (track) {
+      const trackExists = await prisma.track.findFirst({ where: { id: String(track), deletedAt: null } });
+      if (!trackExists) return res.status(404).json({ status: "fail", message: "Track not found" });
+      where.trackId = String(track);
+    }
     const courses = await prisma.course.findMany({ where, include: { track: true, courseUsers: true } });
     const data = courses.map((course) => {
       return { ...course, staff: course.courseUsers, courseUsers: undefined };
@@ -50,6 +54,7 @@ export async function createCourse(req: Request, res: Response) {
     if (assistantIds && !Array.isArray(assistantIds))
       return res.status(400).json({ status: "fail", message: "Assistant ids must be an array" });
     const track = await prisma.track.findFirst({ where: { id: trackId, deletedAt: null } });
+    if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     let instructors: any[] = [];
     if (instructorIds && instructorIds.length > 0)
       instructors = await prisma.user.findMany({ where: { id: { in: instructorIds }, deletedAt: null } });
@@ -74,7 +79,6 @@ export async function createCourse(req: Request, res: Response) {
       return res
         .status(400)
         .json({ status: "fail", message: "One or more assistants is not assigned to the specified track" });
-    if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
     const duplicate = await prisma.course.findFirst({
       where: { trackId, deletedAt: null, name: { equals: name, mode: "insensitive" } },
     });
@@ -189,7 +193,10 @@ export async function deleteCourse(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    await prisma.course.update({ where: { id }, data: { deletedAt: new Date() } });
+    await prisma.$transaction(async (tx) => {
+      await tx.course.update({ where: { id }, data: { deletedAt: new Date() } });
+      await tx.userCourse.updateMany({ where: { courseId: id }, data: { deletedAt: new Date() } });
+    });
     res.status(200).json({ status: "success", message: "Course deleted successfully" });
   } catch (err) {
     console.log(err);

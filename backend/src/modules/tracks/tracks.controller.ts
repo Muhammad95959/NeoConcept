@@ -37,6 +37,10 @@ export async function getTrackById(req: Request, res: Response) {
 export async function getTrackStaff(req: Request, res: Response) {
   try {
     const { id } = req.params as { id: string };
+    const track = await prisma.track.findFirst({ where: { id, deletedAt: null } });
+    if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
+    if (res.locals.user.currentTrackId !== id)
+      return res.status(403).json({ status: "fail", message: "You don't have permission to view the staff of this track" });
     const staff = await prisma.user.findMany({
       where: { currentTrackId: id, role: { in: [Role.INSTRUCTOR, Role.ASSISTANT] }, deletedAt: null },
     });
@@ -172,7 +176,12 @@ export async function deleteTrack(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     const track = await prisma.track.findFirst({ where: { id, deletedAt: null } });
     if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
-    await prisma.track.update({ where: { id }, data: { deletedAt: new Date() } });
+    await prisma.$transaction(async (tx) => {
+      await tx.track.update({ where: { id }, data: { deletedAt: new Date(), creatorId: null } });
+      await tx.course.updateMany({ where: { trackId: id }, data: { deletedAt: new Date() } });
+      await tx.userTrack.updateMany({ where: { trackId: id }, data: { deletedAt: new Date() } });
+      await tx.user.updateMany({ where: { currentTrackId: id }, data: { currentTrackId: null } });
+    });
     res.status(200).json({ status: "success", message: "Track deleted successfully" });
   } catch (err) {
     console.log(err);

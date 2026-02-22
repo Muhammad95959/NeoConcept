@@ -1,7 +1,7 @@
 ### authorize
 
 GET http://localhost:9595/api/v1/auth HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDI2Njk3MiwiZXhwIjoxNzcwMzUzMzcyfQ.8SDxZunSPRAsHsz46TNBIPqLVt_4obQdVjJ1mp_QdAY; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 
 ### signup
@@ -23,7 +23,7 @@ POST http://localhost:9595/api/v1/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "admin3@gmail.com",
+  "email": "student@gmail.com",
   "password": "password"
 }
 
@@ -100,17 +100,17 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBjMzQwMDQ0LWFlMTEtNDE
 ### get-user-tracks
 
 GET http://localhost:9595/api/v1/user/tracks HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTQ0Njg1NywiZXhwIjoxNzcxNTMzMjU3fQ.Y76HoU_kqRYp7iK4meO8iGpUBRAeICRDU43Bzr-naMw; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTc1OTY1MCwiZXhwIjoxNzcxODQ2MDUwfQ.vc1IbFnN6RRW0vAjyp5zfbSpoM1BoAlBQroxROFiyHk; Path=/; HttpOnly; SameSite=Lax
 
 
 ### select-track
 
 PATCH http://localhost:9595/api/v1/user/select-track HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MDI5ODQxMSwiZXhwIjoxNzcwMzg0ODExfQ.B8P3ScxCx6GvTUFl02fBUfGKXtK4CWSLh55vyHIEwbU; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTc1OTY1MCwiZXhwIjoxNzcxODQ2MDUwfQ.vc1IbFnN6RRW0vAjyp5zfbSpoM1BoAlBQroxROFiyHk; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "trackId": "3a6ab996-5845-4052-8518-664e2b1e30f1"
+  "trackId": "b01d48f4-f9c0-4f0f-844c-db22d40e9b00"
 }
 
 
@@ -118,10 +118,10 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQ
 
 PATCH http://localhost:9595/api/v1/user/quit-track HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MDI2NjEwMSwiZXhwIjoxNzcwMzUyNTAxfQ.ZBlDkk1kQ98BllgqwICXW7nD-b_XDZas72E48drk4x0; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzNjVkMjIwLWJjYzgtNDQzZS04OGE2LThkZWE0MWUwMTgxNCIsImlhdCI6MTc3MTc1OTY1MCwiZXhwIjoxNzcxODQ2MDUwfQ.vc1IbFnN6RRW0vAjyp5zfbSpoM1BoAlBQroxROFiyHk; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "trackId": "f20f2083-9fe2-4e22-85d5-b67efbdbb946"
+  "trackId": "b01d48f4-f9c0-4f0f-844c-db22d40e9b00"
 }
 
 
@@ -181,24 +181,28 @@ GET http://localhost:9595/api/v1/tracks/f20f2083-9fe2-4e22-85d5-b67efbdbb946 HTT
 ### get-track-staff
 
 GET http://localhost:9595/api/v1/tracks/d080583d-1fc8-4e80-9c2f-74f149f93e87/staff HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 
 ### create-track
 
 POST http://localhost:9595/api/v1/tracks HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTQ3MzU1MCwiZXhwIjoxNzcxNTU5OTUwfQ.0VROTFVzin_pAmhOOMu9X_UvaRFr1UawDpP7uoqu5qM; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 {
   "domain": "test",
   "language": "test",
-  "learningOutcomes": ["test"],
+  "learningOutcomes": [
+    "test"
+  ],
   "level": "test",
   "longDescription": "test",
   "name": "track 3",
   "pricingModel": "test",
-  "relatedJobs": ["test"],
+  "relatedJobs": [
+    "test"
+  ],
   "shortDescription": "test",
   "targetAudience": "test"
 }
@@ -206,20 +210,20 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDE
 
 ### update-track
 
-PATCH http://localhost:9595/api/v1/tracks/5eb15a8f-e1d0-40c1-9603-c6a3a72fb366 HTTP/1.1
+PATCH http://localhost:9595/api/v1/tracks/31a60f16-17ce-4abf-b03a-41d30a34cd42 HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "description": "Math 101 - Updated",
-  "name": "Math 101"
+  "name": "new track 3",
+  "shortDescription": "new description"
 }
 
 
 ### delete-track
 
-DELETE http://localhost:9595/api/v1/tracks/5eb15a8f-e1d0-40c1-9603-c6a3a72fb366 HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJjMy1hNTdkLTQ5NDcxODE3MDkzNCIsImlhdCI6MTc3MDE4MjU5MywiZXhwIjoxNzcwMjY4OTkzfQ.-lQHNpLXFN0wP9gGAJgnCTNFFvvcL64raspsLGhOshk; Path=/; HttpOnly; SameSite=Lax
+DELETE http://localhost:9595/api/v1/tracks/b01d48f4-f9c0-4f0f-844c-db22d40e9b00 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 
 ### ################################################################################################
@@ -227,27 +231,27 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE1M2EwYzhiLWNhZjYtNDJ
 
 ### get-courses
 
-GET http://localhost:9595/api/v1/courses?track=f20f2083-9fe2-4e22-85d5-b67efbdbb946 HTTP/1.1
+GET http://localhost:9595/api/v1/courses?track=b01d48f4-f9c0-4f0f-844c-db22d40e9b00 HTTP/1.1
 
 
 ### get-course
 
-GET http://localhost:9595/api/v1/courses/fb108099-66c7-4baf-a035-4eb54b42e962 HTTP/1.1
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjFkNzBiNzU5LTBiZjktNDdlMy1iYWNjLWMxOTk2NTA1NDg1NyIsImlhdCI6MTc3MTE4NTM4MywiZXhwIjoxNzcxMjcxNzgzfQ.DMV3r8sQTHLjdLgFuOQXsAeGc_KS-uNfR6lq5t0jXQw; Path=/; HttpOnly; SameSite=Lax
+GET http://localhost:9595/api/v1/courses/462fccf3-a3da-4224-a83a-241f6db26ba7 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 
 ### create-course
 
 POST http://localhost:9595/api/v1/courses HTTP/1.1
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM2YWY2NzhiLWFjZmEtNDEzNS1iZmNjLTc0NjU3NWU2OGU2OSIsImlhdCI6MTc3MDI2Njk3MiwiZXhwIjoxNzcwMzUzMzcyfQ.8SDxZunSPRAsHsz46TNBIPqLVt_4obQdVjJ1mp_QdAY; Path=/; HttpOnly; SameSite=Lax
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDEwZS05YjBhLWRkOGE5NWNkZjY3NSIsImlhdCI6MTc3MTc1OTU3MSwiZXhwIjoxNzcxODQ1OTcxfQ.8_8hN9ljkkUw5k-g8Hod1EpM_YFDD1hqXTtwlcB5CkU; Path=/; HttpOnly; SameSite=Lax
 
 {
   "assistantIds": [],
   "description": "a test course",
   "instructorIds": [],
   "name": "test course 5",
-  "trackId": "f20f2083-9fe2-4e22-85d5-b67efbdbb946"
+  "trackId": "b01d48f4-f9c0-4f0f-844c-db22d40e9b00"
 }
 
 
