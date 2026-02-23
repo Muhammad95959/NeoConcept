@@ -58,6 +58,10 @@ paths:
       responses:
         "201":
           description: Please confirm your email
+        "400":
+          description: Email, username, password and role are required
+        "409":
+          description: Email is already in use
         "500":
           description: Something went wrong
   /auth/login:

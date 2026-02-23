@@ -22,6 +22,8 @@ export async function signup(req: Request, res: Response) {
     });
   }
   try {
+    const existingUser = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
+    if (existingUser) return res.status(409).json({ status: "fail", message: "Email is already in use" });
     const hashedPassword = await bcrypt.hash(password, 10);
     const confirmEmailToken = crypto.randomBytes(32).toString("hex");
     const confirmEmailTokenHash = crypto.createHash("sha256").update(confirmEmailToken).digest("hex");
