@@ -29,7 +29,26 @@ export async function updateUser(req: Request, res: Response) {
 export async function deleteUser(_req: Request, res: Response) {
   try {
     if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
-    await prisma.user.update({ where: { id: res.locals.user.id }, data: { deletedAt: new Date() } });
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: res.locals.user.id }, data: { deletedAt: new Date() } });
+      await tx.userTrack.updateMany({
+        where: { userId: res.locals.user.id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+      await tx.userCourse.updateMany({
+        where: { userId: res.locals.user.id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      });
+      if (res.locals.user.role === Role.ADMIN) {
+        const trackId = res.locals.user.currentTrackId;
+        if (trackId) {
+          await tx.track.update({ where: { id: trackId }, data: { deletedAt: new Date(), creatorId: null } });
+          await tx.course.updateMany({ where: { trackId: trackId }, data: { deletedAt: new Date() } });
+          await tx.userTrack.updateMany({ where: { trackId: trackId }, data: { deletedAt: new Date() } });
+          await tx.user.updateMany({ where: { currentTrackId: trackId }, data: { currentTrackId: null } });
+        }
+      }
+    });
     res.status(200).json({ status: "success", message: "User deleted successfully" });
   } catch (err) {
     console.log(err);
@@ -137,7 +156,9 @@ export async function quitTrack(req: Request, res: Response) {
       return res.status(403).json({ status: "fail", message: "Admins cannot quit tracks" });
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
     await prisma.$transaction(async (tx) => {
-      const { count } = await tx.userTrack.deleteMany({ where: { userId: res.locals.user.id, trackId, deletedAt: null } });
+      const { count } = await tx.userTrack.deleteMany({
+        where: { userId: res.locals.user.id, trackId, deletedAt: null },
+      });
       if (count === 0) throw new Error("TRACK_NOT_FOUND");
       if (trackId === res.locals.user.currentTrackId)
         await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: null } });
@@ -200,7 +221,9 @@ export async function quitCourse(req: Request, res: Response) {
     if (res.locals.user.role !== Role.STUDENT)
       return res.status(403).json({ status: "fail", message: "Only students can quit courses" });
     if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
-    const { count } = await prisma.userCourse.deleteMany({ where: { userId: res.locals.user.id, courseId, deletedAt: null } });
+    const { count } = await prisma.userCourse.deleteMany({
+      where: { userId: res.locals.user.id, courseId, deletedAt: null },
+    });
     if (count === 0) return res.status(404).json({ status: "fail", message: "Course not found" });
     return res.status(200).json({ status: "success", message: "Quitted course successfully" });
   } catch (err) {
