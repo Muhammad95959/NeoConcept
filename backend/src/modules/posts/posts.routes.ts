@@ -5,17 +5,40 @@ import * as postsController from "./posts.controller";
 import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
 import verifyPostOwner from "../../middlewares/verifyPostOwner";
+import { validate } from "../../middlewares/validate";
+import {
+  courseIdParamSchema,
+  createPostSchema,
+  getPostsQuerySchema,
+  postIdParamSchema,
+  updatePostSchema,
+} from "./posts.validation";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", authController.protect, checkCourseExists, verifyCourseMember, postsController.getPosts);
+router.get(
+  "/",
+  authController.protect,
+  validate({ params: courseIdParamSchema, query: getPostsQuerySchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  postsController.getPosts,
+);
 
-router.get("/:id", authController.protect, checkCourseExists, verifyCourseMember, postsController.getPostById);
+router.get(
+  "/:id",
+  authController.protect,
+  validate({ params: postIdParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  postsController.getPostById,
+);
 
 router.post(
   "/",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: courseIdParamSchema, body: createPostSchema }),
   checkCourseExists,
   verifyCourseMember,
   postsController.createPost,
@@ -25,6 +48,7 @@ router.patch(
   "/:id",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: postIdParamSchema, body: updatePostSchema }),
   checkCourseExists,
   verifyCourseMember,
   verifyPostOwner,
@@ -35,6 +59,7 @@ router.delete(
   "/:id",
   authController.protect,
   authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: postIdParamSchema }),
   checkCourseExists,
   verifyCourseMember,
   verifyPostOwner,

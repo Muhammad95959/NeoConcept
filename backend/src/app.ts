@@ -16,7 +16,7 @@ import staffRequestsRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestsRouter from "./modules/studentRequests/studentRequests.routes";
 import tracksRouter from "./modules/tracks/tracks.routes";
 import userRouter from "./modules/user/user.routes";
-
+import {errorHandler} from "./utils/errorHandler"; 
 const app = express();
 
 app.use(helmet());
@@ -46,5 +46,6 @@ app.use("/api/v1/staff-requests", staffRequestsRouter);
 app.use("/api/v1/student-requests", studentRequestsRouter);
 app.use("/api/v1/courses/:courseId/posts", postsRouter);
 app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
+app.use(errorHandler);
 
 export default app;
