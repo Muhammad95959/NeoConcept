@@ -752,7 +752,6 @@ paths:
               required:
                 - name
                 - trackId
-                - instructorIds
               properties:
                 name:
                   type: string
@@ -760,6 +759,9 @@ paths:
                 description:
                   type: string
                   example: test description
+                protect:
+                  type: boolean
+                  example: true
                 trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc
@@ -830,6 +832,9 @@ paths:
                 description:
                   type: string
                   example: new test description
+                protect:
+                  type: boolean
+                  example: false
                 trackId:
                   type: string
                   example: 9c816942-585d-4d23-b44b-fcb0915558fc

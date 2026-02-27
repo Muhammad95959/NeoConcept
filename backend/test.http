@@ -251,6 +251,7 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzYzcwZWViLWUyY2YtNDE
   "description": "a test course",
   "instructorIds": [],
   "name": "test course 5",
+  "protect": false,
   "trackId": "b01d48f4-f9c0-4f0f-844c-db22d40e9b00"
 }
 

@@ -46,7 +46,7 @@ export async function getCourseById(req: Request, res: Response) {
 
 export async function createCourse(req: Request, res: Response) {
   try {
-    const { name, description, trackId, instructorIds, assistantIds } = req.body;
+    const { name, description, protect, trackId, instructorIds, assistantIds } = req.body;
     if (!name) return res.status(400).json({ status: "fail", message: "Course name is required" });
     if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
     if (instructorIds && !Array.isArray(instructorIds))
@@ -86,7 +86,7 @@ export async function createCourse(req: Request, res: Response) {
       return res.status(400).json({ status: "fail", message: "Duplicate course name. Please choose another." });
     let newCourse: any;
     await prisma.$transaction(async (tx) => {
-      newCourse = await tx.course.create({ data: { name, description, trackId } });
+      newCourse = await tx.course.create({ data: { name, description, trackId, protected: protect } });
       let instructorsData: any[] = [];
       if (instructorIds && instructorIds.length > 0)
         instructorsData = instructorIds.map((id: string) => {
@@ -110,7 +110,7 @@ export async function createCourse(req: Request, res: Response) {
 export async function updateCourse(req: Request, res: Response) {
   try {
     const { id } = req.params as { id: string };
-    const { name, description } = req.body;
+    const { name, description, protect } = req.body;
     const course = await prisma.course.findFirst({ where: { id, deletedAt: null } });
     if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
     if (!name?.trim() && !description?.trim())
@@ -118,6 +118,7 @@ export async function updateCourse(req: Request, res: Response) {
     const data: any = {};
     if (name) data.name = name.trim();
     if (description) data.description = description.trim();
+    if (protect !== undefined) data.protected = protect;
     const duplicate = await prisma.course.findFirst({
       where: { trackId: course.trackId, deletedAt: null, name: { equals: name, mode: "insensitive" }, NOT: { id } },
     });
