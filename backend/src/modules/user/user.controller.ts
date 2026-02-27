@@ -1,271 +1,166 @@
-import bcrypt from "bcryptjs";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import prisma from "../../config/db";
 import { Role, Status } from "../../generated/prisma";
+import { UserService } from "./user.service";
+import { HttpStatusText } from "../../types/HTTPStatusText";
 
-export async function updateUser(req: Request, res: Response) {
+export async function updateUser(req: Request, res: Response, next: NextFunction) {
   try {
-    const { password, username } = req.body;
-    if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
-    if (!username?.trim() && !password)
-      return res.status(400).json({ status: "fail", message: "Username or password is required" });
-    const data: any = {};
-    if (username?.trim()) data.username = username.trim();
-    if (password) {
-      data.password = await bcrypt.hash(password, 10);
-      data.passwordChangedAt = new Date();
-    }
-    await prisma.user.update({ where: { id: res.locals.user.id }, data });
+    const { username, password } = req.body;
+
+    const user = res.locals.user;
+
+    const result = await UserService.updateUser(user.id, username, password, user.deletedAt);
+
     res.status(200).json({
-      status: "success",
-      message: password ? "Password updated. Please log in again." : "User updated successfully",
+      status: HttpStatusText.SUCCESS,
+      message: result.message,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function deleteUser(_req: Request, res: Response) {
+export async function deleteUser(_req: Request, res: Response, next: NextFunction) {
   try {
-    if (res.locals.user.deletedAt) return res.status(400).json({ status: "fail", message: "User not found" });
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({ where: { id: res.locals.user.id }, data: { deletedAt: new Date() } });
-      await tx.userTrack.updateMany({
-        where: { userId: res.locals.user.id, deletedAt: null },
-        data: { deletedAt: new Date() },
-      });
-      await tx.userCourse.updateMany({
-        where: { userId: res.locals.user.id, deletedAt: null },
-        data: { deletedAt: new Date() },
-      });
-      if (res.locals.user.role === Role.ADMIN) {
-        const trackId = res.locals.user.currentTrackId;
-        if (trackId) {
-          await tx.track.update({ where: { id: trackId }, data: { deletedAt: new Date(), creatorId: null } });
-          await tx.course.updateMany({ where: { trackId: trackId }, data: { deletedAt: new Date() } });
-          await tx.userTrack.updateMany({ where: { trackId: trackId }, data: { deletedAt: new Date() } });
-          await tx.user.updateMany({ where: { currentTrackId: trackId }, data: { currentTrackId: null } });
-        }
-      }
+    await UserService.deleteUserService(res.locals.user);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "User deleted successfully",
     });
-    res.status(200).json({ status: "success", message: "User deleted successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function getUserTracks(_req: Request, res: Response) {
+export async function getUserTracks(_req: Request, res: Response, next: NextFunction) {
   try {
-    const tracks = await prisma.userTrack.findMany({
-      where: { userId: res.locals.user.id, deletedAt: null },
-      include: {
-        track: {
-          include: {
-            courses: {
-              where: { deletedAt: null },
-              include: {
-                courseUsers: {
-                  where: { roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
-                  select: { roleInCourse: true, joinedAt: true, user: true },
-                },
-              },
-            },
-          },
-        },
-      },
+    const tracks = await UserService.getUserTracksService(res.locals.user);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      data: tracks,
     });
-    const userCourses = await prisma.userCourse.findMany({
-      where: { userId: res.locals.user.id },
-      select: { courseId: true },
-    });
-    const userCourseIds = new Set(userCourses.map((uc) => uc.courseId));
-    let formattedTracks;
-    if (res.locals.user.role === Role.STUDENT) {
-      const studentRequests = await prisma.studentRequest.findMany({
-        where: { userId: res.locals.user.id },
-        select: { courseId: true, status: true },
-      });
-      const studentRequestMap = new Map(studentRequests.map((sr) => [sr.courseId, sr.status]));
-      formattedTracks = tracks.map((userTrack) => {
-        return {
-          ...userTrack.track,
-          courses: userTrack.track.courses.map((course) => {
-            return {
-              hasJoined: userCourseIds.has(course.id),
-              studentRequestStatus: studentRequestMap.get(course.id) || null,
-              ...course,
-            };
-          }),
-        };
-      });
-    } else {
-      const staffRequests = await prisma.staffRequest.findMany({
-        where: { userId: res.locals.user.id },
-        select: { courseId: true, status: true },
-      });
-      const staffRequestMap = new Map(staffRequests.map((sr) => [sr.courseId, sr.status]));
-      formattedTracks = tracks.map((userTrack) => {
-        return {
-          ...userTrack.track,
-          courses: userTrack.track.courses.map((course) => {
-            return {
-              hasJoined: userCourseIds.has(course.id),
-              staffRequestStatus: staffRequestMap.get(course.id) || null,
-              ...course,
-            };
-          }),
-        };
-      });
-    }
-    res.status(200).json({ status: "success", data: formattedTracks });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function selectTrack(req: Request, res: Response) {
+export async function selectTrack(req: Request, res: Response, next: NextFunction) {
   try {
     const { trackId } = req.body;
-    if (res.locals.user.role === Role.ADMIN)
-      return res.status(403).json({ status: "fail", message: "Admins cannot select tracks" });
-    if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
-    const track = await prisma.track.findFirst({ where: { id: trackId, deletedAt: null } });
-    if (!track) return res.status(404).json({ status: "fail", message: "Track not found" });
-    await prisma.$transaction(async (tx) => {
-      await tx.userTrack.upsert({
-        where: { userId_trackId: { userId: res.locals.user.id, trackId }, deletedAt: null },
-        update: {},
-        create: { userId: res.locals.user.id, trackId },
-      });
-      await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: trackId } });
+
+    await UserService.selectTrackService(res.locals.user, trackId);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "Selected track successfully",
     });
-    return res.status(200).json({ status: "success", message: "Selected track successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function quitTrack(req: Request, res: Response) {
+export async function quitTrack(req: Request, res: Response, next: NextFunction) {
   try {
     const { trackId } = req.body;
-    if (res.locals.user.role === Role.ADMIN)
-      return res.status(403).json({ status: "fail", message: "Admins cannot quit tracks" });
-    if (!trackId) return res.status(400).json({ status: "fail", message: "Track id is required" });
-    await prisma.$transaction(async (tx) => {
-      const { count } = await tx.userTrack.deleteMany({
-        where: { userId: res.locals.user.id, trackId, deletedAt: null },
-      });
-      if (count === 0) throw new Error("TRACK_NOT_FOUND");
-      if (trackId === res.locals.user.currentTrackId)
-        await tx.user.update({ where: { id: res.locals.user.id }, data: { currentTrackId: null } });
+
+    await UserService.quitTrackService(res.locals.user, trackId);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "Quitted track successfully",
     });
-    return res.status(200).json({ status: "success", message: "Quitted track successfully" });
   } catch (err) {
     console.log(err);
-    if ((err as Error).message === "TRACK_NOT_FOUND")
-      return res.status(404).json({ status: "fail", message: "Track not found" });
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
-
-export async function getUserCourses(_req: Request, res: Response) {
+export async function getUserCourses(req: Request, res: Response, next: NextFunction) {
   try {
-    const courses = await prisma.userCourse.findMany({
-      where: { userId: res.locals.user.id },
-      include: { course: { include: { track: true } } },
+    const courses = await UserService.getUserCoursesService(res.locals.user.id);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      data: courses,
     });
-    res.status(200).json({ status: "success", data: courses });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function joinCourse(req: Request, res: Response) {
+export async function joinCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { courseId } = req.body;
-    if (res.locals.user.role !== Role.STUDENT)
-      return res.status(403).json({ status: "fail", message: "Only students can join courses" });
-    if (!courseId) return res.status(400).json({ status: "fail", message: "course id is required" });
-    const course = await prisma.course.findFirst({
-      where: { id: courseId, deletedAt: null },
-      include: { courseUsers: { where: { roleInCourse: Role.INSTRUCTOR } } },
+
+    await UserService.joinCourseService(res.locals.user, courseId);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "Joined course successfully",
     });
-    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    if (course.courseUsers.length === 0)
-      return res.status(400).json({ status: "fail", message: "Course has no instructor, can't join" });
-    const isEnrolled = await prisma.userCourse.findFirst({ where: { courseId, userId: res.locals.user.id } });
-    if (isEnrolled) return res.status(400).json({ status: "fail", message: "You're already enrolled in this course" });
-    if (course.protected)
-      return res.status(403).json({
-        status: "fail",
-        message: "This course is protected, please submit a student request to join",
-      });
-    await prisma.userCourse.create({
-      data: { userId: res.locals.user.id, courseId, roleInCourse: res.locals.user.role },
-    });
-    return res.status(200).json({ status: "success", message: "Joined course successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function quitCourse(req: Request, res: Response) {
+export async function quitCourse(req: Request, res: Response, next: NextFunction) {
   try {
     const { courseId } = req.body;
-    if (res.locals.user.role !== Role.STUDENT)
-      return res.status(403).json({ status: "fail", message: "Only students can quit courses" });
-    if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
-    const { count } = await prisma.userCourse.deleteMany({
-      where: { userId: res.locals.user.id, courseId, deletedAt: null },
+
+    await UserService.quitCourseService(res.locals.user, courseId);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "Quitted course successfully",
     });
-    if (count === 0) return res.status(404).json({ status: "fail", message: "Course not found" });
-    return res.status(200).json({ status: "success", message: "Quitted course successfully" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
 
-export async function getUserStaffRequests(req: Request, res: Response) {
+export async function getUserStaffRequests(req: Request, res: Response, next: NextFunction) {
   try {
-    const { status } = req.query as { status?: string };
-    if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
-      return res.status(400).json({ status: "fail", message: "Invalid status" });
-    if (res.locals.user.role !== (Role.INSTRUCTOR || Role.ASSISTANT))
-      return res
-        .status(403)
-        .json({ status: "fail", message: "Only instructors and assistants can have staff requests" });
-    const requests = await prisma.staffRequest.findMany({
-      where: { userId: res.locals.user.id, status: status?.toUpperCase() as Status | undefined },
-      include: { course: true },
+    const { status, search } = req.query as {
+      status?: Status;
+      search?: string;
+    };
+
+    const requests = await UserService.getUserStaffRequestsService(res.locals.user, status, search);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      data: requests,
     });
-    res.status(200).json({ status: "success", data: requests });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+
+    next(err);
   }
 }
-
-export async function getUserStudentRequests(req: Request, res: Response) {
+export async function getUserStudentRequests(req: Request, res: Response, next: NextFunction) {
   try {
-    const { status } = req.query as { status?: string };
-    if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
-      return res.status(400).json({ status: "fail", message: "Invalid status" });
-    if (res.locals.user.role !== Role.STUDENT)
-      return res.status(403).json({ status: "fail", message: "Only students can have student requests" });
-    const requests = await prisma.studentRequest.findMany({
-      where: { userId: res.locals.user.id, status: status?.toUpperCase() as Status | undefined },
-      include: { course: true },
+    const { status, search } = req.query as {
+      status?: Status;
+      search?: string;
+    };
+
+    const requests = await UserService.getUserStudentRequestsService(res.locals.user, status, search);
+
+    return res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      data: requests,
     });
-    res.status(200).json({ status: "success", data: requests });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    next(err);
   }
 }
