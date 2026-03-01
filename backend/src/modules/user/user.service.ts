@@ -5,8 +5,8 @@ import { HttpStatusText } from "../../types/HTTPStatusText";
 import { Role, Status } from "../../generated/prisma";
 import prisma from "../../config/db";
 
-export const UserService = {
-  async updateUser(userId: string, username?: string, password?: string, deletedAt?: Date | null) {
+export class UserService  {
+  static async updateUser(userId: string, username?: string, password?: string, deletedAt?: Date | null) {
     if (deletedAt) {
       throw new CustomError("User not found", 404, HttpStatusText.FAIL);
     }
@@ -31,9 +31,15 @@ export const UserService = {
     return {
       message: password ? "Password updated. Please log in again." : "User updated successfully",
     };
-  },
+  }
+  static async deleteUserService(user: any) {
+    if (user.deletedAt) {
+      throw new CustomError("User not found", 404, HttpStatusText.FAIL);
+    }
 
-  async selectTrackService(user: any, trackId: string) {
+    await UserModel.deleteUserWithRelations(user);
+  }
+  static async selectTrackService(user: any, trackId: string) {
     if (user.role === Role.ADMIN) {
       throw new CustomError("Forbidden", 403, HttpStatusText.FAIL);
     }
@@ -45,9 +51,9 @@ export const UserService = {
       await UserModel.upsertUserTrack(tx, user.id, trackId);
       await UserModel.updateUserCurrentTrack(tx, user.id, trackId);
     });
-  },
+  }
 
-  async quitTrackService(user: any, trackId: string) {
+  static async quitTrackService(user: any, trackId: string) {
     if (user.role === Role.ADMIN) {
       throw new CustomError("Forbidden", 403, HttpStatusText.FAIL);
     }
@@ -63,18 +69,18 @@ export const UserService = {
         await UserModel.updateUserCurrentTrack(tx, user.id, null);
       }
     });
-  },
-  async getUserCoursesService(userId: string) {
+  }
+  static async getUserCoursesService(userId: string) {
     return UserModel.getUserCoursesModel(userId);
-  },
-  async getUserStudentRequestsService(user: any, status?: Status, search?: string) {
+  }
+  static async getUserStudentRequestsService(user: any, status?: Status, search?: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Only students can have student requests", 403, HttpStatusText.FAIL);
     }
 
     return UserModel.findStudentRequests(user.id, status, search);
-  },
-  async joinCourseService(user: any, courseId: string) {
+  }
+  static async joinCourseService(user: any, courseId: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Forbidden, Only students can join courses", 403, HttpStatusText.FAIL);
     }
@@ -104,8 +110,8 @@ export const UserService = {
     }
 
     await UserModel.createUserCourse(user.id, courseId, user.role);
-  },
-  async quitCourseService(user: any, courseId: string) {
+  }
+  static async quitCourseService(user: any, courseId: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Only students can quit courses", 403, HttpStatusText.FAIL);
     }
@@ -115,22 +121,15 @@ export const UserService = {
     if (count === 0) {
       throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
     }
-  },
-  async getUserStaffRequestsService(user: any, status?: Status, search?: string) {
+  }
+  static async getUserStaffRequestsService(user: any, status?: Status, search?: string) {
     if (![Role.INSTRUCTOR, Role.ASSISTANT].includes(user.role)) {
       throw new CustomError("Only instructors and assistants can have staff requests", 403, HttpStatusText.FAIL);
     }
 
     return UserModel.findStaffRequests(user.id, status, search);
-  },
-  async deleteUserService(user: any) {
-    if (user.deletedAt) {
-      throw new CustomError("User not found", 404, HttpStatusText.FAIL);
-    }
-
-    await UserModel.deleteUserWithRelations(user);
-  },
-  async getUserTracksService(user: any) {
+  }
+  static async getUserTracksService(user: any) {
     const [tracks, userCourses] = await Promise.all([
       UserModel.findUserTracks(user.id),
       UserModel.findUserCoursesUserTrackRequest(user.id),
@@ -161,5 +160,5 @@ export const UserService = {
     }));
 
     return formattedTracks;
-  },
+  }
 };

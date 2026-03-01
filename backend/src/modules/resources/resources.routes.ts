@@ -4,17 +4,19 @@ import * as authController from "../auth/auth.controller";
 import * as resourcesController from "./resources.controller";
 import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
+import { protect } from "../../middlewares/protect";
+import { restrict } from "../../middlewares/restrict";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", authController.protect, checkCourseExists, verifyCourseMember, resourcesController.getResources);
+router.get("/", protect, checkCourseExists, verifyCourseMember, resourcesController.getResources);
 
-router.get("/:id", authController.protect, checkCourseExists, verifyCourseMember, resourcesController.getResourceById);
+router.get("/:id", protect, checkCourseExists, verifyCourseMember, resourcesController.getResourceById);
 
 router.post(
   "/upload",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR),
+  protect,
+  restrict(Role.INSTRUCTOR),
   checkCourseExists,
   verifyCourseMember,
   resourcesController.uploadToS3(),
@@ -23,7 +25,7 @@ router.post(
 
 router.get(
   "/:id/download",
-  authController.protect,
+  protect,
   checkCourseExists,
   verifyCourseMember,
   resourcesController.downloadResource,
@@ -31,8 +33,8 @@ router.get(
 
 router.delete(
   "/:id/delete",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR),
+  protect,
+  restrict(Role.INSTRUCTOR),
   checkCourseExists,
   verifyCourseMember,
   resourcesController.deleteResource,

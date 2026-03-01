@@ -1,30 +1,53 @@
 import { Role, User } from "../../generated/prisma/client";
 import express from "express";
 import passport from "passport";
-import * as authController from "./auth.controller";
 import signToken from "../../utils/signToken";
+import { validate } from "../../middlewares/validate";
+
+import { protect } from "../../middlewares/protect";
+import { AuthValidationSchemas } from "./auth.validation";
+import { AuthController } from "./auth.controller";
 
 const router = express.Router();
 
-router.get("/", authController.protect, authController.authorize);
+router.get("/", protect, AuthController.authorize);
 
-router.post("/signup", authController.signup);
+router.post("/signup", validate({ body: AuthValidationSchemas.signup }), AuthController.signup);
 
-router.get("/confirm-email/:token", authController.confirmEmail);
+router.get(
+  "/confirm-email/:token",
+  validate({ params: AuthValidationSchemas.confirmEmail }),
+  AuthController.confirmEmail,
+);
 
-router.post("/resend-confirmation-email", authController.resendConfirmationEmail);
+router.post(
+  "/resend-confirmation-email",
+  validate({ body: AuthValidationSchemas.resendConfirmationEmail }),
+  AuthController.resendConfirmationEmail,
+);
 
-router.post("/login", authController.login);
+router.post("/login", validate({ body: AuthValidationSchemas.login }), AuthController.login);
 
-router.get("/logout", authController.logout);
+router.get("/logout", AuthController.logout);
 
-router.post("/forgot-password", authController.forgotPassword);
+router.post(
+  "/forgot-password",
+  validate({ body: AuthValidationSchemas.forgotPassword }),
+  AuthController.forgotPassword,
+);
 
-router.post("/verify-otp", authController.verifyOTP);
+router.post("/verify-otp", validate({ body: AuthValidationSchemas.verifyOTP }), AuthController.verifyOTP);
 
-router.patch("/reset-password", authController.resetPassword);
+router.patch("/reset-password", validate({ body: AuthValidationSchemas.resetPassword }), AuthController.resetPassword);
 
-router.post("/google/mobile", authController.mobileGoogleAuth);
+router.post(
+  "/google/mobile",
+  validate({
+    body: AuthValidationSchemas.mobileGoogleAuth.shape.body,
+    query: AuthValidationSchemas.mobileGoogleAuth.shape.query,
+  }),
+  AuthController.mobileGoogleAuth,
+);
 
 router.get("/google", (req, res, next) => {
   let role: Role = Role.STUDENT;

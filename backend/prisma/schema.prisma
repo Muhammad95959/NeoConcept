@@ -24,6 +24,7 @@ model User {
   currentTrackId       String?
   createdTrack         Track?           @relation("TrackCreator")
   currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
+  otpAttempts           Int             @default(0) 
   deletedAt            DateTime?
   courseUsers          UserCourse[]
   Resources            Resource[]

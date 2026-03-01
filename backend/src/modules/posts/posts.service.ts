@@ -1,10 +1,12 @@
-import { PostModel } from "./posts.model";
 import prisma from "../../config/db";
 import CustomError from "../../types/customError";
 import { HttpStatusText } from "../../types/HTTPStatusText";
+import { PostModel } from "./posts.model";
+import { CreatePostInputService, DeletePostInput, GetPostsInput, UpdatePostInputService } from "./posts.type";
+import { PostIdParam } from "./posts.validation";
 
-export const PostService = {
-  async getPosts(courseId: string, search?: string) {
+export class PostService {
+  static async getPosts({ courseId, search }: GetPostsInput) {
     const where: any = {
       courseId,
       course: { deletedAt: null },
@@ -18,9 +20,9 @@ export const PostService = {
     }
 
     return PostModel.findMany(where);
-  },
+  }
 
-  async getPostById(courseId: string, id: string) {
+  static async getPost({ courseId, id }: PostIdParam) {
     const post = await PostModel.findFirst({
       courseId,
       id,
@@ -30,9 +32,9 @@ export const PostService = {
     if (!post) throw new CustomError("Post not found", 404, HttpStatusText.FAIL);
 
     return post;
-  },
+  }
 
-  async createPost(courseId: string, userId: string, title: string, content: string) {
+  static async create({ courseId, userId, title, content }: CreatePostInputService) {
     const course = await prisma.course.findFirst({
       where: { id: courseId, deletedAt: null },
     });
@@ -49,9 +51,9 @@ export const PostService = {
       courseId,
       uploadedBy: userId,
     });
-  },
+  }
 
-  async updatePost(courseId: string, id: string, userId: string, title?: string, content?: string) {
+  static async update({ courseId, id, userId, content, title }: UpdatePostInputService) {
     const post = await PostModel.findFirst({
       courseId,
       id,
@@ -71,9 +73,9 @@ export const PostService = {
     if (content) data.content = content.trim();
 
     return PostModel.update(id, data);
-  },
+  }
 
-  async deletePost(courseId: string, id: string, userId: string) {
+  static async delete({courseId, id, userId} : DeletePostInput) {
     const post = await PostModel.findFirst({
       courseId,
       id,
@@ -85,5 +87,5 @@ export const PostService = {
     if (post.uploadedBy !== userId) throw new CustomError("Unauthorized", 401, HttpStatusText.FAIL);
 
     await PostModel.delete(id);
-  },
-};
+  }
+}

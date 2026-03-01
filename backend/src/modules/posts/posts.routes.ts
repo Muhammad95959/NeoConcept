@@ -1,69 +1,65 @@
 import { Role } from "../../generated/prisma/client";
 import express from "express";
 import * as authController from "../auth/auth.controller";
-import * as postsController from "./posts.controller";
 import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
 import verifyPostOwner from "../../middlewares/verifyPostOwner";
 import { validate } from "../../middlewares/validate";
-import {
-  courseIdParamSchema,
-  createPostSchema,
-  getPostsQuerySchema,
-  postIdParamSchema,
-  updatePostSchema,
-} from "./posts.validation";
+import { protect } from "../../middlewares/protect";
+import { PostValidationSchemas } from "./posts.validation";
+import { PostsController } from "./posts.controller";
+import { restrict } from "../../middlewares/restrict";
 
 const router = express.Router({ mergeParams: true });
 
 router.get(
   "/",
-  authController.protect,
-  validate({ params: courseIdParamSchema, query: getPostsQuerySchema }),
+  protect,
+  validate({ params: PostValidationSchemas.courseIdParam, query: PostValidationSchemas.getPostsQuery }),
   checkCourseExists,
   verifyCourseMember,
-  postsController.getPosts,
+  PostsController.getPosts,
 );
 
 router.get(
   "/:id",
-  authController.protect,
-  validate({ params: postIdParamSchema }),
+  protect,
+  validate({ params: PostValidationSchemas.postIdParam }),
   checkCourseExists,
   verifyCourseMember,
-  postsController.getPostById,
+  PostsController.getPost,
 );
 
 router.post(
   "/",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: courseIdParamSchema, body: createPostSchema }),
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: PostValidationSchemas.courseIdParam, body: PostValidationSchemas.create }),
   checkCourseExists,
   verifyCourseMember,
-  postsController.createPost,
+  PostsController.create,
 );
 
 router.patch(
   "/:id",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: postIdParamSchema, body: updatePostSchema }),
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: PostValidationSchemas.postIdParam, body: PostValidationSchemas.update }),
   checkCourseExists,
   verifyCourseMember,
   verifyPostOwner,
-  postsController.updatePost,
+  PostsController.update,
 );
 
 router.delete(
   "/:id",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: postIdParamSchema }),
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: PostValidationSchemas.postIdParam }),
   checkCourseExists,
   verifyCourseMember,
   verifyPostOwner,
-  postsController.deletePost,
+  PostsController.delete,
 );
 
 export default router;

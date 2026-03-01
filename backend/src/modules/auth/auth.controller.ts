@@ -1,305 +1,169 @@
 import { Role } from "../../generated/prisma/client";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
 import { NextFunction, Request, Response } from "express";
-import { promises as fs } from "fs";
-import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
-import prisma from "../../config/db";
-import createRandomOTP from "../../utils/createRandomOTP";
 import safeUserData from "../../utils/safeUserData";
-import sendEmail from "../../utils/sendEmail";
-import signToken from "../../utils/signToken";
+import { sendConfirmationEmail } from "./email.service";
+import { AuthService } from "./auth.service";
+import { HttpStatusText } from "../../types/HTTPStatusText";
+import {
+  ConfirmEmailInput,
+  LoginInput,
+  MobileGoogleAuthInput,
+  MobileGoogleAuthQuery,
+  ResendConfirmationEmailInput,
+  ResetPasswordInput,
+  VerifyOTPInput,
+} from "./auth.validation";
 
-const oauthClient = new OAuth2Client();
+export class AuthController {
+  static async signup(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { confirmEmailToken, isDev } = await AuthService.signupService(req.body);
 
-export async function signup(req: Request, res: Response) {
-  const { email, username, password, role } = req.body;
-  if (!email || !username || !password || !role) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Email, username, password and role are required",
-    });
-  }
-  try {
-    const existingUser = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
-    if (existingUser) return res.status(409).json({ status: "fail", message: "Email is already in use" });
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const confirmEmailToken = crypto.randomBytes(32).toString("hex");
-    const confirmEmailTokenHash = crypto.createHash("sha256").update(confirmEmailToken).digest("hex");
-    await prisma.user.create({
-      data: {
-        email: email.toLowerCase(),
-        username,
-        password: hashedPassword,
-        role: role.toUpperCase(),
-        emailConfirmed: process.env.NODE_ENV === "development" ? true : false,
-        confirmEmailToken: process.env.NODE_ENV === "development" ? confirmEmailTokenHash : null,
-        confirmEmailExpires: process.env.NODE_ENV === "development" ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null,
-      },
-    });
-    const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
-    const message = rawMessage.replaceAll(
-      "%%CONFIRMATION_LINK%%",
-      `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
-    );
-    if (process.env.NODE_ENV !== "development") sendEmail(email, "NeoConcept - Email Confirmation", message, true);
-    res.status(201).json({
-      status: "success",
-      message:
-        process.env.NODE_ENV === "development"
+      if (!isDev) {
+        await sendConfirmationEmail(req.body.email, confirmEmailToken, req);
+      }
+
+      res.status(201).json({
+        status: HttpStatusText.SUCCESS,
+        message: isDev
           ? "api is running on development mode => email created & confirmed"
           : "Please confirm your email",
-    });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function confirmEmail(req: Request, res: Response) {
-  const failHtml = await fs.readFile("public/emailVerificationFailure.html", "utf-8");
-  try {
-    const confirmEmailTokenHash = crypto
-      .createHash("sha256")
-      .update(req.params.token as string)
-      .digest("hex");
-    const user = await prisma.user.findFirst({
-      where: { confirmEmailToken: confirmEmailTokenHash, confirmEmailExpires: { gt: new Date() } },
-    });
-    if (!user) return res.status(400).send(failHtml);
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { emailConfirmed: true, confirmEmailToken: null, confirmEmailExpires: null },
-    });
-    const successHtml = await fs.readFile("public/emailVerificationSuccess.html", "utf-8");
-    res.status(200).send(successHtml);
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(failHtml);
-  }
-}
-
-export async function resendConfirmationEmail(req: Request, res: Response) {
-  const { email } = req.body;
-  if (!email) return res.status(400).json({ status: "fail", message: "Email is required" });
-  try {
-    const user = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
-    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
-    if (user.emailConfirmed) return res.status(400).json({ status: "fail", message: "Email already confirmed" });
-    const confirmEmailToken = crypto.randomBytes(32).toString("hex");
-    const confirmEmailTokenHash = crypto.createHash("sha256").update(confirmEmailToken).digest("hex");
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        confirmEmailToken: confirmEmailTokenHash,
-        confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
-    });
-    const rawMessage = await fs.readFile("public/emailConfirmationMessage.html", "utf-8");
-    const message = rawMessage.replaceAll(
-      "%%CONFIRMATION_LINK%%",
-      `${req.protocol}://${req.get("host")}/api/v1/auth/confirm-email/${confirmEmailToken}`,
-    );
-    sendEmail(email, "NeoConcept - Email Confirmation", message, true);
-    res.status(201).json({ status: "success", message: "New confirmation email was sent successfully" });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ status: "fail", message: "Please provide email and password" });
-  try {
-    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
-    if (!user || !user.password) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
-    const passwordIsValid = await bcrypt.compare(password, user.password);
-    if (!passwordIsValid) return res.status(400).json({ status: "fail", message: "Invalid credentials" });
-    if (!user.emailConfirmed)
-      return res.status(403).json({ status: "fail", message: "Please confirm your email first" });
-    const token = signToken(user.id);
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    });
-    res.status(200).json({ status: "success", token, data: safeUserData(user) });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function forgotPassword(req: Request, res: Response) {
-  const { email } = req.body;
-  try {
-    const user = await prisma.user.findFirst({ where: { email: email.toLowerCase(), deletedAt: null } });
-    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
-    const otp = createRandomOTP(6);
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        resetPasswordOTP: otpHash,
-        resetPasswordExpires: new Date(Date.now() + 20 * 60 * 1000),
-      },
-    });
-    const rawMessage = await fs.readFile("public/resetPasswordMessage.html", "utf-8");
-    const message = rawMessage.replace("%%OTP%%", otp);
-    sendEmail(email, "NeoConcept - Password Reset", message, true);
-    res.status(201).json({ status: "success", message: "Password reset email was sent successfully" });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function verifyOTP(req: Request, res: Response) {
-  const { otp, email } = req.body;
-  try {
-    if (!otp) return res.status(400).json({ status: "fail", message: "Provide the OTP" });
-    if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
-    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
-    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-    if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
-    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date())
-      return res.status(400).json({ status: "fail", message: "OTP has expired" });
-    res.status(200).json({ status: "success", message: "OTP verified successfully" });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function resetPassword(req: Request, res: Response) {
-  const { otp, email, newPassword } = req.body;
-  try {
-    if (!email) return res.status(400).json({ status: "fail", message: "Provide the email" });
-    if (!newPassword) return res.status(400).json({ status: "fail", message: "Provide a new password" });
-    const user = await prisma.user.findFirst({ where: { email, deletedAt: null } });
-    if (!user) return res.status(404).json({ status: "fail", message: "User not found" });
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-    if (user.resetPasswordOTP !== otpHash) return res.status(400).json({ status: "fail", message: "Invalid OTP" });
-    if (!user.resetPasswordExpires || user.resetPasswordExpires < new Date())
-      return res.status(400).json({ status: "fail", message: "OTP has expired" });
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetPasswordOTP: null,
-        resetPasswordExpires: null,
-        passwordChangedAt: new Date(),
-      },
-    });
-    res.status(200).json({ status: "success", message: "Password was reset successfully" });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
-  }
-}
-
-export async function protect(req: Request, res: Response, next: NextFunction) {
-  let token: string | undefined;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  } else if (req.cookies.jwt) {
-    token = req.cookies.jwt;
-  }
-  if (!token) return res.status(401).json({ status: "fail", message: "You are not logged in" });
-  try {
-    if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET is not defined");
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const { id, iat } = decodedToken as { id: string; iat: number; exp: number };
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user)
-      return res.status(401).json({ status: "fail", message: "The user belonging to this token no longer exists" });
-    if (user.deletedAt) return res.status(401).json({ status: "fail", message: "User was deleted" });
-    if (user.passwordChangedAt) {
-      const isPasswordChanged = new Date(user.passwordChangedAt).getTime() / 1000 > iat;
-      if (isPasswordChanged)
-        return res
-          .status(401)
-          .json({ status: "fail", message: "User recently changed password! Please log in again." });
-    }
-    res.locals.user = user;
-    next();
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(401).json({ status: "fail", message: "Invalid or expired token" });
-  }
-}
-
-export function restrict(...roles: Role[]) {
-  return function (_req: Request, res: Response, next: NextFunction) {
-    if (!roles.includes(res.locals.user.role))
-      return res.status(403).json({ status: "fail", message: "You do not have permission to perform this action" });
-    next();
-  };
-}
-
-export function logout(_req: Request, res: Response) {
-  res.clearCookie("jwt");
-  res.status(200).json({ status: "success", message: "Logged out successfully" });
-}
-
-export function authorize(_req: Request, res: Response) {
-  res.status(200).json({ status: "success", data: safeUserData(res.locals.user) });
-}
-
-export async function mobileGoogleAuth(req: Request, res: Response) {
-  const { idToken } = req.body;
-  let role: Role = Role.STUDENT;
-  switch (String(req.query.role).toUpperCase()) {
-    case Role.ADMIN:
-      role = Role.ADMIN;
-      break;
-    case Role.INSTRUCTOR:
-      role = Role.INSTRUCTOR;
-      break;
-    case Role.ASSISTANT:
-      role = Role.ASSISTANT;
-  }
-  try {
-    const ticket = await oauthClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    if (!payload) return res.status(400).json({ status: "fail", message: "Invalid token" });
-    const { email, name, sub: googleId } = payload;
-    let user = await prisma.user.findFirst({ where: { email: email?.toLowerCase(), deletedAt: null } });
-    if (user) {
-      if (role && user.role !== role) {
-        return res.status(400).json({ status: "fail", message: "Role mismatch" });
-      }
-      if (!user.googleId) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { googleId, emailConfirmed: true },
-          include: { currentTrack: { include: { courses: true } } },
-        });
-      }
-    } else {
-      user = await prisma.user.create({
-        data: {
-          email: email!,
-          username: name!,
-          googleId,
-          emailConfirmed: true,
-          role,
-        },
-        include: { currentTrack: { include: { courses: true } } },
       });
+    } catch (err: any) {
+      console.log(err.message);
+      next(err);
     }
-    const token = signToken(user.id);
-    res.status(200).json({ status: "success", token, data: safeUserData(user) });
-  } catch (err) {
-    console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
   }
+
+  static async confirmEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.validated!.params as ConfirmEmailInput;
+      const html = await AuthService.confirmEmailService(token);
+
+      res.status(200).send(html);
+    } catch (err: any) {
+      console.log(err);
+      if (err.html) return res.status(err.status || 400).send(err.html);
+      next(err);
+    }
+  }
+
+  static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.validated!.body as ResendConfirmationEmailInput;
+
+      await AuthService.resendConfirmationEmailService(email);
+
+      res.status(201).json({
+        status: HttpStatusText.SUCCESS,
+        message: "New confirmation email was sent successfully",
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  static async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.validated!.body as LoginInput;
+
+      const { token, user } = await AuthService.loginService(data);
+
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
+
+      res.status(200).json({
+        status: HttpStatusText.SUCCESS,
+        token,
+        data: user,
+      });
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  }
+
+  static async forgotPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+
+      const result = await AuthService.forgotPasswordService(email);
+
+      res.status(201).json({
+        status: HttpStatusText.SUCCESS,
+        ...result,
+      });
+    } catch (err: any) {
+      console.error(err.message);
+      next(err);
+    }
+  }
+
+  static async verifyOTP(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp } = req.validated!.body as VerifyOTPInput;
+
+      const result = await AuthService.verifyOTPService(email, otp);
+
+      res.status(200).json({
+        status: HttpStatusText.SUCCESS,
+        message: result.message,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp, newPassword } = req.validated!.body as ResetPasswordInput;
+
+      const result = await AuthService.resetPasswordService(email, otp, newPassword);
+
+      res.status(200).json({
+        status: HttpStatusText.SUCCESS,
+        message: result.message,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static logout(_req: Request, res: Response) {
+    res.clearCookie("jwt");
+    res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      message: "Logged out successfully",
+    });
+  }
+
+  static authorize(_req: Request, res: Response) {
+    res.status(200).json({
+      status: HttpStatusText.SUCCESS,
+      data: safeUserData(res.locals.user),
+    });
+  }
+
+  static async mobileGoogleAuth(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = req.validated?.body as MobileGoogleAuthInput;
+      const query = req.validated?.query as MobileGoogleAuthQuery;
+
+      const { token, user } = await AuthService.mobileGoogleAuthService(body, query);
+
+      res.status(200).json({
+        status: HttpStatusText.SUCCESS,
+        token,
+        data: user,
+      });
+    } catch (err: any) {
+      console.log(err.message);
+      next(err);
+    }
+  }
+
 }
