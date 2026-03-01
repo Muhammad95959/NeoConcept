@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Status } from "../../generated/prisma";
 import { UserService } from "./user.service";
 import { HttpStatusText } from "../../types/HTTPStatusText";
-import { CourseIdBody, TrackIdBody, UpdateUserInput } from "./user.validation";
+import { CourseIdBody, GetUserStaffRequestsQuery, GetUserStudentRequestsQuery, TrackIdBody, UpdateUserInput } from "./user.validation";
 
 export class UserController {
   static async updateUser(req: Request, res: Response, next: NextFunction) {
@@ -54,7 +53,7 @@ export class UserController {
     try {
       const { trackId } = req.body as TrackIdBody;
 
-      await UserService.selectTrack({user: res.locals.user, trackId});
+      await UserService.selectTrack({ user: res.locals.user, trackId });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -70,7 +69,7 @@ export class UserController {
     try {
       const { trackId } = req.body;
 
-      await UserService.quitTrack({user: res.locals.user, trackId});
+      await UserService.quitTrack({ user: res.locals.user, trackId });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -84,7 +83,7 @@ export class UserController {
 
   static async getUserCourses(req: Request, res: Response, next: NextFunction) {
     try {
-      const courses = await UserService.getUserCourses({userId: res.locals.user.id});
+      const courses = await UserService.getUserCourses({ userId: res.locals.user.id });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -100,7 +99,7 @@ export class UserController {
     try {
       const { courseId } = req.body as CourseIdBody;
 
-      await UserService.joinCourse(res.locals.user, courseId);
+      await UserService.joinCourse({ user: res.locals.user, courseId });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -116,7 +115,7 @@ export class UserController {
     try {
       const { courseId } = req.body as CourseIdBody;
 
-      await UserService.quitCourse(res.locals.user, courseId);
+      await UserService.quitCourse({ user: res.locals.user, courseId });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -130,12 +129,9 @@ export class UserController {
 
   static async getUserStaffRequests(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, search } = req.query as {
-        status?: Status;
-        search?: string;
-      };
+      const { status, search } = req.query as GetUserStaffRequestsQuery;
 
-      const requests = await UserService.getUserStaffRequests({user: res.locals.user, status, search});
+      const requests = await UserService.getUserStaffRequests({ user: res.locals.user, status, search });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -149,10 +145,7 @@ export class UserController {
 
   static async getUserStudentRequests(req: Request, res: Response, next: NextFunction) {
     try {
-      const { status, search } = req.query as {
-        status?: Status;
-        search?: string;
-      };
+      const { status, search } = req.query as GetUserStudentRequestsQuery;
 
       const requests = await UserService.getUserStudentRequests(res.locals.user, status, search);
 
