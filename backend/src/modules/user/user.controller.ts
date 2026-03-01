@@ -2,19 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { Status } from "../../generated/prisma";
 import { UserService } from "./user.service";
 import { HttpStatusText } from "../../types/HTTPStatusText";
+import { CourseIdBody, TrackIdBody, UpdateUserInput } from "./user.validation";
 
 export class UserController {
   static async updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { username, password } = req.body;
+      const { username, password } = req.body as UpdateUserInput;
       const user = res.locals.user;
 
-      const result = await UserService.updateUser(
-        user.id,
-        username,
-        password,
-        user.deletedAt
-      );
+      const result = await UserService.updateUser({ userId: user.id, username, password, deletedAt: user.deletedAt });
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -28,7 +24,7 @@ export class UserController {
 
   static async deleteUser(_req: Request, res: Response, next: NextFunction) {
     try {
-      await UserService.deleteUserService(res.locals.user);
+      await UserService.deleteUser(res.locals.user);
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -42,7 +38,7 @@ export class UserController {
 
   static async getUserTracks(_req: Request, res: Response, next: NextFunction) {
     try {
-      const tracks = await UserService.getUserTracksService(res.locals.user);
+      const tracks = await UserService.getUserTracks(res.locals.user);
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -56,9 +52,9 @@ export class UserController {
 
   static async selectTrack(req: Request, res: Response, next: NextFunction) {
     try {
-      const { trackId } = req.body;
+      const { trackId } = req.body as TrackIdBody;
 
-      await UserService.selectTrackService(res.locals.user, trackId);
+      await UserService.selectTrack({user: res.locals.user, trackId});
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -74,7 +70,7 @@ export class UserController {
     try {
       const { trackId } = req.body;
 
-      await UserService.quitTrackService(res.locals.user, trackId);
+      await UserService.quitTrack({user: res.locals.user, trackId});
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -88,9 +84,7 @@ export class UserController {
 
   static async getUserCourses(req: Request, res: Response, next: NextFunction) {
     try {
-      const courses = await UserService.getUserCoursesService(
-        res.locals.user.id
-      );
+      const courses = await UserService.getUserCourses({userId: res.locals.user.id});
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -104,9 +98,9 @@ export class UserController {
 
   static async joinCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId } = req.body;
+      const { courseId } = req.body as CourseIdBody;
 
-      await UserService.joinCourseService(res.locals.user, courseId);
+      await UserService.joinCourse(res.locals.user, courseId);
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -120,9 +114,9 @@ export class UserController {
 
   static async quitCourse(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId } = req.body;
+      const { courseId } = req.body as CourseIdBody;
 
-      await UserService.quitCourseService(res.locals.user, courseId);
+      await UserService.quitCourse(res.locals.user, courseId);
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -134,23 +128,14 @@ export class UserController {
     }
   }
 
-  static async getUserStaffRequests(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async getUserStaffRequests(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, search } = req.query as {
         status?: Status;
         search?: string;
       };
 
-      const requests =
-        await UserService.getUserStaffRequestsService(
-          res.locals.user,
-          status,
-          search
-        );
+      const requests = await UserService.getUserStaffRequests({user: res.locals.user, status, search});
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -162,23 +147,14 @@ export class UserController {
     }
   }
 
-  static async getUserStudentRequests(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async getUserStudentRequests(req: Request, res: Response, next: NextFunction) {
     try {
       const { status, search } = req.query as {
         status?: Status;
         search?: string;
       };
 
-      const requests =
-        await UserService.getUserStudentRequestsService(
-          res.locals.user,
-          status,
-          search
-        );
+      const requests = await UserService.getUserStudentRequests(res.locals.user, status, search);
 
       return res.status(200).json({
         status: HttpStatusText.SUCCESS,

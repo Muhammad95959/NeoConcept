@@ -3,6 +3,7 @@ import * as authController from "../auth/auth.controller";
 import { Role } from "../../generated/prisma";
 import * as tracksController from "./tracks.controller";
 import { protect } from "../../middlewares/protect";
+import { restrict } from "../../middlewares/restrict";
 
 const router = express.Router();
 

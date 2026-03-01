@@ -6,6 +6,7 @@ import { AuthService } from "./auth.service";
 import { HttpStatusText } from "../../types/HTTPStatusText";
 import {
   ConfirmEmailInput,
+  ForgotPasswordInput,
   LoginInput,
   MobileGoogleAuthInput,
   MobileGoogleAuthQuery,
@@ -17,7 +18,7 @@ import {
 export class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
     try {
-      const { confirmEmailToken, isDev } = await AuthService.signupService(req.body);
+      const { confirmEmailToken, isDev } = await AuthService.signup(req.body);
 
       if (!isDev) {
         await sendConfirmationEmail(req.body.email, confirmEmailToken, req);
@@ -38,7 +39,7 @@ export class AuthController {
   static async confirmEmail(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.validated!.params as ConfirmEmailInput;
-      const html = await AuthService.confirmEmailService(token);
+      const html = await AuthService.confirmEmail({ token });
 
       res.status(200).send(html);
     } catch (err: any) {
@@ -52,7 +53,7 @@ export class AuthController {
     try {
       const { email } = req.validated!.body as ResendConfirmationEmailInput;
 
-      await AuthService.resendConfirmationEmailService(email);
+      await AuthService.resendConfirmationEmail({email});
 
       res.status(201).json({
         status: HttpStatusText.SUCCESS,
@@ -68,7 +69,7 @@ export class AuthController {
     try {
       const data = req.validated!.body as LoginInput;
 
-      const { token, user } = await AuthService.loginService(data);
+      const { token, user } = await AuthService.login(data);
 
       res.cookie("jwt", token, {
         httpOnly: true,
@@ -89,9 +90,9 @@ export class AuthController {
 
   static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.body;
+      const { email } = req.body as ForgotPasswordInput;
 
-      const result = await AuthService.forgotPasswordService(email);
+      const result = await AuthService.forgotPassword({email});
 
       res.status(201).json({
         status: HttpStatusText.SUCCESS,
@@ -107,7 +108,7 @@ export class AuthController {
     try {
       const { email, otp } = req.validated!.body as VerifyOTPInput;
 
-      const result = await AuthService.verifyOTPService(email, otp);
+      const result = await AuthService.verifyOTP({email, otp});
 
       res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -122,7 +123,7 @@ export class AuthController {
     try {
       const { email, otp, newPassword } = req.validated!.body as ResetPasswordInput;
 
-      const result = await AuthService.resetPasswordService(email, otp, newPassword);
+      const result = await AuthService.resetPassword({ email, otp, newPassword });
 
       res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -153,7 +154,7 @@ export class AuthController {
       const body = req.validated?.body as MobileGoogleAuthInput;
       const query = req.validated?.query as MobileGoogleAuthQuery;
 
-      const { token, user } = await AuthService.mobileGoogleAuthService(body, query);
+      const { token, user } = await AuthService.mobileGoogleAuth(body, query);
 
       res.status(200).json({
         status: HttpStatusText.SUCCESS,
@@ -165,5 +166,4 @@ export class AuthController {
       next(err);
     }
   }
-
 }

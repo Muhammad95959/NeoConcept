@@ -4,9 +4,11 @@ import CustomError from "../../types/customError";
 import { HttpStatusText } from "../../types/HTTPStatusText";
 import { Role, Status } from "../../generated/prisma";
 import prisma from "../../config/db";
+import { GetUserCoursesInput, TracksServicesInput, UpdateUserInputService } from "./user.type";
 
-export class UserService  {
-  static async updateUser(userId: string, username?: string, password?: string, deletedAt?: Date | null) {
+export class UserService {
+
+  static async updateUser({ userId, username, password, deletedAt }: UpdateUserInputService) {
     if (deletedAt) {
       throw new CustomError("User not found", 404, HttpStatusText.FAIL);
     }
@@ -32,14 +34,16 @@ export class UserService  {
       message: password ? "Password updated. Please log in again." : "User updated successfully",
     };
   }
-  static async deleteUserService(user: any) {
+
+  static async deleteUser(user: any) {
     if (user.deletedAt) {
       throw new CustomError("User not found", 404, HttpStatusText.FAIL);
     }
 
     await UserModel.deleteUserWithRelations(user);
   }
-  static async selectTrackService(user: any, trackId: string) {
+
+  static async selectTrack({ user, trackId }: TracksServicesInput) {
     if (user.role === Role.ADMIN) {
       throw new CustomError("Forbidden", 403, HttpStatusText.FAIL);
     }
@@ -53,7 +57,7 @@ export class UserService  {
     });
   }
 
-  static async quitTrackService(user: any, trackId: string) {
+  static async quitTrack({ user, trackId }: TracksServicesInput) {
     if (user.role === Role.ADMIN) {
       throw new CustomError("Forbidden", 403, HttpStatusText.FAIL);
     }
@@ -70,17 +74,20 @@ export class UserService  {
       }
     });
   }
-  static async getUserCoursesService(userId: string) {
+
+  static async getUserCourses({ userId }: GetUserCoursesInput) {
     return UserModel.getUserCoursesModel(userId);
   }
-  static async getUserStudentRequestsService(user: any, status?: Status, search?: string) {
+
+  static async getUserStudentRequests(user: any, status?: Status, search?: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Only students can have student requests", 403, HttpStatusText.FAIL);
     }
 
     return UserModel.findStudentRequests(user.id, status, search);
   }
-  static async joinCourseService(user: any, courseId: string) {
+
+  static async joinCourse(user: any, courseId: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Forbidden, Only students can join courses", 403, HttpStatusText.FAIL);
     }
@@ -111,7 +118,9 @@ export class UserService  {
 
     await UserModel.createUserCourse(user.id, courseId, user.role);
   }
-  static async quitCourseService(user: any, courseId: string) {
+
+
+  static async quitCourse(user: any, courseId: string) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Only students can quit courses", 403, HttpStatusText.FAIL);
     }
@@ -122,14 +131,16 @@ export class UserService  {
       throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
     }
   }
-  static async getUserStaffRequestsService(user: any, status?: Status, search?: string) {
+  
+  static async getUserStaffRequests(user: any, status?: Status, search?: string) {
     if (![Role.INSTRUCTOR, Role.ASSISTANT].includes(user.role)) {
       throw new CustomError("Only instructors and assistants can have staff requests", 403, HttpStatusText.FAIL);
     }
 
     return UserModel.findStaffRequests(user.id, status, search);
   }
-  static async getUserTracksService(user: any) {
+
+  static async getUserTracks(user: any) {
     const [tracks, userCourses] = await Promise.all([
       UserModel.findUserTracks(user.id),
       UserModel.findUserCoursesUserTrackRequest(user.id),
@@ -161,4 +172,4 @@ export class UserService  {
 
     return formattedTracks;
   }
-};
+}
