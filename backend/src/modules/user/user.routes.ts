@@ -42,14 +42,14 @@ router.patch(
 router.get(
   "/staff-requests",
   protect,
-  validate({ body: UserValidationSchemas.getUserStaffRequests }),
+  validate({ query: UserValidationSchemas.getUserStaffRequests }),
   UserController.getUserStaffRequests,
 );
 
 router.get(
   "/student-requests",
   protect,
-  validate({ body: UserValidationSchemas.getUserStudentRequests }),
+  validate({ query: UserValidationSchemas.getUserStudentRequests }),
   UserController.getUserStudentRequests,
 );
 

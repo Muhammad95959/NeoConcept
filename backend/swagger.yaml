@@ -95,6 +95,43 @@ paths:
           description: Please confirm your email first
         "500":
           description: Something went wrong
+
+  /auth/confirm-email/{token}:
+    get:
+      tags:
+        - Auth
+      summary: Confirm user email
+      description: |
+        Verifies the user's email address using a confirmation token sent via email.
+        If the token is valid, the user's email will be marked as confirmed and a success HTML page will be returned.
+        Otherwise, a failure HTML page will be returned.
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Email confirmation token sent to the user's email
+          example: 3f5e9b7c1d2a4e6f8g9h0i1j2k3l4m5n
+      responses:
+        "200":
+          description: Email confirmed successfully (HTML page)
+          content:
+            text/html:
+              schema:
+                type: string
+                example: "<html><body><h1>Email Verified Successfully</h1></body></html>"
+
+        "400":
+          description: Invalid or expired token (HTML page)
+          content:
+            text/html:
+              schema:
+                type: string
+                example: "<html><body><h1>Invalid or Expired Token</h1></body></html>"
+
+        "500":
+          description: Internal server error
   /auth/logout:
     get:
       tags:
@@ -489,7 +526,7 @@ paths:
           description: Only instructors and assistants can have staff requests
         "500":
           description: Something went wrong
-  /user/stuedent-requests:
+  /user/student-requests:
     get:
       tags:
         - User

@@ -49,3 +49,9 @@ app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
 app.use(errorHandler);
 
 export default app;
+// {
+//   "username": "Clementine",
+  // "email": "clem@test.com",
+  // "password": "clem1234%$",
+//   "role": "ADMIN"
+// }

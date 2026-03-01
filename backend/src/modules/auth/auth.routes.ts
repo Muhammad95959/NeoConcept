@@ -43,8 +43,8 @@ router.patch("/reset-password", validate({ body: AuthValidationSchemas.resetPass
 router.post(
   "/google/mobile",
   validate({
-    body: AuthValidationSchemas.mobileGoogleAuth.shape.body,
-    query: AuthValidationSchemas.mobileGoogleAuth.shape.query,
+    body: AuthValidationSchemas.mobileGoogleAuthBody,
+    query: AuthValidationSchemas.mobileGoogleAuthQuery,
   }),
   AuthController.mobileGoogleAuth,
 );

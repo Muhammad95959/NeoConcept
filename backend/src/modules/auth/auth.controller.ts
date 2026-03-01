@@ -68,7 +68,6 @@ export class AuthController {
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
       const data = req.validated!.body as LoginInput;
-
       const { token, user } = await AuthService.login(data);
 
       res.cookie("jwt", token, {

@@ -30,10 +30,8 @@ export class AuthValidationSchemas {
   });
 
   static login = z.object({
-    body: z.object({
       email: z.string().email("Invalid email").toLowerCase(),
       password: z.string().min(1, "Password is required"),
-    }),
   });
 
   static forgotPassword = z.object({
@@ -41,10 +39,8 @@ export class AuthValidationSchemas {
   });
 
   static verifyOTP = z.object({
-    body: z.object({
       email: z.string().email(),
       otp: z.string().length(6),
-    }),
   });
 
   static resetPassword = z.object({
@@ -53,22 +49,21 @@ export class AuthValidationSchemas {
     newPassword: z.string().min(6, "Password must be at least 6 characters"),
   });
 
-  static mobileGoogleAuth = z.object({
-    body: z.object({
-      idToken: z.string().nonempty("idToken is required"),
-    }),
-    query: z.object({
-      role: z.string().optional(),
-    }),
+  static mobileGoogleAuthBody = z.object({
+    idToken: z.string().nonempty("idToken is required"),
+  });
+
+  static mobileGoogleAuthQuery = z.object({
+    role: z.string().optional(),
   });
 }
 
 export type SignupInput = z.infer<typeof AuthValidationSchemas.signup>;
 export type ConfirmEmailInput = z.infer<typeof AuthValidationSchemas.confirmEmail>;
 export type ResendConfirmationEmailInput = z.infer<typeof AuthValidationSchemas.resendConfirmationEmail>;
-export type LoginInput = z.infer<typeof AuthValidationSchemas.login>["body"];
+export type LoginInput = z.infer<typeof AuthValidationSchemas.login>;
 export type ForgotPasswordInput = z.infer<typeof AuthValidationSchemas.forgotPassword>;
-export type VerifyOTPInput = z.infer<typeof AuthValidationSchemas.verifyOTP>["body"];
+export type VerifyOTPInput = z.infer<typeof AuthValidationSchemas.verifyOTP>
 export type ResetPasswordInput = z.infer<typeof AuthValidationSchemas.resetPassword>;
-export type MobileGoogleAuthInput = z.infer<typeof AuthValidationSchemas.mobileGoogleAuth>["body"];
-export type MobileGoogleAuthQuery = z.infer<typeof AuthValidationSchemas.mobileGoogleAuth>["query"];
+export type MobileGoogleAuthInput = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthBody>;
+export type MobileGoogleAuthQuery = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthQuery>;

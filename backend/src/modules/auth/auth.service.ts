@@ -108,6 +108,7 @@ export class AuthService {
       throw new CustomError("Invalid credentials", 400, HttpStatusText.FAIL);
     }
 
+    console.log(user);
     if (!user.emailConfirmed) {
       throw new CustomError("Please confirm your email first", 403, HttpStatusText.FAIL);
     }

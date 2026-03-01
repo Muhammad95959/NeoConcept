@@ -4,10 +4,15 @@ import CustomError from "../../types/customError";
 import { HttpStatusText } from "../../types/HTTPStatusText";
 import { Role, Status } from "../../generated/prisma";
 import prisma from "../../config/db";
-import { GetUserCoursesInput, TracksServicesInput, UpdateUserInputService } from "./user.type";
+import {
+  CoursesServicesInput,
+  GetUserCoursesInput,
+  GetUserStaffRequestsInput,
+  TracksServicesInput,
+  UpdateUserInputService,
+} from "./user.type";
 
 export class UserService {
-
   static async updateUser({ userId, username, password, deletedAt }: UpdateUserInputService) {
     if (deletedAt) {
       throw new CustomError("User not found", 404, HttpStatusText.FAIL);
@@ -87,7 +92,7 @@ export class UserService {
     return UserModel.findStudentRequests(user.id, status, search);
   }
 
-  static async joinCourse(user: any, courseId: string) {
+  static async joinCourse({ user, courseId }: CoursesServicesInput) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Forbidden, Only students can join courses", 403, HttpStatusText.FAIL);
     }
@@ -119,8 +124,7 @@ export class UserService {
     await UserModel.createUserCourse(user.id, courseId, user.role);
   }
 
-
-  static async quitCourse(user: any, courseId: string) {
+  static async quitCourse({ user, courseId }: CoursesServicesInput) {
     if (user.role !== Role.STUDENT) {
       throw new CustomError("Only students can quit courses", 403, HttpStatusText.FAIL);
     }
@@ -131,8 +135,8 @@ export class UserService {
       throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
     }
   }
-  
-  static async getUserStaffRequests(user: any, status?: Status, search?: string) {
+
+  static async getUserStaffRequests({ user, status, search }: GetUserStaffRequestsInput) {
     if (![Role.INSTRUCTOR, Role.ASSISTANT].includes(user.role)) {
       throw new CustomError("Only instructors and assistants can have staff requests", 403, HttpStatusText.FAIL);
     }
