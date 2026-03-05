@@ -56,7 +56,7 @@ export class UserService {
     const track = await UserModel.findTrackById(trackId);
     if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
 
-    await prisma.$transaction(async (tx) => {
+    await UserModel.transaction(async (tx: any) => {
       await UserModel.upsertUserTrack(tx, user.id, trackId);
       await UserModel.updateUserCurrentTrack(tx, user.id, trackId);
     });
@@ -67,7 +67,7 @@ export class UserService {
       throw new CustomError("Forbidden", 403, HttpStatusText.FAIL);
     }
 
-    await prisma.$transaction(async (tx) => {
+    await UserModel.transaction(async (tx: any) => {
       const { count } = await UserModel.deleteUserTrack(tx, user.id, trackId);
 
       if (count === 0) {

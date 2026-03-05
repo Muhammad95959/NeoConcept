@@ -1,9 +1,9 @@
 import prisma from "../../config/db";
 import CustomError from "../../types/customError";
 import { HttpStatusText } from "../../types/HTTPStatusText";
-import { PostModel } from "./posts.model";
-import { CreatePostInputService, DeletePostInput, GetPostsInput, UpdatePostInputService } from "./posts.type";
-import { PostIdParam } from "./posts.validation";
+import { PostModel } from "./post.model";
+import { CreatePostInputService, DeletePostInput, GetPostsInput, UpdatePostInputService } from "./post.type";
+import { PostIdParam } from "./post.validation";
 
 export class PostService {
   static async getPosts({ courseId, search }: GetPostsInput) {

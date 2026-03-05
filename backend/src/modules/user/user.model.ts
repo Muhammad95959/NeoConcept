@@ -193,11 +193,7 @@ export class UserModel {
     });
   }
 
-  static updateUserCurrentTrack(
-    tx: any,
-    userId: string,
-    trackId: string | null
-  ) {
+  static updateUserCurrentTrack(tx: any, userId: string, trackId: string | null) {
     return tx.user.update({
       where: { id: userId },
       data: { currentTrackId: trackId },
@@ -255,5 +251,8 @@ export class UserModel {
         }
       }
     });
+  }
+  static transaction(callback: any) {
+    return prisma.$transaction(callback);
   }
 }

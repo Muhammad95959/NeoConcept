@@ -38,7 +38,7 @@ export class AuthController {
 
   static async confirmEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token } = req.validated!.params as ConfirmEmailInput;
+      const { token } = res.locals.params as ConfirmEmailInput;
       const html = await AuthService.confirmEmail({ token });
 
       res.status(200).send(html);
@@ -51,7 +51,7 @@ export class AuthController {
 
   static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.validated!.body as ResendConfirmationEmailInput;
+      const { email } = res.locals.body as ResendConfirmationEmailInput;
 
       await AuthService.resendConfirmationEmail({email});
 
@@ -67,7 +67,7 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = req.validated!.body as LoginInput;
+      const data = res.locals.body as LoginInput;
       const { token, user } = await AuthService.login(data);
 
       res.cookie("jwt", token, {
@@ -105,7 +105,7 @@ export class AuthController {
 
   static async verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, otp } = req.validated!.body as VerifyOTPInput;
+      const { email, otp } = res.locals.body as VerifyOTPInput;
 
       const result = await AuthService.verifyOTP({email, otp});
 
@@ -120,7 +120,7 @@ export class AuthController {
 
   static async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, otp, newPassword } = req.validated!.body as ResetPasswordInput;
+      const { email, otp, newPassword } = res.locals.body as ResetPasswordInput;
 
       const result = await AuthService.resetPassword({ email, otp, newPassword });
 
@@ -150,8 +150,8 @@ export class AuthController {
 
   static async mobileGoogleAuth(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = req.validated?.body as MobileGoogleAuthInput;
-      const query = req.validated?.query as MobileGoogleAuthQuery;
+      const body = res.locals.body as MobileGoogleAuthInput;
+      const query = res.locals.query as MobileGoogleAuthQuery;
 
       const { token, user } = await AuthService.mobileGoogleAuth(body, query);
 

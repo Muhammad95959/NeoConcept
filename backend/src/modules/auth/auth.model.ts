@@ -7,6 +7,7 @@ export class AuthModel {
       where: { email, deletedAt: null },
     });
   }
+
   static async createUser(data: {
     email: string;
     username: string;
@@ -18,6 +19,7 @@ export class AuthModel {
   }) {
     return prisma.user.create({ data });
   }
+
   static async findUserByConfirmToken(tokenHash: string) {
     return prisma.user.findFirst({
       where: {
@@ -26,6 +28,7 @@ export class AuthModel {
       },
     });
   }
+
   static async confirmUserEmail(userId: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -36,12 +39,14 @@ export class AuthModel {
       },
     });
   }
+
   static async updateConfirmationToken(userId: string, tokenHash: string, expires: Date) {
     return prisma.user.update({
       where: { id: userId },
       data: { confirmEmailToken: tokenHash, confirmEmailExpires: expires },
     });
   }
+
   static async updateResetPasswordOTP(userId: string, otpHash: string, expires: Date) {
     return prisma.user.update({
       where: { id: userId },
@@ -52,6 +57,7 @@ export class AuthModel {
       },
     });
   }
+
   static async incrementOtpAttempts(userId: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -60,6 +66,7 @@ export class AuthModel {
       },
     });
   }
+
   static async resetOtpAttempts(userId: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -68,6 +75,7 @@ export class AuthModel {
       },
     });
   }
+
   static async clearResetOTP(userId: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -77,6 +85,7 @@ export class AuthModel {
       },
     });
   }
+
   static async updateUserPassword(userId: string, hashedPassword: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -86,20 +95,27 @@ export class AuthModel {
       },
     });
   }
+
   static async findUserById(id: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { id } });
   }
+
   static async createUserWithGoogle(email: string, username: string, googleId: string, role: Role) {
     return prisma.user.create({
       data: { email, username, googleId, emailConfirmed: true, role },
       include: { currentTrack: { include: { courses: true } } },
     });
   }
+
   static async updateUserGoogleId(userId: string, googleId: string) {
     return prisma.user.update({
       where: { id: userId },
       data: { googleId, emailConfirmed: true },
       include: { currentTrack: { include: { courses: true } } },
     });
+  }
+
+  static transaction(callback: any) {
+    return prisma.$transaction(callback);
   }
 }

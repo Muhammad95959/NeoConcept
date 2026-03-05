@@ -8,14 +8,14 @@ import passport from "passport";
 import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
 import "./config/passport";
-import authRouter from "./modules/auth/auth.routes";
-import coursessRouter from "./modules/courses/courses.routes";
-import postsRouter from "./modules/posts/posts.routes";
+import authRouter from "./modules/auth/auth.route";
+import coursessRouter from "./modules/courses/course.route";
+import postsRouter from "./modules/posts/post.routes";
 import resourcesRouter from "./modules/resources/resources.routes";
 import staffRequestsRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestsRouter from "./modules/studentRequests/studentRequests.routes";
 import tracksRouter from "./modules/tracks/tracks.routes";
-import userRouter from "./modules/user/user.routes";
+import userRouter from "./modules/user/user.route";
 import {errorHandler} from "./utils/errorHandler"; 
 const app = express();
 

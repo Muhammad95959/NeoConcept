@@ -6,8 +6,8 @@ import verifyCourseMember from "../../middlewares/verifyCourseMember";
 import verifyPostOwner from "../../middlewares/verifyPostOwner";
 import { validate } from "../../middlewares/validate";
 import { protect } from "../../middlewares/protect";
-import { PostValidationSchemas } from "./posts.validation";
-import { PostsController } from "./posts.controller";
+import { PostValidationSchemas } from "./post.validation";
+import { PostsController } from "./post.controller";
 import { restrict } from "../../middlewares/restrict";
 
 const router = express.Router({ mergeParams: true });

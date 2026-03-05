@@ -20,4 +20,5 @@ export class PostModel {
   static async delete(id: string) {
     return prisma.post.delete({ where: { id } });
   }
+
 }
