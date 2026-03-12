@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema } from "zod";
+import { HttpStatusText } from "../types/HTTPStatusText";
 
 export const validate =
   (schema: {
@@ -17,7 +18,7 @@ export const validate =
     } catch (err: any) {
       console.log(err);
       return res.status(400).json({
-        status: "fail",
+        status: HttpStatusText.FAIL,
         message: err.errors?.[0]?.message || "Validation error",
       });
     }

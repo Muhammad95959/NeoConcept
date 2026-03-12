@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../config/db";
+import { HttpStatusText } from "../types/HTTPStatusText";
 
 export default async function verifyCourseMember(req: Request, res: Response, next: Function) {
   const { courseId } = req.params as { courseId: string };
@@ -7,10 +8,10 @@ export default async function verifyCourseMember(req: Request, res: Response, ne
     const membership = await prisma.userCourse.findUnique({
       where: { userId_courseId: { userId: res.locals.user.id, courseId } },
     });
-    if (!membership) return res.status(403).json({ status: "fail", message: "You are not a member of this course" });
+    if (!membership) return res.status(403).json({ status: HttpStatusText.FAIL, message: "You are not a member of this course" });
     next();
   } catch (err) {
     console.log((err as Error).message);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+    res.status(500).json({ status: HttpStatusText.FAIL, message: "Something went wrong" });
   }
 }

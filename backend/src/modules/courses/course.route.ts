@@ -28,8 +28,20 @@ router.patch(
   CourseController.update,
 );
 
-router.put("/:id/staff", protect, restrict(Role.ADMIN), CourseController.updateStaff);
+router.put(
+  "/:id/staff",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ body: CourseValidationSchemas.updateStaffBody, params: CourseValidationSchemas.updateStaffParams }),
+  CourseController.updateStaff,
+);
 
-router.delete("/:id", protect, restrict(Role.ADMIN), CourseController.delete);
+router.delete(
+  "/:id",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: CourseValidationSchemas.delete }),
+  CourseController.delete,
+);
 
 export default router;

@@ -1,9 +1,10 @@
 import express from "express";
-import * as authController from "../auth/auth.controller";
-import * as studentRequestsController from "./studentRequests.controller";
 import { Role } from "../../generated/prisma";
 import { protect } from "../../middlewares/protect";
 import { restrict } from "../../middlewares/restrict";
+import { validate } from "../../middlewares/validate";
+import { StudentRequestController } from "./studentRequests.controller";
+import { StudentRequestValidationSchemas } from "./studentRequests.validation";
 
 const router = express.Router();
 
@@ -11,35 +12,40 @@ router.get(
   "/",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  studentRequestsController.getCourseStudentRequests,
+  validate({ query: StudentRequestValidationSchemas.getCourseStudentRequestsQuery }),
+  StudentRequestController.getCourseStudentRequests,
 );
 
 router.get(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  studentRequestsController.getCourseStudentRequestById,
+  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams }),
+  StudentRequestController.getCourseStudentRequestById,
 );
 
 router.post(
   "/",
   protect,
   restrict(Role.STUDENT),
-  studentRequestsController.createStudentRequest,
+  validate({ body: StudentRequestValidationSchemas.createStudentRequestBody }),
+  StudentRequestController.createStudentRequest,
 );
 
 router.patch(
   "/:id/answer",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  studentRequestsController.answerStudentRequest,
+  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams, body: StudentRequestValidationSchemas.answerStudentRequestBody }),
+  StudentRequestController.answerStudentRequest,
 );
 
 router.delete(
   "/:id",
   protect,
   restrict(Role.STUDENT),
-  studentRequestsController.deleteStudentRequest,
+  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams }),
+  StudentRequestController.deleteStudentRequest,
 );
 
 export default router;

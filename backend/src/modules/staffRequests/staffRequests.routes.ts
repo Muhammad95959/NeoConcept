@@ -1,47 +1,58 @@
 import express from "express";
 import { Role } from "../../generated/prisma";
-import * as authController from "../auth/auth.controller";
-import * as staffRequestsController from "./staffRequests.controller";
 import { protect } from "../../middlewares/protect";
 import { restrict } from "../../middlewares/restrict";
+import { validate } from "../../middlewares/validate";
+import { StaffRequestController } from "./staffRequests.controller";
+import { StaffRequestValidationSchemas } from "./staffRequests.validation";
 
 const router = express.Router();
 
-router.get("/", protect, restrict(Role.ADMIN), staffRequestsController.getStaffRequests);
+router.get(
+  "/",
+  protect,
+  restrict(Role.ADMIN),
+  StaffRequestController.getMany,
+);
 
 router.get(
   "/:id",
   protect,
   restrict(Role.ADMIN),
-  staffRequestsController.getStaffRequestById,
+  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  StaffRequestController.get,
 );
 
 router.post(
   "/",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.createStaffRequest,
+  validate({ body: StaffRequestValidationSchemas.createBody }),
+  StaffRequestController.create,
 );
 
 router.patch(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.updateStaffRequest,
+  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.updateBody }),
+  StaffRequestController.update,
 );
 
 router.patch(
   "/:id/answer",
   protect,
   restrict(Role.ADMIN),
-  staffRequestsController.answerStaffRequest,
+  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.answerBody }),
+  StaffRequestController.answer,
 );
 
 router.delete(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.deleteStaffRequest,
+  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  StaffRequestController.delete,
 );
 
 export default router;

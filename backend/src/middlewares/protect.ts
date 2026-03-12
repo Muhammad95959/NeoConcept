@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/verifyToken";
+import { HttpStatusText } from "../types/HTTPStatusText";
 
 export async function protect(req: Request, res: Response, next: NextFunction) {
   try {
@@ -18,7 +19,7 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
   } catch (err: any) {
     console.log(err.message);
     res.status(err.statusCode || 401).json({
-      status: "fail",
+      status: HttpStatusText.FAIL,
       message: err.message || "Unauthorized",
     });
   }

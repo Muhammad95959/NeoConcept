@@ -1,115 +1,67 @@
-import { Request, Response } from "express";
-import prisma from "../../config/db";
-import { Role, Status } from "../../generated/prisma";
+import { Request, Response, NextFunction } from "express";
+import { Status } from "../../generated/prisma";
+import { StudentRequestService } from "./studentRequests.service";
+import { HttpStatusText } from "../../types/HTTPStatusText";
 
-export async function getCourseStudentRequests(req: Request, res: Response) {
-  try {
-    const { courseId, status } = req.query as { courseId?: string; status?: string };
-    if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
-    if (status && !Object.values(Status).includes(status.toUpperCase() as Status))
-      return res.status(400).json({ status: "fail", message: "Invalid status" });
-    const user = res.locals.user;
-    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
-    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    const isStaff = await prisma.userCourse.findFirst({
-      where: { courseId, userId: user.id, roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
-    });
-    if (!isStaff) return res.status(403).json({ status: "fail", message: "You're not a staff member of this course" });
-    const requests = await prisma.studentRequest.findMany({
-      where: { courseId, status: status?.toUpperCase() as Status | undefined },
-    });
-    res.status(200).json({ status: "success", data: requests });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+export class StudentRequestController {
+  static async getCourseStudentRequests(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId, status } = res.locals.query as { courseId: string; status?: string };
+      const statusValue = status ? (status.toUpperCase() as Status) : undefined;
+
+      const data = await StudentRequestService.getMany(res.locals.user.id, courseId, statusValue);
+
+      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+    } catch (err) {
+      next(err);
+    }
   }
-}
 
-export async function getCourseStudentRequestById(req: Request, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
-    const user = res.locals.user;
-    const request = await prisma.studentRequest.findUnique({ where: { id } });
-    if (!request) return res.status(404).json({ status: "fail", message: "Student request not found" });
-    const isStaff = await prisma.userCourse.findFirst({
-      where: { courseId: request.courseId, userId: user.id, roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
-    });
-    if (!isStaff) return res.status(403).json({ status: "fail", message: "You're not a staff member of this course" });
-    res.status(200).json({ status: "success", data: request });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  static async getCourseStudentRequestById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals.params as { id: string };
+
+      const data = await StudentRequestService.getById(res.locals.user.id, id);
+
+      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+    } catch (err) {
+      next(err);
+    }
   }
-}
 
-export async function createStudentRequest(req: Request, res: Response) {
-  try {
-    const { courseId } = req.body as { courseId: string };
-    if (!courseId) return res.status(400).json({ status: "fail", message: "Course id is required" });
-    const user = res.locals.user;
-    const course = await prisma.course.findUnique({ where: { id: courseId, deletedAt: null } });
-    if (!course) return res.status(404).json({ status: "fail", message: "Course not found" });
-    const isEnrolled = await prisma.userCourse.findFirst({ where: { courseId, userId: user.id } });
-    if (isEnrolled) return res.status(400).json({ status: "fail", message: "You're already enrolled in this course" });
-    if (!course.protected)
-      return res
-        .status(400)
-        .json({ status: "fail", message: "This course is not protected, you can join it directly" });
-    const existingRequest = await prisma.studentRequest.findFirst({ where: { courseId, userId: user.id } });
-    if (existingRequest)
-      return res.status(400).json({ status: "fail", message: "You have already submitted a request for this course" });
-    const newRequest = await prisma.studentRequest.create({ data: { courseId, userId: user.id } });
-    res.status(201).json({ status: "success", data: newRequest });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  static async createStudentRequest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { courseId } = res.locals.body as { courseId: string };
+      const data = await StudentRequestService.create(res.locals.user.id, courseId);
+
+      res.status(201).json({ status: HttpStatusText.SUCCESS, data });
+    } catch (err) {
+      next(err);
+    }
   }
-}
 
-export async function answerStudentRequest(req: Request, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
-    const { status } = req.body;
-    const user = res.locals.user;
-    if (status !== Status.APPROVED && status !== Status.REJECTED)
-      return res.status(400).json({ status: "fail", message: "Invalid status" });
-    const request = await prisma.studentRequest.findUnique({ where: { id } });
-    if (!request) return res.status(404).json({ status: "fail", message: "Request not found" });
-    if (request.status !== Status.PENDING)
-      return res.status(400).json({ status: "fail", message: "Request already answered" });
-    const isStaff = await prisma.userCourse.findFirst({
-      where: { courseId: request.courseId, userId: user.id, roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] } },
-    });
-    if (!isStaff) return res.status(403).json({ status: "fail", message: "You're not a staff member of this course" });
-    await prisma.$transaction(async (tx) => {
-      await tx.studentRequest.update({ where: { id }, data: { status } });
-      if (status === Status.APPROVED) {
-        await tx.userCourse.create({
-          data: { userId: request.userId, courseId: request.courseId, roleInCourse: Role.STUDENT },
-        });
-      }
-    });
-    res.status(200).json({ status: "success", message: `Request ${status.toLowerCase()} successfully` });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  static async answerStudentRequest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals.params as { id: string };
+      const { status } = res.locals.body as { status: Status };
+
+      const message = await StudentRequestService.answer(res.locals.user.id, id, status);
+
+      res.status(200).json({ status: HttpStatusText.SUCCESS, message });
+    } catch (err) {
+      next(err);
+    }
   }
-}
 
-export async function deleteStudentRequest(req: Request, res: Response) {
-  try {
-    const { id } = req.params as { id: string };
-    const user = res.locals.user;
-    const request = await prisma.studentRequest.findUnique({ where: { id } });
-    if (!request) return res.status(404).json({ status: "fail", message: "Request not found" });
-    if (request.userId !== user.id)
-      return res.status(403).json({ status: "fail", message: "You can only delete your own requests" });
-    if (request.status !== Status.PENDING)
-      return res.status(400).json({ status: "fail", message: "Only pending requests can be deleted" });
-    await prisma.studentRequest.delete({ where: { id } });
-    res.status(200).json({ status: "success", message: "Request deleted successfully" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "fail", message: "Something went wrong" });
+  static async deleteStudentRequest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals.params as { id: string };
+
+      await StudentRequestService.delete(res.locals.user.id, id);
+
+      res.status(200).json({ status: HttpStatusText.SUCCESS, message: "Request deleted successfully" });
+    } catch (err) {
+      next(err);
+    }
   }
 }

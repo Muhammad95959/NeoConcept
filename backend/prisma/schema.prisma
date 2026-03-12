@@ -32,6 +32,8 @@ model User {
   courseUsers          UserCourse[]
   userTracks           UserTrack[]
   currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
+  participants         Participant[]
+  hostedMeetings      Meeting[]        @relation("MeetingHost")
 
   @@map("users")
 }
@@ -166,4 +168,42 @@ enum Status {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum ParticipantRole {
+  HOST
+  PARTICIPANT
+}
+
+model Meeting {
+  id          String          @id @default(uuid())
+  title       String
+  channelName String
+  status      MeetingStatus   @default(SCHEDULED)
+  scheduledAt DateTime?
+  createdAt   DateTime        @default(now())
+  hostId      String
+  host        User            @relation("MeetingHost", fields: [hostId], references: [id])
+  participants Participant[]
+
+  @@map("meetings")
+}
+
+model Participant {
+  userId    String
+  meetingId String
+  role      ParticipantRole  @default(PARTICIPANT)
+  joinedAt  DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id])
+  meeting   Meeting          @relation(fields: [meetingId], references: [id])
+
+  @@id([userId, meetingId])
+  @@map("participants")
 }
