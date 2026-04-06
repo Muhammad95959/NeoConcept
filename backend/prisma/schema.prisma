@@ -71,21 +71,33 @@ model UserTrack {
 }
 
 model Course {
-  id              String           @id @default(uuid())
+  id              String               @id @default(uuid())
   name            String
   description     String?
-  protected       Boolean          @default(true)
-  createdAt       DateTime         @default(now())
+  protected       Boolean              @default(true)
+  createdAt       DateTime             @default(now())
   trackId         String
-  track           Track            @relation(fields: [trackId], references: [id])
+  track           Track                @relation(fields: [trackId], references: [id])
   deletedAt       DateTime?
   courseUsers     UserCourse[]
   Resources       Resource[]
   Post            Post[]
   staffRequests   StaffRequest[]
   studentRequests StudentRequest[]
+  prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
+  requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
 
   @@map("courses")
+}
+
+model CoursePrerequisite {
+  courseId       String
+  prerequisiteId String
+  course         Course @relation("CourseToPrerequisite", fields: [courseId], references: [id])
+  prerequisite   Course @relation("PrerequisiteToCourse", fields: [prerequisiteId], references: [id])
+
+  @@id([courseId, prerequisiteId])
+  @@map("course_prerequisites")
 }
 
 model UserCourse {

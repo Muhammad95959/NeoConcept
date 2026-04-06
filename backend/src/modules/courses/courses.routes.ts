@@ -13,7 +13,19 @@ router.post("/", authController.protect, authController.restrict(Role.ADMIN), co
 
 router.patch("/:id", authController.protect, authController.restrict(Role.ADMIN), coursesController.updateCourse);
 
-router.put("/:id/staff", authController.protect, authController.restrict(Role.ADMIN), coursesController.updateCourseStaff);
+router.put(
+  "/:id/prerequisites",
+  authController.protect,
+  authController.restrict(Role.ADMIN),
+  coursesController.updateCoursePrerequisites,
+);
+
+router.put(
+  "/:id/staff",
+  authController.protect,
+  authController.restrict(Role.ADMIN),
+  coursesController.updateCourseStaff,
+);
 
 router.delete("/:id", authController.protect, authController.restrict(Role.ADMIN), coursesController.deleteCourse);
 
