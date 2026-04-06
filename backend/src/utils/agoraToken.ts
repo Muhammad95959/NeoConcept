@@ -1,4 +1,6 @@
 import CustomError from "../types/customError";
+import { ErrorMessages } from "../types/errorsMessages";
+import { HTTPStatusText } from "../types/HTTPStatusText";
 
 const APP_ID = process.env.AGORA_APP_ID!;
 const APP_CERTIFICATE = process.env.AGORA_APP_CERT!;
@@ -8,7 +10,7 @@ import { RtcTokenBuilder, Role } from "./agora/rtcTokenBuilder2";
 export function generateAgoraToken(channelName: string, uid: string) {
   if (!APP_ID || !APP_CERTIFICATE) {
     throw new CustomError(
-      "Agora APP_ID or APP_CERTIFICATE is missing",
+      ErrorMessages.AGORA_APP_ID_OR_CERTIFICATE_MISSING,
       400,
       HTTPStatusText.FAIL,
     );

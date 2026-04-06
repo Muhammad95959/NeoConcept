@@ -1,7 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
-import { CourseIdBody, GetUserStaffRequestsQuery, GetUserStudentRequestsQuery, TrackIdBody, UpdateUserInput } from "./user.validation";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import {
+  CourseIdBody,
+  GetUserStaffRequestsQuery,
+  GetUserStudentRequestsQuery,
+  TrackIdBody,
+  UpdateUserInput,
+} from "./user.validation";
+import { SuccessMessages } from "../../types/successMessages";
 
 export class UserController {
   static async updateUser(req: Request, res: Response, next: NextFunction) {
@@ -12,7 +19,7 @@ export class UserController {
       const result = await UserService.updateUser({ userId: user.id, username, password, deletedAt: user.deletedAt });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         message: result.message,
       });
     } catch (err) {
@@ -26,8 +33,8 @@ export class UserController {
       await UserService.deleteUser(res.locals.user);
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "User deleted successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.USER_DELETED,
       });
     } catch (err) {
       console.log(err);
@@ -40,7 +47,7 @@ export class UserController {
       const tracks = await UserService.getUserTracks(res.locals.user);
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         data: tracks,
       });
     } catch (err) {
@@ -56,8 +63,8 @@ export class UserController {
       await UserService.selectTrack({ user: res.locals.user, trackId });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "Selected track successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.TRACK_SELECTED,
       });
     } catch (err) {
       console.log(err);
@@ -72,8 +79,8 @@ export class UserController {
       await UserService.quitTrack({ user: res.locals.user, trackId });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "Quitted track successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.TRACK_QUITTED,
       });
     } catch (err) {
       console.log(err);
@@ -86,7 +93,7 @@ export class UserController {
       const courses = await UserService.getUserCourses({ userId: res.locals.user.id });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         data: courses,
       });
     } catch (err) {
@@ -102,8 +109,8 @@ export class UserController {
       await UserService.joinCourse({ user: res.locals.user, courseId });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "Joined course successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.COURSE_JOINED,
       });
     } catch (err) {
       console.log(err);
@@ -118,8 +125,8 @@ export class UserController {
       await UserService.quitCourse({ user: res.locals.user, courseId });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "Quitted course successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.COURSE_QUITTED,
       });
     } catch (err) {
       console.log(err);
@@ -134,7 +141,7 @@ export class UserController {
       const requests = await UserService.getUserStaffRequests({ user: res.locals.user, status, search });
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         data: requests,
       });
     } catch (err) {
@@ -150,7 +157,7 @@ export class UserController {
       const requests = await UserService.getUserStudentRequests(res.locals.user, status, search);
 
       return res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         data: requests,
       });
     } catch (err) {

@@ -7,8 +7,18 @@ import { validate } from "../../middlewares/validate";
 import { protect } from "../../middlewares/protect";
 import { AuthValidationSchemas } from "./auth.validation";
 import { AuthController } from "./auth.controller";
+import { Constants } from "../../types/constants";
 
 const router = express.Router();
+const getFrontendOrigin = () => {
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:9595";
+
+  if (frontendUrl.endsWith(":")) {
+    return `${frontendUrl}9595`;
+  }
+
+  return frontendUrl;
+};
 
 router.get("/", protect, AuthController.authorize);
 
@@ -75,8 +85,12 @@ router.get(
   }),
   (req, res) => {
     const token = signToken((req.user as User).id);
-    res.cookie("jwt", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-    res.redirect(process.env.FRONTEND_URL + "/login/success");
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === Constants.PRODUCTION,
+      sameSite: process.env.NODE_ENV === Constants.PRODUCTION ? "none" : "lax",
+    });
+    res.redirect(new URL("/login/success", getFrontendOrigin()).toString());
   },
 );
 

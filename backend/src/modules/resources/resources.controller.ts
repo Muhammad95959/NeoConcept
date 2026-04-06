@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ResourceService } from "./resource.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { SuccessMessages } from "../../types/successMessages";
 
 export class ResourceController {
   static async getMany(req: Request, res: Response, next: NextFunction) {
@@ -8,7 +9,7 @@ export class ResourceController {
       const { courseId } = res.locals.params;
       const data = await ResourceService.getResources(courseId);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -19,7 +20,7 @@ export class ResourceController {
       const { courseId, id } = res.locals.params;
       const data = await ResourceService.getResourceById(courseId, id);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -37,7 +38,7 @@ export class ResourceController {
         userId
       );
 
-      res.status(201).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -68,8 +69,8 @@ export class ResourceController {
       await ResourceService.deleteResource(courseId, id);
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
-        message: "Resource deleted successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.RESOURCE_DELETED,
       });
     } catch (err) {
       next(err);

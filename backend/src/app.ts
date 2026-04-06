@@ -51,7 +51,31 @@ app.use(errorHandler);
 export default app;
 // {
 //   "username": "Clementine",
-  // "email": "clem@test.com",
+  // "email": "amer.live477@gmail.com",
+  // "password": "newPassword@",
+//   "role": "ADMIN"
+// }
+
+// {
+//   "username": "Lee",
+  // "email": "amrsouriya477@gmail.com",
   // "password": "clem1234%$",
 //   "role": "ADMIN"
+// }
+
+// {
+//   "username": "Lee",
+//   "email": "amrsouriya477@gmail.com",
+//   "password": "clem1234%$",
+//   "role": "ADMIN"
+// }
+
+// {
+//   "name": "test course",
+//   "description": "test description",
+//   "trackId": "83f00ecd-3053-44c9-b453-296635346c27",
+//   "instructorIds": [
+//     "46d2d81d-d735-4685-ae8b-546028a108fd"
+//   ],
+//   "assistantIds": []
 // }

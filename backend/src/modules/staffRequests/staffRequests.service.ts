@@ -1,6 +1,7 @@
 import { Status } from "../../generated/prisma";
 import CustomError from "../../types/customError";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { ErrorMessages } from "../../types/errorsMessages";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { StaffRequestModel } from "./staffRequests.model";
 
 export class StaffRequestService {
@@ -12,7 +13,7 @@ export class StaffRequestService {
     const request = await StaffRequestModel.findById(id);
 
     if (!request) {
-      throw new CustomError("Request not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
 
     return request;
@@ -22,16 +23,16 @@ export class StaffRequestService {
     const course = await StaffRequestModel.findCourse(courseId);
 
     if (!course) {
-      throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
 
     const existingRequest = await StaffRequestModel.findPendingRequest(userId, courseId);
 
     if (existingRequest) {
       throw new CustomError(
-        "You already have a pending request for this course",
+        ErrorMessages.YOU_ALREADY_HAVE_A_PENDING_REQUEST_FOR_THIS_COURSE,
         400,
-        HttpStatusText.FAIL
+        HTTPStatusText.FAIL
       );
     }
 
@@ -45,14 +46,14 @@ export class StaffRequestService {
   static async update(id: string, userId: string, message: string) {
     const request = await StaffRequestModel.findById(id);
 
-    if (!request) throw new CustomError("Request not found", 404, HttpStatusText.FAIL);
+    if (!request) throw new CustomError(ErrorMessages.REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (request.userId !== userId) {
-      throw new CustomError("You can only update your own requests", 401);
+      throw new CustomError(ErrorMessages.YOU_CAN_ONLY_UPDATE_YOUR_OWN_REQUESTS, 401, HTTPStatusText.FAIL);
     }
 
     if (request.status !== Status.PENDING) {
-      throw new CustomError("Only pending requests can be updated", 400, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.ONLY_PENDING_REQUESTS_CAN_BE_UPDATED, 400, HTTPStatusText.FAIL);
     }
 
     return StaffRequestModel.update(id, { message });
@@ -61,10 +62,10 @@ export class StaffRequestService {
   static async answer(id: string, status: Status) {
     const request = await StaffRequestModel.findById(id);
 
-    if (!request) throw new CustomError("Request not found", 404, HttpStatusText.FAIL);
+    if (!request) throw new CustomError(ErrorMessages.REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (request.status !== Status.PENDING) {
-      throw new CustomError("Request already answered", 400, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.REQUEST_ALREADY_ANSWERED, 400, HTTPStatusText.FAIL);
     }
 
     await StaffRequestModel.transaction(async (tx: any) => {
@@ -74,11 +75,21 @@ export class StaffRequestService {
       });
 
       if (status === Status.APPROVED) {
-        await tx.userCourse.create({
-          data: {
+        await tx.userCourse.upsert({
+          where: {
+            userId_courseId: {
+              userId: request.userId,
+              courseId: request.courseId,
+            },
+          },
+          create: {
             userId: request.userId,
             courseId: request.courseId,
             roleInCourse: request.user.role,
+          },
+          update: {
+            roleInCourse: request.user.role,
+            deletedAt: null,
           },
         });
       }
@@ -90,14 +101,14 @@ export class StaffRequestService {
   static async delete(id: string, userId: string) {
     const request = await StaffRequestModel.findById(id);
 
-    if (!request) throw new CustomError("Request not found", 404);
+    if (!request) throw new CustomError(ErrorMessages.REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (request.userId !== userId) {
-      throw new CustomError("You can only delete your own requests", 403);
+      throw new CustomError(ErrorMessages.YOU_CAN_ONLY_DELETE_YOUR_OWN_REQUESTS, 403, HTTPStatusText.FAIL);
     }
 
     if (request.status !== Status.PENDING) {
-      throw new CustomError("Only pending requests can be deleted", 400);
+      throw new CustomError(ErrorMessages.ONLY_PENDING_REQUESTS_CAN_BE_DELETED, 400, HTTPStatusText.FAIL);
     }
 
     await StaffRequestModel.delete(id);

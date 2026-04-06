@@ -1,7 +1,7 @@
 import { CourseModel } from "./course.model";
 import { Role } from "../../generated/prisma";
 import CustomError from "../../types/customError";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 
 export class CourseService {
   static async getMany(query: any) {
@@ -16,7 +16,7 @@ export class CourseService {
 
     if (query.track) {
       const track = await CourseModel.findTrackById(query.track);
-      if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+      if (!track) throw new CustomError("Track not found", 404, HTTPStatusText.FAIL);
       where.trackId = query.track;
     }
 
@@ -31,7 +31,7 @@ export class CourseService {
 
   static async get(id: string) {
     const course = await CourseModel.findById(id);
-    if (!course) throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+    if (!course) throw new CustomError("Course not found", 404, HTTPStatusText.FAIL);
 
     return {
       ...course,
@@ -50,23 +50,23 @@ export class CourseService {
     const { name, description, trackId, instructorIds = [], assistantIds = [] } = body;
 
     const track = await CourseModel.findTrackById(trackId);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError("Track not found", 404, HTTPStatusText.FAIL);
 
     let instructors: any[] = [];
     if (instructorIds.length > 0) {
       instructors = await CourseModel.findUsersByIds(instructorIds);
 
       if (instructors.length !== instructorIds.length)
-        throw new CustomError("One or more instructorIds are invalid", 400, HttpStatusText.FAIL);
+        throw new CustomError("One or more instructorIds are invalid", 400, HTTPStatusText.FAIL);
 
       if (instructors.some((user) => user.role !== Role.INSTRUCTOR))
-        throw new CustomError("One or more users in instructorIds is not an instructor", 400, HttpStatusText.FAIL);
+        throw new CustomError("One or more users in instructorIds is not an instructor", 400, HTTPStatusText.FAIL);
 
       if (instructors.some((user) => user.currentTrackId !== trackId))
         throw new CustomError(
           "One or more instructors is not assigned to the specified track",
           400,
-          HttpStatusText.FAIL,
+          HTTPStatusText.FAIL,
         );
     }
 
@@ -75,21 +75,21 @@ export class CourseService {
       assistants = await CourseModel.findUsersByIds(assistantIds);
 
       if (assistants.length !== assistantIds.length)
-        throw new CustomError("One or more assistantIds are invalid", 400, HttpStatusText.FAIL);
+        throw new CustomError("One or more assistantIds are invalid", 400, HTTPStatusText.FAIL);
 
       if (assistants.some((user) => user.role !== Role.ASSISTANT))
-        throw new CustomError("One or more users in assistantIds is not an assistant", 400, HttpStatusText.FAIL);
+        throw new CustomError("One or more users in assistantIds is not an assistant", 400, HTTPStatusText.FAIL);
 
       if (assistants.some((user) => user.currentTrackId !== trackId))
         throw new CustomError(
           "One or more assistants is not assigned to the specified track",
           400,
-          HttpStatusText.FAIL,
+          HTTPStatusText.FAIL,
         );
     }
 
     const duplicate = await CourseModel.findDuplicate(trackId, name);
-    if (duplicate) throw new CustomError("Duplicate course name. Please choose another.", 400, HttpStatusText.FAIL);
+    if (duplicate) throw new CustomError("Duplicate course name. Please choose another.", 400, HTTPStatusText.FAIL);
 
     return CourseModel.transaction(async (tx: any) => {
       const newCourse = await tx.course.create({
@@ -123,7 +123,7 @@ export class CourseService {
 
   static async update(id: string, body: any) {
     const course = await CourseModel.findById(id);
-    if (!course) throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+    if (!course) throw new CustomError("Course not found", 404, HTTPStatusText.FAIL);
 
     const data: any = {};
     if (body.name) data.name = body.name.trim();
@@ -131,7 +131,7 @@ export class CourseService {
 
     if (body.name) {
       const duplicate = await CourseModel.findDuplicate(course.trackId, body.name, id);
-      if (duplicate) throw new CustomError("Duplicate course name", 400, HttpStatusText.FAIL);
+      if (duplicate) throw new CustomError("Duplicate course name", 400, HTTPStatusText.FAIL);
     }
 
     return CourseModel.update(id, data);
@@ -148,32 +148,32 @@ export class CourseService {
     const { trackId, instructorIds = [], assistantIds = [] } = body;
 
     const course = await CourseModel.findById(id);
-    if (!course) throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+    if (!course) throw new CustomError("Course not found", 404, HTTPStatusText.FAIL);
 
     const track = await CourseModel.findTrackById(trackId);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError("Track not found", 404, HTTPStatusText.FAIL);
 
     const instructors = instructorIds.length ? await CourseModel.findUsersByIds(instructorIds) : [];
 
     const assistants = assistantIds.length ? await CourseModel.findUsersByIds(assistantIds) : [];
 
     if (instructors.length !== instructorIds.length)
-      throw new CustomError("One or more instructorIds are invalid", 400, HttpStatusText.FAIL);
+      throw new CustomError("One or more instructorIds are invalid", 400, HTTPStatusText.FAIL);
 
     if (assistants.length !== assistantIds.length)
-      throw new CustomError("One or more assistantIds are invalid", 400, HttpStatusText.FAIL);
+      throw new CustomError("One or more assistantIds are invalid", 400, HTTPStatusText.FAIL);
 
     if (instructors.some((u) => u.role !== Role.INSTRUCTOR))
-      throw new CustomError("One or more users is not an instructor", 400, HttpStatusText.FAIL);
+      throw new CustomError("One or more users is not an instructor", 400, HTTPStatusText.FAIL);
 
     if (assistants.some((u) => u.role !== Role.ASSISTANT))
-      throw new CustomError("One or more users is not an assistant", 400, HttpStatusText.FAIL, HttpStatusText.FAIL);
+      throw new CustomError("One or more users is not an assistant", 400, HTTPStatusText.FAIL, HTTPStatusText.FAIL);
 
     if (instructors.some((u) => u.currentTrackId !== trackId))
-      throw new CustomError("One or more instructors is not assigned to this track", 400, HttpStatusText.FAIL);
+      throw new CustomError("One or more instructors is not assigned to this track", 400, HTTPStatusText.FAIL);
 
     if (assistants.some((u) => u.currentTrackId !== trackId))
-      throw new CustomError("One or more assistants is not assigned to this track", 400, HttpStatusText.FAIL);
+      throw new CustomError("One or more assistants is not assigned to this track", 400, HTTPStatusText.FAIL);
 
     return CourseModel.transaction(async (tx: any) => {
       await tx.userCourse.updateMany({
@@ -204,7 +204,7 @@ export class CourseService {
 
   static async delete(id: string) {
     const course = await CourseModel.findById(id);
-    if (!course) throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+    if (!course) throw new CustomError("Course not found", 404, HTTPStatusText.FAIL);
 
     return CourseModel.transaction(async (tx: any) => {
       await tx.course.update({

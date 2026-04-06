@@ -1,11 +1,12 @@
 import crypto from "crypto";
 import prisma from "../../config/db";
 import CustomError from "../../types/customError";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { MeetingModel } from "./meeting.model";
 import { createCalendarEvent } from "../../utils/googleCalendar";
 import { stringToUid } from "../../utils/stringToUid";
 import { generateAgoraToken } from "../../utils/agoraToken";
+import { ErrorMessages } from "../../types/errorsMessages";
 
 export class MeetingService {
   static async create(
@@ -52,15 +53,19 @@ export class MeetingService {
   static async getById(id: string | string[] | undefined) {
     if (!id) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const meetingId = Array.isArray(id) ? id[0] : id;
     const meeting = await MeetingModel.findById(meetingId!);
     if (!meeting) {
-      throw new CustomError("Meeting not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.MEETING_NOT_FOUND,
+        404,
+        HTTPStatusText.FAIL,
+      );
     }
     return meeting;
   }
@@ -76,9 +81,9 @@ export class MeetingService {
   ) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
@@ -92,9 +97,9 @@ export class MeetingService {
   ) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
@@ -108,27 +113,35 @@ export class MeetingService {
   ) {
     if (!meetingId)
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
 
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
     const meeting = await MeetingModel.findById(id!);
     if (!meeting)
-      throw new CustomError("Meeting not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.MEETING_NOT_FOUND,
+        404,
+        HTTPStatusText.FAIL,
+      );
 
     if (meeting.status === "ENDED")
-      throw new CustomError("Meeting has ended", 400, HttpStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.MEETING_ENDED,
+        400,
+        HTTPStatusText.FAIL
+      );
 
     if (meeting.status === "SCHEDULED")
       throw new CustomError(
-        "Meeting hasn't started yet",
+        ErrorMessages.MEETING_NOT_STARTED,
         400,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     const existing = await MeetingModel.findParticipant(userId, id!);
-    if (existing) throw new CustomError("Already joined this meeting", 400);
+    if (existing) throw new CustomError(ErrorMessages.USER_ALREADY_IN_MEETING, 400, HTTPStatusText.FAIL);
 
     await MeetingModel.addParticipant({ userId, meetingId: id! });
     const uid = stringToUid(userId);
@@ -149,9 +162,9 @@ export class MeetingService {
   ) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
@@ -159,17 +172,17 @@ export class MeetingService {
 
     if (!participant) {
       throw new CustomError(
-        "You are not in this meeting",
+        ErrorMessages.PARTICIPANT_NOT_FOUND,
         400,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
     if (participant.role === "HOST") {
       throw new CustomError(
-        "Host cannot leave meeting. You must end it",
+        ErrorMessages.HOST_CANNOT_LEAVE_MEETING,
         400,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -179,9 +192,9 @@ export class MeetingService {
   static async checkHost(userId: string, meetingId: string | string[] | undefined) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -189,9 +202,9 @@ export class MeetingService {
     const participant = await MeetingModel.findParticipant(userId, id);
     if (!participant || participant.role !== "HOST") {
       throw new CustomError(
-        "Only host can perform this action",
+        ErrorMessages.ONLY_HOST_CAN_PERFORM_THIS_ACTION,
         403,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
   }
@@ -199,9 +212,9 @@ export class MeetingService {
   static async checkParticipant(userId: string, meetingId: string | string[] | undefined) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -210,9 +223,9 @@ export class MeetingService {
 
     if (!participant) {
       throw new CustomError(
-        "You are not part of this meeting",
+        ErrorMessages.PARTICIPANT_NOT_FOUND,
         403,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
   }
@@ -220,9 +233,9 @@ export class MeetingService {
   static async startMeeting(userId: string, meetingId: string | string[] | undefined) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -238,9 +251,9 @@ export class MeetingService {
   static async endMeeting(userId: string, meetingId: string | string[] | undefined) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -260,9 +273,9 @@ export class MeetingService {
   ) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
@@ -271,9 +284,9 @@ export class MeetingService {
     const existing = await MeetingModel.findParticipant(userId, id!);
     if (existing) {
       throw new CustomError(
-        "User is already in the meeting",
+        ErrorMessages.USER_ALREADY_IN_MEETING,
         400,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 
@@ -287,27 +300,27 @@ export class MeetingService {
   ) {
     if (!meetingId) {
       throw new CustomError(
-        "Meeting ID must be provided",
+        ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
     await this.checkHost(hostId, id!);
     if (!userId) {
       throw new CustomError(
-        "User ID must be provided",
+        ErrorMessages.USER_ID_MUST_BE_PROVIDED,
         404,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
     const checkedUserId = Array.isArray(userId) ? userId[0] : userId;
     const participant = await MeetingModel.findParticipant(checkedUserId!, id!);
     if (!participant) {
       throw new CustomError(
-        "User is not in the meeting",
+        ErrorMessages.PARTICIPANT_NOT_FOUND,
         400,
-        HttpStatusText.FAIL,
+        HTTPStatusText.FAIL,
       );
     }
 

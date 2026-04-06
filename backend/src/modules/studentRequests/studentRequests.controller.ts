@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { Status } from "../../generated/prisma";
 import { StudentRequestService } from "./studentRequests.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { SuccessMessages } from "../../types/successMessages";
 
 export class StudentRequestController {
   static async getCourseStudentRequests(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +12,7 @@ export class StudentRequestController {
 
       const data = await StudentRequestService.getMany(res.locals.user.id, courseId, statusValue);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -23,7 +24,7 @@ export class StudentRequestController {
 
       const data = await StudentRequestService.getById(res.locals.user.id, id);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -34,7 +35,7 @@ export class StudentRequestController {
       const { courseId } = res.locals.body as { courseId: string };
       const data = await StudentRequestService.create(res.locals.user.id, courseId);
 
-      res.status(201).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -47,7 +48,7 @@ export class StudentRequestController {
 
       const message = await StudentRequestService.answer(res.locals.user.id, id, status);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, message });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, message });
     } catch (err) {
       next(err);
     }
@@ -59,7 +60,7 @@ export class StudentRequestController {
 
       await StudentRequestService.delete(res.locals.user.id, id);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, message: "Request deleted successfully" });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, message: SuccessMessages.REQUEST_DELETED });
     } catch (err) {
       next(err);
     }

@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand",
-    "test:watch": "jest --watch",
+   "test": "jest --runInBand --forceExit --detectOpenHandles",
+    "test:watch": "jest --watch --runInBand",
+    "test:coverage": "jest --coverage --runInBand --forceExit",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand --logHeapUsage",
     "dev": "tsx --env-file=.env --watch-path=. src/server.ts"
   },
   "keywords": [],

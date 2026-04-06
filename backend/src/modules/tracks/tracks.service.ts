@@ -1,5 +1,6 @@
 import CustomError from "../../types/customError";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { ErrorMessages } from "../../types/errorsMessages";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { TrackModel } from "./tracks.model";
 
 export class TrackService {
@@ -9,16 +10,16 @@ export class TrackService {
 
   static async getById(id: string) {
     const track = await TrackModel.findById(id);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
     return track;
   }
 
   static async getStaff(trackId: string, currentTrackId: string | null, safeUserData: (user: any) => any) {
     const track = await TrackModel.findById(trackId);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (currentTrackId !== trackId)
-      throw new CustomError("You don't have permission to view the staff of this track", 403, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.YOU_DONT_HAVE_PERMISSION_TO_VIEW_THE_STAFF_OF_THIS_TRACK, 403, HTTPStatusText.FAIL);
 
     const staff = await TrackModel.findStaff(trackId);
 
@@ -29,7 +30,7 @@ export class TrackService {
 
   static async create(userId: string, payload: any) {
     const duplicate = await TrackModel.findByName(payload.name);
-    if (duplicate) throw new CustomError("Duplicate track name. Please choose another.", 400, HttpStatusText.FAIL);
+    if (duplicate) throw new CustomError(ErrorMessages.DUPLICATE_TRACK_NAME, 400, HTTPStatusText.FAIL);
 
     return TrackModel.transaction(async (tx: any) => {
       const newTrack = await tx.track.create({
@@ -56,12 +57,12 @@ export class TrackService {
 
   static async update(id: string, payload: any) {
     const track = await TrackModel.findById(id);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (payload.name) {
       const duplicate = await TrackModel.findByName(payload.name);
       if (duplicate && duplicate.id !== id)
-        throw new CustomError("Duplicate track name. Please choose another.", 400, HttpStatusText.FAIL);
+        throw new CustomError(ErrorMessages.DUPLICATE_TRACK_NAME, 400, HTTPStatusText.FAIL);
     }
 
     const data: any = {};
@@ -81,7 +82,7 @@ export class TrackService {
 
   static async delete(id: string) {
     const track = await TrackModel.findById(id);
-    if (!track) throw new CustomError("Track not found", 404, HttpStatusText.FAIL);
+    if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     return TrackModel.transaction(async (tx: any) => {
       await tx.track.update({ where: { id }, data: { deletedAt: new Date(), creatorId: null } });

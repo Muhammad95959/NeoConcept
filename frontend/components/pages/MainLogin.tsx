@@ -16,6 +16,9 @@ const MainLogin = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:9595/api/v1/auth/google";
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +62,11 @@ const MainLogin = () => {
           Log In
         </h1>
 
-        <button className="w-full flex items-center justify-center space-x-2 bg-[#1a1c1f] hover:bg-[#222428] text-white py-2 rounded-lg border border-gray-700 mb-4">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center space-x-2 bg-[#1a1c1f] hover:bg-[#222428] text-white py-2 rounded-lg border border-gray-700 mb-4"
+        >
           <img
             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
             className="w-5 h-5"

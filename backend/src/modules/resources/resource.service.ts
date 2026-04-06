@@ -3,7 +3,8 @@ import { Readable } from "stream";
 import { ResourceModel } from "./resource.model";
 import { s3 } from "./resource.upload";
 import CustomError from "../../types/customError";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { ErrorMessages } from "../../types/errorsMessages";
 
 export class ResourceService {
   private static async verify(courseId: string): Promise<{ course: any }>;
@@ -12,7 +13,7 @@ export class ResourceService {
   private static async verify(courseId: string, id?: string) {
     const course = await ResourceModel.findCourseById(courseId);
     if (!course) {
-      throw new CustomError("Course not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
 
     if (!id) {
@@ -21,11 +22,11 @@ export class ResourceService {
 
     const resource = await ResourceModel.findResourceById(id);
     if (!resource) {
-      throw new CustomError("Resource not found", 404, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.RESOURCE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
 
     if (resource.courseId !== course.id) {
-      throw new CustomError("Resource does not belong to this course", 400, HttpStatusText.FAIL);
+      throw new CustomError(ErrorMessages.RESOURCE_DOES_NOT_BELONG_TO_COURSE, 400, HTTPStatusText.FAIL);
     }
 
     return { course, resource };
@@ -89,7 +90,8 @@ export class ResourceService {
 
     const { Body, ContentType } = await s3.send(command);
 
-    if (!(Body instanceof Readable)) throw new CustomError("Unexpected response type from S3", 500);
+    if (!(Body instanceof Readable))
+      throw new CustomError(ErrorMessages.UNEXPECTED_S3_RESPONSE, 500, HTTPStatusText.ERROR);
 
     return {
       stream: Body,

@@ -1,9 +1,8 @@
-import { Role } from "../../generated/prisma/client";
 import { NextFunction, Request, Response } from "express";
 import safeUserData from "../../utils/safeUserData";
 import { sendConfirmationEmail } from "./email.service";
 import { AuthService } from "./auth.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 import {
   ConfirmEmailInput,
   ForgotPasswordInput,
@@ -14,6 +13,8 @@ import {
   ResetPasswordInput,
   VerifyOTPInput,
 } from "./auth.validation";
+import { SuccessMessages } from "../../types/successMessages";
+import { Constants } from "../../types/constants";
 
 export class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
@@ -25,10 +26,10 @@ export class AuthController {
       }
 
       res.status(201).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         message: isDev
-          ? "api is running on development mode => email created & confirmed"
-          : "Please confirm your email",
+          ? SuccessMessages.DEV_SIGNUP
+          : SuccessMessages.CONFIRM_EMAIL,
       });
     } catch (err: any) {
       console.log(err.message);
@@ -56,8 +57,8 @@ export class AuthController {
       await AuthService.resendConfirmationEmail({email});
 
       res.status(201).json({
-        status: HttpStatusText.SUCCESS,
-        message: "New confirmation email was sent successfully",
+        status: HTTPStatusText.SUCCESS,
+        message: SuccessMessages.NEW_CONFIRMATION,
       });
     } catch (err) {
       console.log(err);
@@ -72,12 +73,12 @@ export class AuthController {
 
       res.cookie("jwt", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === Constants.PRODUCTION,
+        sameSite: process.env.NODE_ENV === Constants.PRODUCTION ? "none" : "lax",
       });
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         token,
         data: user,
       });
@@ -94,7 +95,7 @@ export class AuthController {
       const result = await AuthService.forgotPassword({email});
 
       res.status(201).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         ...result,
       });
     } catch (err: any) {
@@ -110,7 +111,7 @@ export class AuthController {
       const result = await AuthService.verifyOTP({email, otp});
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         message: result.message,
       });
     } catch (err) {
@@ -125,7 +126,7 @@ export class AuthController {
       const result = await AuthService.resetPassword({ email, otp, newPassword });
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         message: result.message,
       });
     } catch (err) {
@@ -136,14 +137,14 @@ export class AuthController {
   static logout(_req: Request, res: Response) {
     res.clearCookie("jwt");
     res.status(200).json({
-      status: HttpStatusText.SUCCESS,
-      message: "Logged out successfully",
+      status: HTTPStatusText.SUCCESS,
+      message: SuccessMessages.LOGGED_OUT,
     });
   }
 
   static authorize(_req: Request, res: Response) {
     res.status(200).json({
-      status: HttpStatusText.SUCCESS,
+      status: HTTPStatusText.SUCCESS,
       data: safeUserData(res.locals.user),
     });
   }
@@ -156,7 +157,7 @@ export class AuthController {
       const { token, user } = await AuthService.mobileGoogleAuth(body, query);
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         token,
         data: user,
       });

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { HttpStatusText } from "../types/HTTPStatusText";
+import { HTTPStatusText } from "../types/HTTPStatusText";
+import { ErrorMessages } from "../types/errorsMessages";
 
 export const errorHandler = (
   err: any,
@@ -9,20 +10,21 @@ export const errorHandler = (
 ): void => {
   let statusCode = err.statusCode ?? 500;
   let message = err.message ?? "Internal Server Error";
-  let statusText = err.statusText ?? HttpStatusText.ERROR;
+  let statusText = err.statusText ?? HTTPStatusText.ERROR;
   if (err.name === "ZodError") {
     statusCode = 400;
     message = err.errors
       .map((e: any) => `${e.path.join(".")}: ${e.message}`)
       .join(", ");
-    statusText = HttpStatusText.FAIL;
+    statusText = HTTPStatusText.FAIL;
   }
 
   if (err.name === "JsonWebTokenError") {
     statusCode = 401;
-    message = "Invalid token";
-    statusText = HttpStatusText.FAIL;
+    message = ErrorMessages.INVALID_TOKEN;
+    statusText = HTTPStatusText.FAIL;
   }
+  console.error(err);
   res.status(statusCode).json({
     status: statusText,
     message,

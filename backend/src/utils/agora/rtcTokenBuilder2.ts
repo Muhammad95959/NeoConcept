@@ -330,6 +330,3 @@ export class RtcTokenBuilder {
         return token.build()
     }
 }
-
-module.exports.RtcTokenBuilder = RtcTokenBuilder
-module.exports.Role = Role

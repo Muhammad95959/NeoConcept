@@ -21,6 +21,7 @@ export class AuthModel {
   }
 
   static async findUserByConfirmToken(tokenHash: string) {
+    console.log(await prisma.user.findMany());
     return prisma.user.findFirst({
       where: {
         confirmEmailToken: tokenHash,

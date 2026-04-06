@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Role } from "../generated/prisma/client";
-import { HttpStatusText } from "../types/HTTPStatusText";
+import { HTTPStatusText } from "../types/HTTPStatusText";
+import { ErrorMessages } from "../types/errorsMessages";
 
 export const restrict =
   (...roles: Role[]) =>
@@ -10,15 +11,15 @@ export const restrict =
 
       if (!user) {
         return res.status(401).json({
-          status: HttpStatusText.FAIL,
-          message: "You are not logged in",
+          status: HTTPStatusText.FAIL,
+          message: ErrorMessages.NOT_LOGIN_YET,
         });
       }
 
       if (!roles.includes(user.role)) {
         return res.status(403).json({
-          status: HttpStatusText.FAIL,
-          message: "You do not have permission to perform this action",
+          status: HTTPStatusText.FAIL,
+          message: ErrorMessages.DONT_HAVE_PERMISSION_TO_PERFORM_THIS_ACTION,
         });
       }
 

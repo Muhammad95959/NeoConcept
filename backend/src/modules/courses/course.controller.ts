@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { CourseService } from "./course.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { SuccessMessages } from "../../types/successMessages";
 
 export class CourseController {
   static async getMany(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await CourseService.getMany(res.locals.query);
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -16,7 +17,7 @@ export class CourseController {
     try {
       const { id } = res.locals.params;
       const data = await CourseService.get(id);
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -25,7 +26,7 @@ export class CourseController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await CourseService.create(res.locals.body);
-      res.status(201).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -35,7 +36,7 @@ export class CourseController {
     try {
       const { id } = res.locals.params;
       const data = await CourseService.update(id, res.locals.body);
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -46,7 +47,7 @@ export class CourseController {
       const data = await CourseService.updateStaff(id, res.locals.body);
 
       res.status(200).json({
-        status: HttpStatusText.SUCCESS,
+        status: HTTPStatusText.SUCCESS,
         ...data,
       });
     } catch (err) {
@@ -57,7 +58,7 @@ export class CourseController {
     try {
       const { id } = res.locals.params;
       await CourseService.delete(id);
-      res.status(200).json({ status: HttpStatusText.SUCCESS, message: "Course deleted successfully" });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, message: SuccessMessages.COURSE_DELETED });
     } catch (err) {
       next(err);
     }

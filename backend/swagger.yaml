@@ -8,6 +8,7 @@ servers:
 tags:
   - name: Auth
   - name: User
+  - name: Meetings
   - name: Tracks
   - name: Courses
   - name: Posts
@@ -513,6 +514,11 @@ paths:
           in: query
           schema:
             type: string
+            enum: [PENDING, APPROVED, REJECTED]
+        - name: search
+          in: query
+          schema:
+            type: string
       security:
         - cookieAuth: []
       responses:
@@ -536,6 +542,11 @@ paths:
           in: query
           schema:
             type: string
+            enum: [PENDING, APPROVED, REJECTED]
+        - name: search
+          in: query
+          schema:
+            type: string
       security:
         - cookieAuth: []
       responses:
@@ -547,6 +558,247 @@ paths:
           description: Unauthorized
         "403":
           description: Only students can have student requests
+        "500":
+          description: Something went wrong
+
+  /meetings:
+    get:
+      tags:
+        - Meetings
+      summary: list all meetings for the logged-in user
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Meetings
+      summary: create a new meeting
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  example: Weekly Standup
+                channelName:
+                  type: string
+                  example: weekly-standup-room
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  example: 2026-04-07T10:00:00.000Z
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Title must be at least 3 characters || Title must not exceed 100 characters || Channel Name must be at least 3 characters || Channel Name must not exceed 100 characters || Invalid date format
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
+
+  /meetings/{id}:
+    get:
+      tags:
+        - Meetings
+      summary: retrieve a meeting by id
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid ID
+        "401":
+          description: Unauthorized
+        "404":
+          description: Meeting not found
+        "500":
+          description: Something went wrong
+    put:
+      tags:
+        - Meetings
+      summary: update a meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Weekly Standup
+                channelName:
+                  type: string
+                  example: updated-standup-room
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  example: 2026-04-07T11:00:00.000Z
+                status:
+                  type: string
+                  enum: [SCHEDULED, LIVE, ENDED]
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid ID || Title must be at least 3 characters || Title must not exceed 100 characters || Channel Name must be at least 3 characters || Channel Name must not exceed 100 characters || Invalid date format
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only host can perform this action
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Meetings
+      summary: delete a meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: Deleted successfully
+        "400":
+          description: Invalid ID
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only host can perform this action
+        "500":
+          description: Something went wrong
+
+  /meetings/{meetingId}/join:
+    post:
+      tags:
+        - Meetings
+      summary: join a live meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: meetingId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid meeting ID || Meeting has already ended || Meeting has not started yet || User is already in the meeting
+        "401":
+          description: Unauthorized
+        "404":
+          description: Meeting not found
+        "500":
+          description: Something went wrong
+
+  /meetings/{meetingId}/leave:
+    post:
+      tags:
+        - Meetings
+      summary: leave a meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: meetingId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid meeting ID || User is not in the meeting || Host cannot leave the meeting
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
+
+  /meetings/{meetingId}/start:
+    post:
+      tags:
+        - Meetings
+      summary: start a meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: meetingId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only host can perform this action
+        "500":
+          description: Something went wrong
+
+  /meetings/{meetingId}/checkHost:
+    get:
+      tags:
+        - Meetings
+      summary: check if the logged-in user is the host of a meeting
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: meetingId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "403":
+          description: Only host can perform this action
         "500":
           description: Something went wrong
 
@@ -1116,13 +1368,6 @@ paths:
       description: restricted to instructor or assistant
       security:
         - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
       requestBody:
         required: true
         content:
@@ -1143,6 +1388,8 @@ paths:
           description: success
         "400":
           description: Course ID is required || You already have a pending request for this course
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
   /staff-requests/{id}:
@@ -1187,6 +1434,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - message
               properties:
                 message:
                   type: string
@@ -1221,7 +1470,7 @@ paths:
           description: Request deleted successfully
         "400":
           description: Only pending requests can be deleted
-        "401":
+        "403":
           description: You can only delete your own requests
         "404":
           description: Request not found
@@ -1242,6 +1491,21 @@ paths:
           schema:
             type: string
             example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - APPROVED
+                    - REJECTED
+                  example: APPROVED
       responses:
         "200":
           description: success

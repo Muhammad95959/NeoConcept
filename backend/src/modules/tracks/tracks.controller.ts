@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { TrackService } from "./tracks.service";
-import { HttpStatusText } from "../../types/HTTPStatusText";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
 import safeUserData from "../../utils/safeUserData";
+import { SuccessMessages } from "../../types/successMessages";
 
 export class TrackController {
   static async getTracks(req: Request, res: Response, next: NextFunction) {
@@ -9,7 +10,7 @@ export class TrackController {
       const { search } = res.locals.query as { search?: string };
       const data = await TrackService.getMany(search);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -20,7 +21,7 @@ export class TrackController {
       const { id } = res.locals.params as { id: string };
       const data = await TrackService.getById(id);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -31,7 +32,7 @@ export class TrackController {
       const { id } = res.locals.params as { id: string };
       const data = await TrackService.getStaff(id, res.locals.user.currentTrackId, safeUserData);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -42,7 +43,7 @@ export class TrackController {
       const payload = res.locals.body;
       const data = await TrackService.create(res.locals.user.id, payload);
 
-      res.status(201).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -54,7 +55,7 @@ export class TrackController {
       const payload = res.locals.body;
       const data = await TrackService.update(id, payload);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, data });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
@@ -65,7 +66,7 @@ export class TrackController {
       const { id } = res.locals.params as { id: string };
       await TrackService.delete(id);
 
-      res.status(200).json({ status: HttpStatusText.SUCCESS, message: "Track deleted successfully" });
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, message: SuccessMessages.TRACK_DELETED });
     } catch (err) {
       next(err);
     }

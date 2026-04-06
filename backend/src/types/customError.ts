@@ -1,4 +1,4 @@
-import { HttpStatusText } from "./HTTPStatusText"
+import { HTTPStatusText } from "./HTTPStatusText"
 
 export default class CustomError extends Error {
   statusCode: number;
@@ -8,7 +8,7 @@ export default class CustomError extends Error {
   constructor(
     message: string,
     statusCode = 500,
-    statusText = HttpStatusText.ERROR,
+    statusText = HTTPStatusText.ERROR,
     html = ''
   ) {
     super(message);

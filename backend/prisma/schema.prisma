@@ -23,7 +23,6 @@ model User {
   passwordChangedAt    DateTime?
   deletedAt            DateTime?
   currentTrackId       String?
-  otpAttempts          Int              @default(0)
   Post                 Post[]
   Resources            Resource[]
   staffRequests        StaffRequest[]
@@ -32,8 +31,6 @@ model User {
   courseUsers          UserCourse[]
   userTracks           UserTrack[]
   currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
-  participants         Participant[]
-  hostedMeetings      Meeting[]        @relation("MeetingHost")
 
   @@map("users")
 }
@@ -74,19 +71,21 @@ model UserTrack {
 }
 
 model Course {
-  id              String           @id @default(uuid())
-  name            String
-  description     String?
-  createdAt       DateTime         @default(now())
-  trackId         String
-  deletedAt       DateTime?
-  protected       Boolean          @default(true)
-  track           Track            @relation(fields: [trackId], references: [id])
-  Post            Post[]
-  Resources       Resource[]
-  staffRequests   StaffRequest[]
-  studentRequests StudentRequest[]
-  courseUsers     UserCourse[]
+  id                                                                String                 @id @default(uuid())
+  name                                                              String
+  description                                                       String?
+  createdAt                                                         DateTime               @default(now())
+  trackId                                                           String
+  deletedAt                                                         DateTime?
+  protected                                                         Boolean                @default(true)
+  course_prerequisites_course_prerequisites_courseIdTocourses       course_prerequisites[] @relation("course_prerequisites_courseIdTocourses")
+  course_prerequisites_course_prerequisites_prerequisiteIdTocourses course_prerequisites[] @relation("course_prerequisites_prerequisiteIdTocourses")
+  track                                                             Track                  @relation(fields: [trackId], references: [id])
+  Post                                                              Post[]
+  Resources                                                         Resource[]
+  staffRequests                                                     StaffRequest[]
+  studentRequests                                                   StudentRequest[]
+  courseUsers                                                       UserCourse[]
 
   @@map("courses")
 }
@@ -157,6 +156,15 @@ model Post {
   @@map("posts")
 }
 
+model course_prerequisites {
+  courseId                                             String
+  prerequisiteId                                       String
+  courses_course_prerequisites_courseIdTocourses       Course @relation("course_prerequisites_courseIdTocourses", fields: [courseId], references: [id])
+  courses_course_prerequisites_prerequisiteIdTocourses Course @relation("course_prerequisites_prerequisiteIdTocourses", fields: [prerequisiteId], references: [id])
+
+  @@id([courseId, prerequisiteId])
+}
+
 enum Role {
   ADMIN
   INSTRUCTOR
@@ -168,42 +176,4 @@ enum Status {
   PENDING
   APPROVED
   REJECTED
-}
-
-enum MeetingStatus {
-  SCHEDULED
-  LIVE
-  ENDED
-}
-
-enum ParticipantRole {
-  HOST
-  PARTICIPANT
-}
-
-model Meeting {
-  id          String          @id @default(uuid())
-  title       String
-  channelName String
-  status      MeetingStatus   @default(SCHEDULED)
-  scheduledAt DateTime?
-  createdAt   DateTime        @default(now())
-  hostId      String
-  host        User            @relation("MeetingHost", fields: [hostId], references: [id])
-  participants Participant[]
-
-  @@map("meetings")
-}
-
-model Participant {
-  userId    String
-  meetingId String
-  role      ParticipantRole  @default(PARTICIPANT)
-  joinedAt  DateTime         @default(now())
-
-  user      User             @relation(fields: [userId], references: [id])
-  meeting   Meeting          @relation(fields: [meetingId], references: [id])
-
-  @@id([userId, meetingId])
-  @@map("participants")
 }
