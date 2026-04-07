@@ -12,15 +12,29 @@ import { AuthService } from "./auth.service";
 jest.mock("./auth.model", () => ({
   AuthModel: {
     findUserByEmail: jest.fn(),
+    findUserByConfirmToken: jest.fn(),
     createUser: jest.fn(),
+    confirmUserEmail: jest.fn(),
+    updateConfirmationToken: jest.fn(),
+    updateResetPasswordOTP: jest.fn(),
     incrementOtpAttempts: jest.fn(),
     clearResetOTP: jest.fn(),
     resetOtpAttempts: jest.fn(),
+    updateUserPassword: jest.fn(),
+    createUserWithGoogle: jest.fn(),
+    updateUserGoogleId: jest.fn(),
   },
 }));
 
 jest.mock("../../utils/signToken", () => jest.fn());
 jest.mock("../../utils/safeUserData", () => jest.fn());
+jest.mock("../../utils/sendEmail", () => jest.fn());
+jest.mock("../../utils/createRandomOTP", () => jest.fn(() => "654321"));
+jest.mock("fs", () => ({
+  promises: {
+    readFile: jest.fn(),
+  },
+}));
 
 describe("AuthService", () => {
   beforeEach(() => {
@@ -45,7 +59,7 @@ describe("AuthService", () => {
     });
 
     it("creates a new user and returns raw confirmation token", async () => {
-      const randomBytesSpy = jest.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("token-seed"));
+      const randomBytesSpy = jest.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("token-seed") as any);
       const hashSpy = jest.spyOn(bcrypt, "hash").mockResolvedValue("hashed-password" as never);
       process.env.NODE_ENV = "test";
 
@@ -191,6 +205,195 @@ describe("AuthService", () => {
       expect(result).toEqual({
         success: true,
         message: SuccessMessages.OTP_VERIFIED,
+      });
+    });
+  });
+
+  describe("confirmEmail", () => {
+    it("throws invalid token error when user not found", async () => {
+      (AuthModel.findUserByConfirmToken as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        AuthService.confirmEmail({ token: "invalid-token" }),
+      ).rejects.toMatchObject({
+        message: ErrorMessages.INVALID_TOKEN,
+        statusCode: 400,
+      });
+    });
+
+    it("confirms email and returns success html", async () => {
+      const fs = require("fs").promises;
+      const htmlContent = "<html>Email Verified Successfully</html>";
+      fs.readFile.mockResolvedValue(htmlContent);
+      (AuthModel.findUserByConfirmToken as jest.Mock).mockResolvedValue({ id: "u-7" });
+      (AuthModel.confirmUserEmail as jest.Mock).mockResolvedValue({ emailConfirmed: true });
+
+      const result = await AuthService.confirmEmail({ token: "valid-token" });
+
+      expect(AuthModel.confirmUserEmail).toHaveBeenCalledWith("u-7");
+      expect(result).toEqual(htmlContent);
+      expect(fs.readFile).toHaveBeenCalled();
+    });
+  });
+
+  describe("resendConfirmationEmail", () => {
+    it("throws when user not found", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue(null);
+
+      await expect(AuthService.resendConfirmationEmail({ email: "missing@example.com" })).rejects.toMatchObject({
+        message: ErrorMessages.USER_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("throws when email already confirmed", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({ id: "u-8", emailConfirmed: true });
+
+      await expect(AuthService.resendConfirmationEmail({ email: "confirmed@example.com" })).rejects.toMatchObject({
+        message: ErrorMessages.EMAIL_ALREADY_CONFIRMED,
+        statusCode: 400,
+      });
+    });
+
+    it("sends new confirmation email", async () => {
+      const fs = require("fs").promises;
+      fs.readFile.mockResolvedValue("Confirm your email: %%CONFIRMATION_LINK%%");
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({ id: "u-9", emailConfirmed: false });
+      (AuthModel.updateConfirmationToken as jest.Mock).mockResolvedValue({});
+
+      const result = await AuthService.resendConfirmationEmail({ email: "unconfirmed@example.com" });
+
+      expect(AuthModel.updateConfirmationToken).toHaveBeenCalled();
+      expect(result).toEqual({ success: true });
+    });
+  });
+
+  describe("forgotPassword", () => {
+    it("throws when user not found", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue(null);
+
+      await expect(AuthService.forgotPassword({ email: "notfound@example.com" })).rejects.toMatchObject({
+        message: ErrorMessages.USER_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("sends password reset email", async () => {
+      const fs = require("fs").promises;
+      fs.readFile.mockResolvedValue("Your OTP is: %%OTP%%");
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({ id: "u-10", email: "reset@example.com" });
+      (AuthModel.updateResetPasswordOTP as jest.Mock).mockResolvedValue({});
+
+      const result = await AuthService.forgotPassword({ email: "reset@example.com" });
+
+      expect(AuthModel.updateResetPasswordOTP).toHaveBeenCalled();
+      expect(result).toEqual({ message: SuccessMessages.PASSWORD_RESET_EMAIL_SENT });
+    });
+  });
+
+  describe("resetPassword", () => {
+    it("throws when user not found", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        AuthService.resetPassword({ email: "notfound@example.com", otp: "123456", newPassword: "pass" }),
+      ).rejects.toMatchObject({
+        message: ErrorMessages.USER_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("throws when otp is missing", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({ id: "u-11", resetPasswordOTP: null });
+
+      await expect(
+        AuthService.resetPassword({ email: "reset@example.com", otp: "123456", newPassword: "pass" }),
+      ).rejects.toMatchObject({
+        message: ErrorMessages.NO_OTP_REQUEST_FOUND,
+        statusCode: 400,
+      });
+    });
+
+    it("throws when too many otp attempts", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({
+        id: "u-12",
+        resetPasswordOTP: "hash",
+        otpAttempts: 5,
+      });
+
+      await expect(
+        AuthService.resetPassword({ email: "reset@example.com", otp: "123456", newPassword: "pass" }),
+      ).rejects.toMatchObject({
+        message: ErrorMessages.TOO_MANY_OTP_ATTEMPTS,
+        statusCode: 429,
+      });
+    });
+
+    it("resets password on valid otp", async () => {
+      const otp = "654321";
+      const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+      jest.spyOn(bcrypt, "hash").mockResolvedValue("new-hash" as never);
+
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({
+        id: "u-13",
+        resetPasswordOTP: otpHash,
+        otpAttempts: 0,
+        resetPasswordExpires: new Date(Date.now() + 60_000),
+      });
+
+      const result = await AuthService.resetPassword({
+        email: "reset@example.com",
+        otp,
+        newPassword: "newpass123",
+      });
+
+      expect(AuthModel.updateUserPassword).toHaveBeenCalled();
+      expect(result).toEqual({
+        success: true,
+        message: SuccessMessages.PASSWORD_RESET_SUCCESSFULLY,
+      });
+    });
+  });
+
+  describe("verifyOTP - error cases", () => {
+    it("throws when no otp request", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({
+        id: "u-14",
+        emailConfirmed: false,
+        resetPasswordOTP: null,
+      });
+
+      await expect(AuthService.verifyOTP({ email: "nootp@example.com", otp: "123456" })).rejects.toMatchObject({
+        message: ErrorMessages.NO_OTP_REQUEST_FOUND,
+        statusCode: 400,
+      });
+    });
+
+    it("throws when too many attempts", async () => {
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({
+        id: "u-15",
+        resetPasswordOTP: "somehash",
+        otpAttempts: 5,
+      });
+
+      await expect(AuthService.verifyOTP({ email: "toomany@example.com", otp: "123456" })).rejects.toMatchObject({
+        message: ErrorMessages.TOO_MANY_OTP_ATTEMPTS,
+        statusCode: 429,
+      });
+    });
+
+    it("throws when otp expired", async () => {
+      const storedOtp = crypto.createHash("sha256").update("correct").digest("hex");
+      (AuthModel.findUserByEmail as jest.Mock).mockResolvedValue({
+        id: "u-16",
+        resetPasswordOTP: storedOtp,
+        otpAttempts: 0,
+        resetPasswordExpires: new Date(Date.now() - 60_000), // Expired
+      });
+
+      await expect(AuthService.verifyOTP({ email: "expired@example.com", otp: "correct" })).rejects.toMatchObject({
+        message: ErrorMessages.OTP_EXPIRED,
+        statusCode: 400,
       });
     });
   });

@@ -24,7 +24,6 @@ export const errorHandler = (
     message = ErrorMessages.INVALID_TOKEN;
     statusText = HTTPStatusText.FAIL;
   }
-  console.error(err);
   res.status(statusCode).json({
     status: statusText,
     message,

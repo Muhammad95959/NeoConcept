@@ -151,6 +151,25 @@ describe("UserController", () => {
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data: requests });
   });
 
+  it("getUserStudentRequests passes query filters", async () => {
+    const req = { query: { status: "APPROVED", search: "english" } } as unknown as Request;
+    const res = createMockRes();
+    const requests = [{ id: "str-1" }];
+    res.locals = { user: { id: "u-8" } };
+
+    (UserService.getUserStudentRequests as jest.Mock).mockResolvedValue(requests);
+
+    await UserController.getUserStudentRequests(req, res, next);
+
+    expect(UserService.getUserStudentRequests).toHaveBeenCalledWith(
+      { id: "u-8" },
+      "APPROVED",
+      "english"
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data: requests });
+  });
+
   it("forwards service errors to next", async () => {
     const req = { body: { trackId: "t-9" } } as Request;
     const res = createMockRes();
@@ -161,5 +180,115 @@ describe("UserController", () => {
     await UserController.selectTrack(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
+  });
+
+  describe("error handling", () => {
+    it("updateUser forwards errors to next", async () => {
+      const req = { body: { username: "Test" } } as Request;
+      const res = createMockRes();
+      const error = new Error("update failed");
+      res.locals = { user: { id: "u-1" } };
+      (UserService.updateUser as jest.Mock).mockRejectedValue(error);
+
+      await UserController.updateUser(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("deleteUser forwards errors to next", async () => {
+      const req = {} as Request;
+      const res = createMockRes();
+      const error = new Error("delete failed");
+      res.locals = { user: { id: "u-2" } };
+      (UserService.deleteUser as jest.Mock).mockRejectedValue(error);
+
+      await UserController.deleteUser(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("getUserTracks forwards errors to next", async () => {
+      const req = {} as Request;
+      const res = createMockRes();
+      const error = new Error("get tracks failed");
+      res.locals = { user: { id: "u-3" } };
+      (UserService.getUserTracks as jest.Mock).mockRejectedValue(error);
+
+      await UserController.getUserTracks(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("quitTrack forwards errors to next", async () => {
+      const req = { body: { trackId: "t-1" } } as Request;
+      const res = createMockRes();
+      const error = new Error("quit track failed");
+      res.locals = { user: { id: "u-4" } };
+      (UserService.quitTrack as jest.Mock).mockRejectedValue(error);
+
+      await UserController.quitTrack(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("getUserCourses forwards errors to next", async () => {
+      const req = {} as Request;
+      const res = createMockRes();
+      const error = new Error("get courses failed");
+      res.locals = { user: { id: "u-5" } };
+      (UserService.getUserCourses as jest.Mock).mockRejectedValue(error);
+
+      await UserController.getUserCourses(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("joinCourse forwards errors to next", async () => {
+      const req = { body: { courseId: "c-1" } } as Request;
+      const res = createMockRes();
+      const error = new Error("join failed");
+      res.locals = { user: { id: "u-9" } };
+      (UserService.joinCourse as jest.Mock).mockRejectedValue(error);
+
+      await UserController.joinCourse(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("quitCourse forwards errors to next", async () => {
+      const req = { body: { courseId: "c-2" } } as Request;
+      const res = createMockRes();
+      const error = new Error("quit course failed");
+      res.locals = { user: { id: "u-10" } };
+      (UserService.quitCourse as jest.Mock).mockRejectedValue(error);
+
+      await UserController.quitCourse(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("getUserStaffRequests forwards errors to next", async () => {
+      const req = { query: { status: "PENDING" } } as unknown as Request;
+      const res = createMockRes();
+      const error = new Error("get staff requests failed");
+      res.locals = { user: { id: "u-11" } };
+      (UserService.getUserStaffRequests as jest.Mock).mockRejectedValue(error);
+
+      await UserController.getUserStaffRequests(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+
+    it("getUserStudentRequests forwards errors to next", async () => {
+      const req = { query: { status: "PENDING" } } as unknown as Request;
+      const res = createMockRes();
+      const error = new Error("get student requests failed");
+      res.locals = { user: { id: "u-12" } };
+      (UserService.getUserStudentRequests as jest.Mock).mockRejectedValue(error);
+
+      await UserController.getUserStudentRequests(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
   });
 });

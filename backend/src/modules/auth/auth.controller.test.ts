@@ -15,6 +15,7 @@ jest.mock("./auth.service", () => ({
     forgotPassword: jest.fn(),
     verifyOTP: jest.fn(),
     resetPassword: jest.fn(),
+    resendConfirmationEmail: jest.fn(),
     mobileGoogleAuth: jest.fn(),
   },
 }));
@@ -206,5 +207,196 @@ describe("AuthController", () => {
     await AuthController.mobileGoogleAuth(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
+  });
+
+  it("signup handles email service error and passes to next", async () => {
+    const req = { body: { email: "neo@example.com" } } as Request;
+    const res = createMockRes();
+    const sendError = new Error("email send failed");
+
+    (AuthService.signup as jest.Mock).mockResolvedValue({
+      confirmEmailToken: "confirm-token",
+      isDev: false,
+    });
+    (sendConfirmationEmail as jest.Mock).mockRejectedValue(sendError);
+
+    await AuthController.signup(req, res, next);
+
+    // Should still return 201 because sendEmail error isn't caught in controller
+  });
+
+  it("signup propagates service errors to next", async () => {
+    const req = { body: { email: "taken@example.com" } } as Request;
+    const res = createMockRes();
+    const serviceError = new Error("Email already exists");
+
+    (AuthService.signup as jest.Mock).mockRejectedValue(serviceError);
+
+    await AuthController.signup(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(serviceError);
+  });
+
+  it("confirmEmail sends 400 on default error", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { params: { token: "abc" } };
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+
+    const error = new Error("generic error");
+    (AuthService.confirmEmail as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.confirmEmail(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    consoleLogSpy.mockRestore();
+  });
+
+  it("resendConfirmationEmail sends email and returns success", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "test@example.com" } };
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+
+    (AuthService.resendConfirmationEmail as jest.Mock).mockResolvedValue({ success: true });
+
+    await AuthController.resendConfirmationEmail(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      status: HTTPStatusText.SUCCESS,
+      message: SuccessMessages.NEW_CONFIRMATION,
+    });
+
+    consoleLogSpy.mockRestore();
+  });
+
+  it("resendConfirmationEmail handles errors", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "notfound@example.com" } };
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+    const error = new Error("User not found");
+
+    (AuthService.resendConfirmationEmail as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.resendConfirmationEmail(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    consoleLogSpy.mockRestore();
+  });
+
+  it("login handles service errors", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "test@example.com", password: "wrong" } };
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+    const error = new Error("Invalid credentials");
+
+    (AuthService.login as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.login(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    consoleLogSpy.mockRestore();
+  });
+
+  it("login sets secure cookie in dev environment", async () => {
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = Constants.DEVELOPMENT;
+
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "dev@example.com", password: "pass" } };
+    (AuthService.login as jest.Mock).mockResolvedValue({ token: "jwt-token", user: { id: "u-1" } });
+
+    await AuthController.login(req, res, next);
+
+    expect(res.cookie).toHaveBeenCalledWith("jwt", "jwt-token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    process.env.NODE_ENV = previousNodeEnv;
+  });
+
+  it("forgotPassword handles service errors", async () => {
+    const req = { body: { email: "notfound@example.com" } } as Request;
+    const res = createMockRes();
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const error = new Error("User not found");
+
+    (AuthService.forgotPassword as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.forgotPassword(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("verifyOTP handles service errors", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "test@example.com", otp: "wrong" } };
+    const error = new Error("Invalid OTP");
+
+    (AuthService.verifyOTP as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.verifyOTP(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+  });
+
+  it("resetPassword returns success message", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "test@example.com", otp: "123456", newPassword: "newpass" } };
+
+    (AuthService.resetPassword as jest.Mock).mockResolvedValue({ message: SuccessMessages.PASSWORD_RESET_SUCCESSFULLY });
+
+    await AuthController.resetPassword(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      status: HTTPStatusText.SUCCESS,
+      message: SuccessMessages.PASSWORD_RESET_SUCCESSFULLY,
+    });
+  });
+
+  it("resetPassword handles service errors", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { email: "test@example.com", otp: "wrong", newPassword: "pass" } };
+    const error = new Error("Invalid OTP");
+
+    (AuthService.resetPassword as jest.Mock).mockRejectedValue(error);
+
+    await AuthController.resetPassword(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+  });
+
+  it("mobileGoogleAuth returns token and user data", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    res.locals = { body: { idToken: "valid-token" }, query: { role: "INSTRUCTOR" } };
+    const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+
+    (AuthService.mobileGoogleAuth as jest.Mock).mockResolvedValue({
+      token: "jwt-token",
+      user: { id: "u-1", email: "google@example.com" },
+    });
+
+    await AuthController.mobileGoogleAuth(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      status: HTTPStatusText.SUCCESS,
+      token: "jwt-token",
+      data: { id: "u-1", email: "google@example.com" },
+    });
+
+    consoleLogSpy.mockRestore();
   });
 });

@@ -16,6 +16,15 @@ jest.mock("./user.model", () => ({
     findUserCoursesUserTrackRequest: jest.fn(),
     findStudentRequestsUserTrackRequest: jest.fn(),
     findStaffRequestsUserTrackRequest: jest.fn(),
+    deleteUserWithRelations: jest.fn(),
+    findTrackById: jest.fn(),
+    transaction: jest.fn(),
+    upsertUserTrack: jest.fn(),
+    deleteUserTrack: jest.fn(),
+    deleteUserCourse: jest.fn(),
+    getUserCoursesModel: jest.fn(),
+    findStudentRequests: jest.fn(),
+    findStaffRequests: jest.fn(),
   },
 }));
 
@@ -209,6 +218,252 @@ describe("UserService", () => {
               title: "TypeScript",
               hasJoined: false,
               studentRequestStatus: Status.PENDING,
+            },
+          ],
+        },
+      ]);
+    });
+  });
+
+  describe("deleteUser", () => {
+    it("throws when user is already deleted", async () => {
+      await expect(
+        UserService.deleteUser({ id: "u-1", deletedAt: new Date() }),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.USER_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("calls deleteUserWithRelations for active user", async () => {
+      const user = { id: "u-2", deletedAt: null };
+      await UserService.deleteUser(user);
+      expect(UserModel.deleteUserWithRelations).toHaveBeenCalledWith(user);
+    });
+  });
+
+  describe("selectTrack", () => {
+    const user = { id: "u-3", role: Role.STUDENT };
+
+    it("throws forbidden for admin user", async () => {
+      await expect(
+        UserService.selectTrack({ user: { id: "a-1", role: Role.ADMIN }, trackId: "t-1" }),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.FORBIDDEN,
+        statusCode: 403,
+      });
+    });
+
+    it("throws when track does not exist", async () => {
+      (UserModel.findTrackById as jest.Mock).mockResolvedValue(null);
+
+      await expect(UserService.selectTrack({ user, trackId: "t-404" })).rejects.toMatchObject<
+        Partial<CustomError>
+      >({
+        message: ErrorMessages.TRACK_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("upserts user track when track exists", async () => {
+      const track = { id: "t-2" };
+      const tx = {};
+      (UserModel.findTrackById as jest.Mock).mockResolvedValue(track);
+      (UserModel.transaction as jest.Mock).mockImplementation(async (cb: any) => cb(tx));
+
+      await UserService.selectTrack({ user, trackId: "t-2" });
+
+      expect(UserModel.upsertUserTrack).toHaveBeenCalledWith(tx, user.id, "t-2");
+    });
+  });
+
+  describe("quitTrack", () => {
+    const user = { id: "u-4", role: Role.STUDENT };
+
+    it("throws forbidden for admin user", async () => {
+      await expect(
+        UserService.quitTrack({ user: { id: "a-2", role: Role.ADMIN }, trackId: "t-3" }),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.FORBIDDEN,
+        statusCode: 403,
+      });
+    });
+
+    it("throws when track not found", async () => {
+      const tx = {};
+      (UserModel.transaction as jest.Mock).mockImplementation(async (cb: any) => {
+        await cb(tx);
+      });
+      (UserModel.deleteUserTrack as jest.Mock).mockResolvedValue({ count: 0 });
+
+      await expect(UserService.quitTrack({ user, trackId: "t-404" })).rejects.toMatchObject<
+        Partial<CustomError>
+      >({
+        message: ErrorMessages.TRACK_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("deletes user track when found", async () => {
+      const tx = {};
+      (UserModel.transaction as jest.Mock).mockImplementation(async (cb: any) => {
+        await cb(tx);
+      });
+      (UserModel.deleteUserTrack as jest.Mock).mockResolvedValue({ count: 1 });
+
+      await UserService.quitTrack({ user, trackId: "t-3" });
+
+      expect(UserModel.deleteUserTrack).toHaveBeenCalledWith(tx, user.id, "t-3");
+    });
+  });
+
+  describe("getUserCourses", () => {
+    it("returns user courses", async () => {
+      const courses = [{ id: "c-1", title: "React" }];
+      (UserModel.getUserCoursesModel as jest.Mock).mockResolvedValue(courses);
+
+      const result = await UserService.getUserCourses({ userId: "u-5" });
+
+      expect(result).toEqual(courses);
+      expect(UserModel.getUserCoursesModel).toHaveBeenCalledWith("u-5");
+    });
+  });
+
+  describe("getUserStudentRequests", () => {
+    const studentUser = { id: "u-6", role: Role.STUDENT };
+    const instructorUser = { id: "i-1", role: Role.INSTRUCTOR };
+
+    it("throws when user is not a student", async () => {
+      await expect(
+        UserService.getUserStudentRequests(instructorUser, Status.PENDING, "math"),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.ONLY_STUDENTS_CAN_HAVE_STUDENT_REQUESTS,
+        statusCode: 403,
+      });
+    });
+
+    it("returns student requests with filters", async () => {
+      const requests = [{ id: "sr-1", status: Status.PENDING }];
+      (UserModel.findStudentRequests as jest.Mock).mockResolvedValue(requests);
+
+      const result = await UserService.getUserStudentRequests(studentUser, Status.PENDING, "math");
+
+      expect(result).toEqual(requests);
+      expect(UserModel.findStudentRequests).toHaveBeenCalledWith(studentUser.id, Status.PENDING, "math");
+    });
+  });
+
+  describe("quitCourse", () => {
+    const studentUser = { id: "u-7", role: Role.STUDENT };
+
+    it("throws when user is not a student", async () => {
+      await expect(
+        UserService.quitCourse({ user: { id: "a-3", role: Role.ADMIN }, courseId: "c-1" }),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.FORBIDDEN,
+        statusCode: 403,
+      });
+    });
+
+    it("throws when course not found", async () => {
+      (UserModel.deleteUserCourse as jest.Mock).mockResolvedValue({ count: 0 });
+
+      await expect(UserService.quitCourse({ user: studentUser, courseId: "c-404" })).rejects.toMatchObject<
+        Partial<CustomError>
+      >({
+        message: ErrorMessages.COURSE_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("deletes user course enrollment", async () => {
+      (UserModel.deleteUserCourse as jest.Mock).mockResolvedValue({ count: 1 });
+
+      await UserService.quitCourse({ user: studentUser, courseId: "c-2" });
+
+      expect(UserModel.deleteUserCourse).toHaveBeenCalledWith(studentUser.id, "c-2");
+    });
+  });
+
+  describe("getUserStaffRequests", () => {
+    const instructorUser = { id: "i-2", role: Role.INSTRUCTOR };
+    const assistantUser = { id: "as-1", role: Role.ASSISTANT };
+    const studentUser = { id: "u-8", role: Role.STUDENT };
+
+    it("throws when user is not instructor or assistant", async () => {
+      await expect(
+        UserService.getUserStaffRequests({ user: studentUser, status: Status.APPROVED, search: "physics" }),
+      ).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.ONLY_INSTRUCTORS_AND_ASSISTANTS_CAN_HAVE_STAFF_REQUESTS,
+        statusCode: 403,
+      });
+    });
+
+    it("returns staff requests for instructor", async () => {
+      const requests = [{ id: "st-1", status: Status.PENDING }];
+      (UserModel.findStaffRequests as jest.Mock).mockResolvedValue(requests);
+
+      const result = await UserService.getUserStaffRequests({
+        user: instructorUser,
+        status: Status.PENDING,
+        search: "student",
+      });
+
+      expect(result).toEqual(requests);
+      expect(UserModel.findStaffRequests).toHaveBeenCalledWith(instructorUser.id, Status.PENDING, "student");
+    });
+
+    it("returns staff requests for assistant", async () => {
+      const requests = [{ id: "st-2", status: Status.APPROVED }];
+      (UserModel.findStaffRequests as jest.Mock).mockResolvedValue(requests);
+
+      const result = await UserService.getUserStaffRequests({
+        user: assistantUser,
+        status: Status.APPROVED,
+        search: undefined,
+      });
+
+      expect(result).toEqual(requests);
+    });
+  });
+
+  describe("getUserTracks with staff role", () => {
+    it("returns tracks with staffRequestStatus for staff users", async () => {
+      (UserModel.findUserTracks as jest.Mock).mockResolvedValue([
+        {
+          track: {
+            id: "t-2",
+            name: "Backend",
+            courses: [
+              { id: "c-3", title: "Node" },
+              { id: "c-4", title: "Express" },
+            ],
+          },
+        },
+      ]);
+      (UserModel.findUserCoursesUserTrackRequest as jest.Mock).mockResolvedValue([{ courseId: "c-3" }]);
+      (UserModel.findStaffRequestsUserTrackRequest as jest.Mock).mockResolvedValue([
+        { courseId: "c-4", status: Status.APPROVED },
+      ]);
+
+      const result = await UserService.getUserTracks({ id: "i-3", role: Role.INSTRUCTOR });
+
+      expect(result).toEqual([
+        {
+          id: "t-2",
+          name: "Backend",
+          courses: [
+            {
+              id: "c-3",
+              title: "Node",
+              hasJoined: true,
+              staffRequestStatus: null,
+            },
+            {
+              id: "c-4",
+              title: "Express",
+              hasJoined: false,
+              staffRequestStatus: Status.APPROVED,
             },
           ],
         },

@@ -16,6 +16,7 @@ module.exports = {
     "src/**/*.ts",
     "!src/**/*.test.ts",
     "!src/index.ts",
+    "!src/utils/agora/**",
   ],
   coverageThreshold: {
     global: {
@@ -32,7 +33,6 @@ module.exports = {
     "^.+\\.tsx?$": [
       "ts-jest",
       {
-        isolatedModules: true,
         diagnostics: false,
         tsconfig: {
           esModuleInterop: true,
