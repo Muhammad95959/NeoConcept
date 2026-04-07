@@ -47,6 +47,19 @@ export class CourseModel {
     });
   }
 
+  static findUsersAssignedToTrack(ids: string[], trackId: string) {
+    return prisma.user.findMany({
+      where: {
+        id: { in: ids },
+        deletedAt: null,
+        userTracks: {
+          some: { trackId, deletedAt: null },
+        },
+      },
+      select: { id: true },
+    });
+  }
+
   static deleteCourseUsers(courseId: string) {
     return prisma.userCourse.deleteMany({ where: { courseId } });
   }

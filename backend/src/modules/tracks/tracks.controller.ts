@@ -30,7 +30,7 @@ export class TrackController {
   static async getTrackStaff(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as { id: string };
-      const data = await TrackService.getStaff(id, res.locals.user.currentTrackId, safeUserData);
+      const data = await TrackService.getStaff(id, res.locals.user.id, safeUserData);
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {

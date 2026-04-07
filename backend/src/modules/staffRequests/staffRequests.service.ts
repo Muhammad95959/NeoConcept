@@ -5,8 +5,11 @@ import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { StaffRequestModel } from "./staffRequests.model";
 
 export class StaffRequestService {
-  static async getMany(trackId: string) {
-    return StaffRequestModel.findManyByTrack(trackId);
+  static async getMany(userId: string) {
+    const userTrackIds = await StaffRequestModel.findTrackIdsByUser(userId);
+    if (userTrackIds.length === 0) return [];
+
+    return StaffRequestModel.findManyByTrackIds(userTrackIds.map((t) => t.trackId));
   }
 
   static async get(id: string) {

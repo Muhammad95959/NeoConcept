@@ -193,13 +193,6 @@ export class UserModel {
     });
   }
 
-  static updateUserCurrentTrack(tx: any, userId: string, trackId: string | null) {
-    return tx.user.update({
-      where: { id: userId },
-      data: { currentTrackId: trackId },
-    });
-  }
-
   static deleteUserTrack(tx: any, userId: string, trackId: string) {
     return tx.userTrack.deleteMany({
       where: { userId, trackId, deletedAt: null },
@@ -226,7 +219,11 @@ export class UserModel {
       });
 
       if (user.role === Role.ADMIN) {
-        const trackId = user.currentTrackId;
+        const createdTrack = await tx.track.findFirst({
+          where: { creatorId: user.id, deletedAt: null },
+          select: { id: true },
+        });
+        const trackId = createdTrack?.id;
 
         if (trackId) {
           await tx.track.update({
@@ -242,11 +239,6 @@ export class UserModel {
           await tx.userTrack.updateMany({
             where: { trackId },
             data: { deletedAt: now },
-          });
-
-          await tx.user.updateMany({
-            where: { currentTrackId: trackId },
-            data: { currentTrackId: null },
           });
         }
       }

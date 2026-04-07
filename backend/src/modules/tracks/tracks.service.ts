@@ -14,11 +14,12 @@ export class TrackService {
     return track;
   }
 
-  static async getStaff(trackId: string, currentTrackId: string | null, safeUserData: (user: any) => any) {
+  static async getStaff(trackId: string, userId: string, safeUserData: (user: any) => any) {
     const track = await TrackModel.findById(trackId);
     if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
-    if (currentTrackId !== trackId)
+    const isInTrack = await TrackModel.isUserInTrack(userId, trackId);
+    if (!isInTrack)
       throw new CustomError(ErrorMessages.YOU_DONT_HAVE_PERMISSION_TO_VIEW_THE_STAFF_OF_THIS_TRACK, 403, HTTPStatusText.FAIL);
 
     const staff = await TrackModel.findStaff(trackId);
@@ -48,7 +49,6 @@ export class TrackService {
         },
       });
 
-      await tx.user.update({ where: { id: userId }, data: { currentTrackId: newTrack.id } });
       await tx.userTrack.create({ data: { userId, trackId: newTrack.id } });
 
       return newTrack;
@@ -88,7 +88,6 @@ export class TrackService {
       await tx.track.update({ where: { id }, data: { deletedAt: new Date(), creatorId: null } });
       await tx.course.updateMany({ where: { trackId: id }, data: { deletedAt: new Date() } });
       await tx.userTrack.updateMany({ where: { trackId: id }, data: { deletedAt: new Date() } });
-      await tx.user.updateMany({ where: { currentTrackId: id }, data: { currentTrackId: null } });
     });
   }
 }

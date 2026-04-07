@@ -104,7 +104,6 @@ export class AuthModel {
   static async createUserWithGoogle(email: string, username: string, googleId: string, role: Role) {
     return prisma.user.create({
       data: { email, username, googleId, emailConfirmed: true, role },
-      include: { currentTrack: { include: { courses: true } } },
     });
   }
 
@@ -112,7 +111,6 @@ export class AuthModel {
     return prisma.user.update({
       where: { id: userId },
       data: { googleId, emailConfirmed: true },
-      include: { currentTrack: { include: { courses: true } } },
     });
   }
 

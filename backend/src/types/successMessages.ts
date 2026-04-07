@@ -22,4 +22,7 @@ export class SuccessMessages {
   static STUDENT_REQUEST_ANSWERED = "Request answered successfully";
   static PASSWORD_UPDATED = "Password updated successfully";
   static USER_UPDATED = "User updated successfully";
+  static COURSE_CREATED = "Course created successfully";
+  static COURSE_UPDATED = "Course updated successfully";
+  static COURSE_STAFF_UPDATED = "Course staff updated successfully";
 }

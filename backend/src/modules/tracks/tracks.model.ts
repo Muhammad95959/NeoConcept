@@ -26,8 +26,23 @@ export class TrackModel {
 
   static findStaff(trackId: string) {
     return prisma.user.findMany({
-      where: { currentTrackId: trackId, role: { in: [Role.INSTRUCTOR, Role.ASSISTANT] }, deletedAt: null },
+      where: {
+        role: { in: [Role.INSTRUCTOR, Role.ASSISTANT] },
+        deletedAt: null,
+        userTracks: {
+          some: { trackId, deletedAt: null },
+        },
+      },
     });
+  }
+
+  static async isUserInTrack(userId: string, trackId: string) {
+    const membership = await prisma.userTrack.findFirst({
+      where: { userId, trackId, deletedAt: null },
+      select: { userId: true },
+    });
+
+    return !!membership;
   }
 
   static create(data: any) {

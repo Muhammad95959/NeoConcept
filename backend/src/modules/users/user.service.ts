@@ -59,7 +59,6 @@ export class UserService {
 
     await UserModel.transaction(async (tx: any) => {
       await UserModel.upsertUserTrack(tx, user.id, trackId);
-      await UserModel.updateUserCurrentTrack(tx, user.id, trackId);
     });
   }
 
@@ -75,9 +74,6 @@ export class UserService {
         throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
       }
 
-      if (trackId === user.currentTrackId) {
-        await UserModel.updateUserCurrentTrack(tx, user.id, null);
-      }
     });
   }
 

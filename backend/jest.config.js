@@ -27,13 +27,19 @@ module.exports = {
   },
  
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
-  globals: {
-    "ts-jest": {
-      tsconfig: {
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
+  transform: {
+    ...tsJestTransformCfg,
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        isolatedModules: true,
+        diagnostics: false,
+        tsconfig: {
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
       },
-    },
+    ],
   },
 };
  

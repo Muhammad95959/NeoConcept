@@ -2,12 +2,21 @@ import prisma from "../../config/db";
 import { Status } from "../../generated/prisma";
 
 export class StaffRequestModel {
-  static findManyByTrack(trackId: string) {
+  static findTrackIdsByUser(userId: string) {
+    return prisma.userTrack.findMany({
+      where: { userId, deletedAt: null },
+      select: { trackId: true },
+    });
+  }
+
+  static findManyByTrackIds(trackIds: string[]) {
     return prisma.staffRequest.findMany({
       where: {
         user: {
           deletedAt: null,
-          currentTrackId: trackId,
+          userTracks: {
+            some: { trackId: { in: trackIds }, deletedAt: null },
+          },
         },
       },
       include: { user: true, course: true },

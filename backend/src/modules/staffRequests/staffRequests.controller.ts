@@ -7,7 +7,7 @@ import { SuccessMessages } from "../../types/successMessages";
 export class StaffRequestController {
   static async getMany(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await StaffRequestService.getMany(res.locals.user.currentTrackId);
+      const data = await StaffRequestService.getMany(res.locals.user.id);
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {

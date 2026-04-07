@@ -10,8 +10,8 @@ datasource db {
 model User {
   id                   String           @id @default(uuid())
   createdAt            DateTime         @default(now())
-  email                String
-  username             String
+  email                String           @unique
+  username             String           @unique
   password             String?
   googleId             String?          @unique
   role                 Role
@@ -22,25 +22,56 @@ model User {
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   deletedAt            DateTime?
-  currentTrackId       String?
-  Post                 Post[]
-  Resources            Resource[]
+  otpAttempts          Int              @default(0)
+
+  posts                Post[]           @relation("UserPosts")
+  resources            Resource[]       @relation("UserResources")
   staffRequests        StaffRequest[]
   studentRequests      StudentRequest[]
   createdTrack         Track?           @relation("TrackCreator")
   courseUsers          UserCourse[]
   userTracks           UserTrack[]
-  currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
+  hostedMeetings       Meeting[]        @relation("HostRelation")
+  meetingParticipants  Participant[]
 
   @@map("users")
 }
 
+model Meeting {
+  id          String        @id @default(uuid())
+  channelName String        @unique
+  title       String
+  hostId      String
+  scheduledAt DateTime?
+  status      MeetingStatus @default(SCHEDULED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  host         User          @relation("HostRelation", fields: [hostId], references: [id])
+  participants Participant[]
+
+  @@map("meetings")
+}
+
+model Participant {
+  id        String      @id @default(uuid())
+  userId    String
+  meetingId String
+  role      MeetingRole
+
+  user    User    @relation(fields: [userId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, meetingId])
+  @@map("participants")
+}
+
 model Track {
-  id               String      @id @default(uuid())
+  id               String    @id @default(uuid())
   name             String
-  createdAt        DateTime    @default(now())
+  createdAt        DateTime  @default(now())
   deletedAt        DateTime?
-  creatorId        String?     @unique
+  creatorId        String?   @unique
   domain           String?
   language         String?
   learningOutcomes String[]
@@ -50,10 +81,10 @@ model Track {
   relatedJobs      String[]
   shortDescription String?
   targetAudience   String?
-  courses          Course[]
-  creator          User?       @relation("TrackCreator", fields: [creatorId], references: [id])
-  userTracks       UserTrack[]
-  users            User[]      @relation("UserTrack")
+
+  courses    Course[]
+  creator    User?      @relation("TrackCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+  userTracks UserTrack[]
 
   @@map("tracks")
 }
@@ -63,31 +94,44 @@ model UserTrack {
   trackId   String
   joinedAt  DateTime  @default(now())
   deletedAt DateTime?
-  track     Track     @relation(fields: [trackId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+
+  track Track @relation(fields: [trackId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 
   @@id([userId, trackId])
   @@map("user_tracks")
 }
 
 model Course {
-  id                                                                String                 @id @default(uuid())
-  name                                                              String
-  description                                                       String?
-  createdAt                                                         DateTime               @default(now())
-  trackId                                                           String
-  deletedAt                                                         DateTime?
-  protected                                                         Boolean                @default(true)
-  course_prerequisites_course_prerequisites_courseIdTocourses       course_prerequisites[] @relation("course_prerequisites_courseIdTocourses")
-  course_prerequisites_course_prerequisites_prerequisiteIdTocourses course_prerequisites[] @relation("course_prerequisites_prerequisiteIdTocourses")
-  track                                                             Track                  @relation(fields: [trackId], references: [id])
-  Post                                                              Post[]
-  Resources                                                         Resource[]
-  staffRequests                                                     StaffRequest[]
-  studentRequests                                                   StudentRequest[]
-  courseUsers                                                       UserCourse[]
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  trackId     String
+  deletedAt   DateTime?
+  protected   Boolean   @default(true)
+
+  track                   Track                    @relation(fields: [trackId], references: [id])
+  posts                   Post[]
+  resources               Resource[]
+  staffRequests           StaffRequest[]
+  studentRequests         StudentRequest[]
+  courseUsers             UserCourse[]
+  coursePrerequisites     CoursePrerequisite[]     @relation("CoursePrerequisites")
+  prerequisiteFor         CoursePrerequisite[]     @relation("PrerequisitesFor")
 
   @@map("courses")
+}
+
+model CoursePrerequisite {
+  courseId       String
+  prerequisiteId String
+
+  course      Course @relation("CoursePrerequisites", fields: [courseId], references: [id])
+  prerequisite Course @relation("PrerequisitesFor", fields: [prerequisiteId], references: [id])
+
+  @@id([courseId, prerequisiteId])
+  @@map("course_prerequisites")
 }
 
 model UserCourse {
@@ -96,8 +140,9 @@ model UserCourse {
   roleInCourse Role
   joinedAt     DateTime  @default(now())
   deletedAt    DateTime?
-  course       Course    @relation(fields: [courseId], references: [id])
-  user         User      @relation(fields: [userId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@id([userId, courseId])
   @@map("user_courses")
@@ -110,8 +155,9 @@ model StaffRequest {
   message   String?
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@map("staff_requests")
 }
@@ -122,8 +168,9 @@ model StudentRequest {
   courseId  String
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@map("student_requests")
 }
@@ -137,8 +184,9 @@ model Resource {
   fileType   String
   fileUrl    String
   fileKey    String
-  course     Course   @relation(fields: [courseId], references: [id])
-  user       User     @relation(fields: [uploadedBy], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation("UserResources", fields: [uploadedBy], references: [id])
 
   @@map("resources")
 }
@@ -150,19 +198,11 @@ model Post {
   title      String
   content    String
   createdAt  DateTime @default(now())
-  course     Course   @relation(fields: [courseId], references: [id])
-  user       User     @relation(fields: [uploadedBy], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation("UserPosts", fields: [uploadedBy], references: [id])
 
   @@map("posts")
-}
-
-model course_prerequisites {
-  courseId                                             String
-  prerequisiteId                                       String
-  courses_course_prerequisites_courseIdTocourses       Course @relation("course_prerequisites_courseIdTocourses", fields: [courseId], references: [id])
-  courses_course_prerequisites_prerequisiteIdTocourses Course @relation("course_prerequisites_prerequisiteIdTocourses", fields: [prerequisiteId], references: [id])
-
-  @@id([courseId, prerequisiteId])
 }
 
 enum Role {
@@ -176,4 +216,15 @@ enum Status {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum MeetingRole {
+  HOST
+  PARTICIPANT
 }

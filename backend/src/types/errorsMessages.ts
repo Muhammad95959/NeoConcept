@@ -43,7 +43,8 @@ export class ErrorMessages {
   static UNAUTHORIZED = "Unauthorized";
   static FORBIDDEN = "Forbidden";
   static ONLY_STUDENTS_CAN_HAVE_STUDENT_REQUESTS = "Only students can have student requests";
-  static ONLY_INSTRUCTORS_AND_ASSISTANTS_CAN_HAVE_STAFF_REQUESTS = "Only instructors and assistants can have staff requests";
+  static ONLY_INSTRUCTORS_AND_ASSISTANTS_CAN_HAVE_STAFF_REQUESTS =
+    "Only instructors and assistants can have staff requests";
   static YOU_ALREADY_HAVE_A_PENDING_REQUEST_FOR_THIS_COURSE = "You already have a pending request for this course";
   static YOU_CAN_ONLY_UPDATE_YOUR_OWN_REQUESTS = "You can only update your own requests";
   static ONLY_PENDING_REQUESTS_CAN_BE_UPDATED = "Only pending requests can be updated";
@@ -55,4 +56,22 @@ export class ErrorMessages {
   static STUDENT_REQUEST_NOT_FOUND = "Student request not found";
   static ONLY_PENDING_REQUESTS_CAN_BE_DELETED = "Only pending requests can be deleted";
   static YOU_CAN_ONLY_DELETE_YOUR_OWN_REQUESTS = "You can only delete your own requests";
+  static REQUEST_ALREADY_ANSWERED = "Request already answered";
+  static COURSE_IS_PROTECTED = "This course is protected, please submit a student request to join";
+  static YOU_DONT_HAVE_PERMISSION_TO_VIEW_THE_STAFF_OF_THIS_TRACK =
+    "You don't have permission to view the staff of this track";
+  static DUPLICATE_TRACK_NAME = "Another track with the same name already exists, please choose a different name";
+  static COURSE_HAS_NO_INSTRUCTOR = "Course has no instructor, can't join";
+  static USER_ALREADY_ENROLLED_IN_COURSE = "You're already enrolled in this course";
+  static ONLY_STUDENTS_CAN_JOIN_COURSES = "Only students can join courses";
+  static USERNAME_OR_PASSWORD_REQUIRED = "Username and password are required";
+  static INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
+  static DUPLICATE_COURSE_NAME = "Another course with the same name already exists in this track, please choose a different name";
+  static INVALID_INSTRUCTOR_IDS = "One or more instructor IDs are invalid";
+  static NOT_AN_INSTRUCTOR = "One or more users are not instructors";
+  static INSTRUCTOR_NOT_ASSIGNED_TO_TRACK = "One or more instructors are not assigned to the track of this course";
+  static INVALID_ASSISTANT_IDS = "One or more assistant IDs are invalid";
+  static NOT_AN_ASSISTANT = "One or more users are not assistants";
+  static ASSISTANT_NOT_ASSIGNED_TO_TRACK = "One or more assistants are not assigned to the track of this course";
+  
 }
