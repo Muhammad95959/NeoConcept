@@ -23,7 +23,6 @@ export class UserController {
         message: result.message,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -37,7 +36,6 @@ export class UserController {
         message: SuccessMessages.USER_DELETED,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -51,7 +49,6 @@ export class UserController {
         data: tracks,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -67,7 +64,6 @@ export class UserController {
         message: SuccessMessages.TRACK_SELECTED,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -83,7 +79,6 @@ export class UserController {
         message: SuccessMessages.TRACK_QUITTED,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -97,7 +92,6 @@ export class UserController {
         data: courses,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -113,7 +107,6 @@ export class UserController {
         message: SuccessMessages.COURSE_JOINED,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -129,7 +122,6 @@ export class UserController {
         message: SuccessMessages.COURSE_QUITTED,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -145,7 +137,6 @@ export class UserController {
         data: requests,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -161,7 +152,6 @@ export class UserController {
         data: requests,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }

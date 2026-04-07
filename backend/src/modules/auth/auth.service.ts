@@ -110,7 +110,6 @@ export class AuthService {
       throw new CustomError(ErrorMessages.INVALID_CREDENTIALS, 400, HTTPStatusText.FAIL);
     }
 
-    console.log(user);
     if (!user.emailConfirmed) {
       throw new CustomError(ErrorMessages.EMAIL_NOT_CONFIRMED, 403, HTTPStatusText.FAIL);
     }

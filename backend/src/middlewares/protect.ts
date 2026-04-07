@@ -17,7 +17,6 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     res.locals.user = user;
     next();
   } catch (err: any) {
-    console.log(err.message);
     res.status(err.statusCode || 401).json({
       status: HTTPStatusText.FAIL,
       message: err.message || "Unauthorized",

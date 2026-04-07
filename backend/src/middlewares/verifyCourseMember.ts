@@ -12,7 +12,6 @@ export default async function verifyCourseMember(req: Request, res: Response, ne
     if (!membership) return res.status(403).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.NOT_A_MEMBER_OF_COURSE });
     next();
   } catch (err) {
-    console.log((err as Error).message);
     res.status(500).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.SOMETHING_WENT_WRONG });
   }
 }

@@ -12,7 +12,6 @@ export default async function verifyPostOwner(req: Request, res: Response, next:
       return res.status(403).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.NOT_POST_OWNER });
     next();
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.SOMETHING_WENT_WRONG });
   }
 }

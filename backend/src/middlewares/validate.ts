@@ -16,7 +16,6 @@ export const validate =
 
       next();
     } catch (err: any) {
-      console.log(err);
       return res.status(400).json({
         status: HTTPStatusText.FAIL,
         message: err.errors?.[0]?.message || "Validation error",

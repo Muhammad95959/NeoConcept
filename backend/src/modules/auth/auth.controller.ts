@@ -32,7 +32,6 @@ export class AuthController {
           : SuccessMessages.CONFIRM_EMAIL,
       });
     } catch (err: any) {
-      console.log(err.message);
       next(err);
     }
   }
@@ -44,7 +43,6 @@ export class AuthController {
 
       res.status(200).send(html);
     } catch (err: any) {
-      console.log(err);
       if (err.html) return res.status(err.status || 400).send(err.html);
       next(err);
     }
@@ -61,7 +59,6 @@ export class AuthController {
         message: SuccessMessages.NEW_CONFIRMATION,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -83,7 +80,6 @@ export class AuthController {
         data: user,
       });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
@@ -99,7 +95,6 @@ export class AuthController {
         ...result,
       });
     } catch (err: any) {
-      console.error(err.message);
       next(err);
     }
   }
@@ -162,7 +157,6 @@ export class AuthController {
         data: user,
       });
     } catch (err: any) {
-      console.log(err.message);
       next(err);
     }
   }

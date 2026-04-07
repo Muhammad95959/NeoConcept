@@ -10,7 +10,6 @@ export default async function checkCourseExists(req: Request, res: Response, nex
     if (!course) return res.status(404).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.COURSE_NOT_FOUND });
     next();
   } catch (err) {
-    console.log(err);
     res.status(500).json({ status: HTTPStatusText.ERROR, message: ErrorMessages.SOMETHING_WENT_WRONG });
   }
 }
