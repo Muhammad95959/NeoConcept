@@ -45,11 +45,12 @@ export class CourseService {
   static async create(body: {
     name: string;
     description?: string;
+    protect: boolean;
     trackId: string;
     instructorIds?: string[];
     assistantIds?: string[];
   }) {
-    const { name, description, trackId, instructorIds = [], assistantIds = [] } = body;
+    const { name, description, protect, trackId, instructorIds = [], assistantIds = [] } = body;
 
     const track = await CourseModel.findTrackById(trackId);
     if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
@@ -101,6 +102,7 @@ export class CourseService {
           name: name.trim(),
           description,
           trackId,
+          protected: protect
         },
       });
 
@@ -132,6 +134,7 @@ export class CourseService {
     const data: any = {};
     if (body.name) data.name = body.name.trim();
     if (body.description) data.description = body.description.trim();
+    if (body.protect !== undefined) data.protected = body.protect;
 
     if (body.name) {
       const duplicate = await CourseModel.findDuplicate(course.trackId, body.name, id);

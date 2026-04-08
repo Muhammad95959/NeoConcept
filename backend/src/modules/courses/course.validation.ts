@@ -13,6 +13,7 @@ export class CourseValidationSchemas {
   static create = z.object({
     name: z.string().min(1, "Course name is required"),
     description: z.string().optional(),
+    protect: z.boolean().optional(),
     trackId: z.string(),
     instructorIds: z.array(z.string()).optional(),
     assistantIds: z.array(z.string()).optional(),
@@ -21,6 +22,7 @@ export class CourseValidationSchemas {
   static updateBody = z.object({
     name: z.string().optional(),
     description: z.string().optional(),
+    protect: z.boolean().optional(),
   });
 
   static updateParmas = z.object({
