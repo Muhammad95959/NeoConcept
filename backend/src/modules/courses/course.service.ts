@@ -47,13 +47,19 @@ export class CourseService {
     description?: string;
     protect: boolean;
     trackId: string;
+    prerequisiteIds?: string[];
     instructorIds?: string[];
     assistantIds?: string[];
   }) {
-    const { name, description, protect, trackId, instructorIds = [], assistantIds = [] } = body;
+    const { name, description, protect, trackId, prerequisiteIds = [], instructorIds = [], assistantIds = [] } = body;
 
     const track = await CourseModel.findTrackById(trackId);
     if (!track) throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
+
+    let prerequisites: any[] = [];
+    prerequisites = await CourseModel.findPrerequisites(prerequisiteIds);
+    if (prerequisites.length !== prerequisiteIds.length)
+      throw new CustomError(ErrorMessages.INVALID_PREREQUISITES, 400, HTTPStatusText.FAIL);
 
     let instructors: any[] = [];
     if (instructorIds.length > 0) {
@@ -67,11 +73,7 @@ export class CourseService {
 
       const instructorsAssignedToTrack = await CourseModel.findUsersAssignedToTrack(instructorIds, trackId);
       if (instructorsAssignedToTrack.length !== instructorIds.length)
-        throw new CustomError(
-          ErrorMessages.INSTRUCTOR_NOT_ASSIGNED_TO_TRACK,
-          400,
-          HTTPStatusText.FAIL,
-        );
+        throw new CustomError(ErrorMessages.INSTRUCTOR_NOT_ASSIGNED_TO_TRACK, 400, HTTPStatusText.FAIL);
     }
 
     let assistants: any[] = [];
@@ -86,11 +88,7 @@ export class CourseService {
 
       const assistantsAssignedToTrack = await CourseModel.findUsersAssignedToTrack(assistantIds, trackId);
       if (assistantsAssignedToTrack.length !== assistantIds.length)
-        throw new CustomError(
-          ErrorMessages.ASSISTANT_NOT_ASSIGNED_TO_TRACK,
-          400,
-          HTTPStatusText.FAIL,
-        );
+        throw new CustomError(ErrorMessages.ASSISTANT_NOT_ASSIGNED_TO_TRACK, 400, HTTPStatusText.FAIL);
     }
 
     const duplicate = await CourseModel.findDuplicate(trackId, name);
@@ -102,9 +100,17 @@ export class CourseService {
           name: name.trim(),
           description,
           trackId,
-          protected: protect
+          protected: protect,
         },
       });
+
+      let prerequisitesData: any[] = [];
+      if (prerequisiteIds.length > 0) {
+        prerequisitesData = prerequisiteIds.map((id: string) => {
+          return { courseId: newCourse.id, prerequisiteId: id };
+        });
+        await tx.coursePrerequisite.createMany({ data: prerequisitesData });
+      }
 
       const staffData = [
         ...instructorIds.map((id) => ({
@@ -142,6 +148,38 @@ export class CourseService {
     }
 
     return CourseModel.update(id, data);
+  }
+
+  static async updatePrerequisites(
+    id: string,
+    body: {
+      prerequisiteIds: string[];
+    },
+  ) {
+    const { prerequisiteIds = [] } = body;
+
+    const course = await CourseModel.findById(id);
+    if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
+
+    const prerequisites = await CourseModel.findPrerequisites(prerequisiteIds);
+
+    if (prerequisites.length !== prerequisiteIds.length)
+      throw new CustomError(ErrorMessages.INVALID_PREREQUISITES, 400, HTTPStatusText.FAIL);
+
+    if (prerequisiteIds.includes(id))
+      throw new CustomError(ErrorMessages.CANNOT_PREREQUISITE_SELF, 400, HTTPStatusText.FAIL);
+
+    CourseModel.transaction(async (tx: any) => {
+      await tx.coursePrerequisite.deleteMany({ where: { courseId: id } });
+      if (prerequisiteIds && prerequisiteIds.length > 0) {
+        const prerequisitesData = prerequisiteIds.map((prereqId: string) => {
+          return { courseId: id, prerequisiteId: prereqId };
+        });
+        await tx.coursePrerequisite.createMany({ data: prerequisitesData });
+      }
+    });
+
+    return { message: SuccessMessages.PREREQUISITES_UPDATED };
   }
 
   static async updateStaff(

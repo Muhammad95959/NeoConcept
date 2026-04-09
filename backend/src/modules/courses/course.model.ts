@@ -4,14 +4,14 @@ export class CourseModel {
   static findMany(where: any) {
     return prisma.course.findMany({
       where,
-      include: { track: true, courseUsers: true },
+      include: { track: true, courseUsers: true, prerequisites: { select: { prerequisite: true } } },
     });
   }
 
   static findById(id: string) {
     return prisma.course.findFirst({
       where: { id, deletedAt: null },
-      include: { track: true, courseUsers: true },
+      include: { track: true, courseUsers: true, prerequisites: { select: { prerequisite: true } } },
     });
   }
 
@@ -24,6 +24,10 @@ export class CourseModel {
         ...(excludeId && { NOT: { id: excludeId } }),
       },
     });
+  }
+
+  static findPrerequisites(prerequisiteIds: string[]) {
+    return prisma.course.findMany({ where: { id: { in: prerequisiteIds }, deletedAt: null } });
   }
 
   static create(data: any) {

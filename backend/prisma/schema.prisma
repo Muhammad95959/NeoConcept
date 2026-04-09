@@ -117,8 +117,20 @@ model Course {
   staffRequests   StaffRequest[]
   studentRequests StudentRequest[]
   courseUsers     UserCourse[]
+  prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
+  requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
 
   @@map("courses")
+}
+
+model CoursePrerequisite {
+  courseId       String
+  prerequisiteId String
+  course         Course @relation("CourseToPrerequisite", fields: [courseId], references: [id])
+  prerequisite   Course @relation("PrerequisiteToCourse", fields: [prerequisiteId], references: [id])
+
+  @@id([courseId, prerequisiteId])
+  @@map("course_prerequisites")
 }
 
 model UserCourse {

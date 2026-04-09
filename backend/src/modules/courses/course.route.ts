@@ -29,6 +29,14 @@ router.patch(
 );
 
 router.put(
+  "/:id/prerequisites",
+  protect,
+  restrict(Role.ADMIN),
+  validate({body: CourseValidationSchemas.updatePrerequisitesBody, params: CourseValidationSchemas.updatePrerequisitesParams}),
+  CourseController.updatePrerequisites,
+);
+
+router.put(
   "/:id/staff",
   protect,
   restrict(Role.ADMIN),

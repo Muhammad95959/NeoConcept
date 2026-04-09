@@ -41,6 +41,15 @@ export class CourseController {
       next(err);
     }
   }
+  static async updatePrerequisites(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals.params;
+      const data = await CourseService.updatePrerequisites(id, res.locals.body);
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
+    } catch (err) {
+      next(err);
+    }
+  }
   static async updateStaff(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params;

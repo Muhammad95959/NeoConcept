@@ -30,7 +30,7 @@ describe("CourseModel", () => {
 
     expect(prisma.course.findMany).toHaveBeenCalledWith({
       where: { deletedAt: null },
-      include: { track: true, courseUsers: true },
+      include: { track: true, courseUsers: true, prerequisites: { select: { prerequisite: true } } },
     });
     expect(result).toEqual(rows);
   });
@@ -40,7 +40,7 @@ describe("CourseModel", () => {
 
     expect(prisma.course.findFirst).toHaveBeenCalledWith({
       where: { id: "c-1", deletedAt: null },
-      include: { track: true, courseUsers: true },
+      include: { track: true, courseUsers: true, prerequisites: { select: { prerequisite: true } } },
     });
   });
 

@@ -73,5 +73,6 @@ export class ErrorMessages {
   static INVALID_ASSISTANT_IDS = "One or more assistant IDs are invalid";
   static NOT_AN_ASSISTANT = "One or more users are not assistants";
   static ASSISTANT_NOT_ASSIGNED_TO_TRACK = "One or more assistants are not assigned to the track of this course";
-  
+  static INVALID_PREREQUISITES = "One or more prerequisiteIds are invalid";
+  static CANNOT_PREREQUISITE_SELF = "A course cannot be a prerequisite of itself";
 }
