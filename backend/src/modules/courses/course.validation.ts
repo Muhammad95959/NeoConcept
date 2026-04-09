@@ -35,7 +35,7 @@ export class CourseValidationSchemas {
   });
 
   static updatePrerequisitesBody = z.object({
-    prerequisiteIds: z.array(z.string()).min(1, "One or more prerequisiteIds are required"),
+    prerequisiteIds: z.array(z.string()).optional(),
   });
 
   static updateStaffBody = z
