@@ -2,12 +2,7 @@ import prisma from "../../config/db";
 import { MeetingStatus } from "../../generated/prisma";
 
 export class MeetingModel {
-  static async create(data: {
-    title: string;
-    hostId: string;
-    channelName: string;
-    scheduledAt?: Date | null;
-  }) {
+  static async create(data: { title: string; hostId: string; channelName: string; scheduledAt?: Date | null }) {
     const meeting = await prisma.meeting.create({
       data: {
         title: data.title,
@@ -64,7 +59,7 @@ export class MeetingModel {
     data: Partial<{
       title: string;
       scheduledAt: Date;
-      channelName: string
+      channelName: string;
       status: MeetingStatus;
     }>,
   ) {
@@ -80,11 +75,7 @@ export class MeetingModel {
     });
   }
 
-  static addParticipant(data: {
-    userId: string;
-    meetingId: string;
-    role?: "HOST" | "PARTICIPANT";
-  }) {
+  static addParticipant(data: { userId: string; meetingId: string; role?: "HOST" | "PARTICIPANT" }) {
     return prisma.participant.create({
       data: {
         userId: data.userId,

@@ -32,11 +32,7 @@ export class StaffRequestService {
     const existingRequest = await StaffRequestModel.findPendingRequest(userId, courseId);
 
     if (existingRequest) {
-      throw new CustomError(
-        ErrorMessages.YOU_ALREADY_HAVE_A_PENDING_REQUEST_FOR_THIS_COURSE,
-        400,
-        HTTPStatusText.FAIL
-      );
+      throw new CustomError(ErrorMessages.YOU_ALREADY_HAVE_A_PENDING_REQUEST_FOR_THIS_COURSE, 400, HTTPStatusText.FAIL);
     }
 
     return StaffRequestModel.create({

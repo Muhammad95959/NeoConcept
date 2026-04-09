@@ -10,7 +10,8 @@ export class StudentRequestService {
     if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     const isStaff = await StudentRequestModel.findStaffMember(courseId, userId);
-    if (!isStaff) throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
+    if (!isStaff)
+      throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
 
     return StudentRequestModel.findManyByCourse(courseId, status);
   }
@@ -20,7 +21,8 @@ export class StudentRequestService {
     if (!request) throw new CustomError(ErrorMessages.STUDENT_REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     const isStaff = await StudentRequestModel.findStaffMember(request.courseId, userId);
-    if (!isStaff) throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
+    if (!isStaff)
+      throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
 
     return request;
   }
@@ -30,18 +32,18 @@ export class StudentRequestService {
     if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     const isEnrolled = await StudentRequestModel.findEnrollment(userId, courseId);
-    if (isEnrolled) throw new CustomError(ErrorMessages.YOU_ARE_ALREADY_ENROLLED_IN_THIS_COURSE, 400, HTTPStatusText.FAIL);
+    if (isEnrolled)
+      throw new CustomError(ErrorMessages.YOU_ARE_ALREADY_ENROLLED_IN_THIS_COURSE, 400, HTTPStatusText.FAIL);
 
-    if (!course.protected)
-      throw new CustomError(
-        ErrorMessages.THIS_COURSE_IS_NOT_PROTECTED,
-        400,
-        HTTPStatusText.FAIL,
-      );
+    if (!course.protected) throw new CustomError(ErrorMessages.THIS_COURSE_IS_NOT_PROTECTED, 400, HTTPStatusText.FAIL);
 
     const existingRequest = await StudentRequestModel.findPendingRequest(userId, courseId);
     if (existingRequest)
-      throw new CustomError(ErrorMessages.YOU_HAVE_ALREADY_SUBMITTED_A_REQUEST_FOR_THIS_COURSE, 400, HTTPStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.YOU_HAVE_ALREADY_SUBMITTED_A_REQUEST_FOR_THIS_COURSE,
+        400,
+        HTTPStatusText.FAIL,
+      );
 
     return StudentRequestModel.create({ courseId, userId });
   }
@@ -54,7 +56,8 @@ export class StudentRequestService {
       throw new CustomError(ErrorMessages.REQUEST_ALREADY_ANSWERED, 400, HTTPStatusText.FAIL);
 
     const isStaff = await StudentRequestModel.findStaffMember(request.courseId, userId);
-    if (!isStaff) throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
+    if (!isStaff)
+      throw new CustomError(ErrorMessages.YOU_ARE_NOT_A_STAFF_MEMBER_OF_THIS_COURSE, 403, HTTPStatusText.FAIL);
 
     await StudentRequestModel.transaction(async (tx: any) => {
       await tx.studentRequest.update({ where: { id }, data: { status } });

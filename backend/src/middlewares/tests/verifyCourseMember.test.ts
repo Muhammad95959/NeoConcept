@@ -14,15 +14,17 @@ jest.mock("../../config/db", () => ({
 }));
 
 describe("verifyCourseMember", () => {
-  const createRes = (userId?: string) => ({
-    locals: { user: { id: userId || "u-1" } },
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as unknown as Response);
+  const createRes = (userId?: string) =>
+    ({
+      locals: { user: { id: userId || "u-1" } },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }) as unknown as Response;
 
-  const createReq = (params: any) => ({
-    params,
-  } as unknown as Request);
+  const createReq = (params: any) =>
+    ({
+      params,
+    }) as unknown as Request;
 
   afterEach(() => {
     jest.clearAllMocks();

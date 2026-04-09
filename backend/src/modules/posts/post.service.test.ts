@@ -50,9 +50,7 @@ describe("PostService", () => {
     it("throws when post is missing", async () => {
       (PostModel.findFirst as jest.Mock).mockResolvedValue(null);
 
-      await expect(PostService.getPost({ courseId: "c-1", id: "p-404" })).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
+      await expect(PostService.getPost({ courseId: "c-1", id: "p-404" })).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.POST_NOT_FOUND,
         statusCode: 404,
       });

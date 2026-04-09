@@ -28,9 +28,7 @@ describe("generateAgoraToken", () => {
 
     const { generateAgoraToken } = require("../agoraToken") as typeof import("../agoraToken");
 
-    expect(() => generateAgoraToken("room-1", "user-1")).toThrow(
-      ErrorMessages.AGORA_APP_ID_OR_CERTIFICATE_MISSING,
-    );
+    expect(() => generateAgoraToken("room-1", "user-1")).toThrow(ErrorMessages.AGORA_APP_ID_OR_CERTIFICATE_MISSING);
   });
 
   it("builds Agora token with expected payload", () => {
@@ -38,7 +36,8 @@ describe("generateAgoraToken", () => {
     process.env.AGORA_APP_CERT = "app-cert";
     const nowSpy = jest.spyOn(Date, "now").mockReturnValue(1_700_000_000_000);
 
-    const { RtcTokenBuilder, Role } = require("../agora/rtcTokenBuilder2") as typeof import("../agora/rtcTokenBuilder2");
+    const { RtcTokenBuilder, Role } =
+      require("../agora/rtcTokenBuilder2") as typeof import("../agora/rtcTokenBuilder2");
     (RtcTokenBuilder.buildTokenWithUserAccount as jest.Mock).mockReturnValue("agora-token");
 
     const { generateAgoraToken } = require("../agoraToken") as typeof import("../agoraToken");

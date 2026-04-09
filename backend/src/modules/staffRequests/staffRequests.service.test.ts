@@ -35,10 +35,7 @@ describe("StaffRequestService", () => {
 
     it("returns staff requests by track ids", async () => {
       const requests = [{ id: "sr-1", userId: "u-2", courseId: "c-1" }];
-      (StaffRequestModel.findTrackIdsByUser as jest.Mock).mockResolvedValue([
-        { trackId: "t-1" },
-        { trackId: "t-2" },
-      ]);
+      (StaffRequestModel.findTrackIdsByUser as jest.Mock).mockResolvedValue([{ trackId: "t-1" }, { trackId: "t-2" }]);
       (StaffRequestModel.findManyByTrackIds as jest.Mock).mockResolvedValue(requests);
 
       const result = await StaffRequestService.getMany("u-1");

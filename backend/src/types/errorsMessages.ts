@@ -66,7 +66,8 @@ export class ErrorMessages {
   static ONLY_STUDENTS_CAN_JOIN_COURSES = "Only students can join courses";
   static USERNAME_OR_PASSWORD_REQUIRED = "Username and password are required";
   static INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
-  static DUPLICATE_COURSE_NAME = "Another course with the same name already exists in this track, please choose a different name";
+  static DUPLICATE_COURSE_NAME =
+    "Another course with the same name already exists in this track, please choose a different name";
   static INVALID_INSTRUCTOR_IDS = "One or more instructor IDs are invalid";
   static NOT_AN_INSTRUCTOR = "One or more users are not instructors";
   static INSTRUCTOR_NOT_ASSIGNED_TO_TRACK = "One or more instructors are not assigned to the track of this course";

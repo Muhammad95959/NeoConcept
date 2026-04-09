@@ -31,7 +31,7 @@ export class PostsController {
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.params as CourseIdParam;
-      const { title, content } =res.locals.body as CreatePostInput;
+      const { title, content } = res.locals.body as CreatePostInput;
 
       const post = await PostService.create({ courseId, userId: res.locals.user.id, title, content });
 

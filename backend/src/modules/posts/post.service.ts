@@ -76,7 +76,7 @@ export class PostService {
     return PostModel.update(id, data);
   }
 
-  static async delete({courseId, id, userId} : DeletePostInput) {
+  static async delete({ courseId, id, userId }: DeletePostInput) {
     const post = await PostModel.findFirst({
       courseId,
       id,

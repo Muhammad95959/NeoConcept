@@ -32,7 +32,10 @@ router.put(
   "/:id/prerequisites",
   protect,
   restrict(Role.ADMIN),
-  validate({body: CourseValidationSchemas.updatePrerequisitesBody, params: CourseValidationSchemas.updatePrerequisitesParams}),
+  validate({
+    body: CourseValidationSchemas.updatePrerequisitesBody,
+    params: CourseValidationSchemas.updatePrerequisitesParams,
+  }),
   CourseController.updatePrerequisites,
 );
 

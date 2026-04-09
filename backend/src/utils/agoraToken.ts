@@ -9,11 +9,7 @@ import { RtcTokenBuilder, Role } from "./agora/rtcTokenBuilder2";
 
 export function generateAgoraToken(channelName: string, uid: string) {
   if (!APP_ID || !APP_CERTIFICATE) {
-    throw new CustomError(
-      ErrorMessages.AGORA_APP_ID_OR_CERTIFICATE_MISSING,
-      400,
-      HTTPStatusText.FAIL,
-    );
+    throw new CustomError(ErrorMessages.AGORA_APP_ID_OR_CERTIFICATE_MISSING, 400, HTTPStatusText.FAIL);
   }
 
   const role = Role.PUBLISHER;
@@ -22,14 +18,7 @@ export function generateAgoraToken(channelName: string, uid: string) {
   const expireTime = 3600;
 
   const privilegeExpiredTs = currentTimestamp + expireTime;
-  return RtcTokenBuilder.buildTokenWithUserAccount(
-    APP_ID,
-    APP_CERTIFICATE,
-    channelName,
-    uid,
-    role,
-    privilegeExpiredTs,
-  );
+  return RtcTokenBuilder.buildTokenWithUserAccount(APP_ID, APP_CERTIFICATE, channelName, uid, role, privilegeExpiredTs);
 }
 
 // | Type        | Without Wildcard | With Wildcard |

@@ -14,14 +14,16 @@ jest.mock("../../config/db", () => ({
 }));
 
 describe("checkCourseExists", () => {
-  const createRes = () => ({
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as unknown as Response);
+  const createRes = () =>
+    ({
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }) as unknown as Response;
 
-  const createReq = (params: any) => ({
-    params,
-  } as unknown as Request);
+  const createReq = (params: any) =>
+    ({
+      params,
+    }) as unknown as Request;
 
   afterEach(() => {
     jest.clearAllMocks();

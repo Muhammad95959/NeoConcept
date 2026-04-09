@@ -17,10 +17,11 @@ describe("protect middleware", () => {
     return res;
   };
 
-  const createReq = (headers?: any, cookies?: any) => ({
-    headers: headers || {},
-    cookies: cookies || {},
-  } as unknown as Request);
+  const createReq = (headers?: any, cookies?: any) =>
+    ({
+      headers: headers || {},
+      cookies: cookies || {},
+    }) as unknown as Request;
 
   afterEach(() => {
     jest.clearAllMocks();

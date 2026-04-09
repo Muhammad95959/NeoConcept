@@ -27,9 +27,7 @@ export class AuthController {
 
       res.status(201).json({
         status: HTTPStatusText.SUCCESS,
-        message: isDev
-          ? SuccessMessages.DEV_SIGNUP
-          : SuccessMessages.CONFIRM_EMAIL,
+        message: isDev ? SuccessMessages.DEV_SIGNUP : SuccessMessages.CONFIRM_EMAIL,
       });
     } catch (err: any) {
       next(err);
@@ -52,7 +50,7 @@ export class AuthController {
     try {
       const { email } = res.locals.body as ResendConfirmationEmailInput;
 
-      await AuthService.resendConfirmationEmail({email});
+      await AuthService.resendConfirmationEmail({ email });
 
       res.status(201).json({
         status: HTTPStatusText.SUCCESS,
@@ -88,7 +86,7 @@ export class AuthController {
     try {
       const { email } = req.body as ForgotPasswordInput;
 
-      const result = await AuthService.forgotPassword({email});
+      const result = await AuthService.forgotPassword({ email });
 
       res.status(201).json({
         status: HTTPStatusText.SUCCESS,
@@ -103,7 +101,7 @@ export class AuthController {
     try {
       const { email, otp } = res.locals.body as VerifyOTPInput;
 
-      const result = await AuthService.verifyOTP({email, otp});
+      const result = await AuthService.verifyOTP({ email, otp });
 
       res.status(200).json({
         status: HTTPStatusText.SUCCESS,

@@ -20,13 +20,22 @@ export class TrackService {
 
     const isInTrack = await TrackModel.isUserInTrack(userId, trackId);
     if (!isInTrack)
-      throw new CustomError(ErrorMessages.YOU_DONT_HAVE_PERMISSION_TO_VIEW_THE_STAFF_OF_THIS_TRACK, 403, HTTPStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.YOU_DONT_HAVE_PERMISSION_TO_VIEW_THE_STAFF_OF_THIS_TRACK,
+        403,
+        HTTPStatusText.FAIL,
+      );
 
     const staff = await TrackModel.findStaff(trackId);
 
     return staff
       .filter((user: any) => user.emailConfirmed === true)
-      .map((user: any) => ({ ...safeUserData(user), googleId: undefined, emailConfirmed: undefined, deletedAt: undefined }));
+      .map((user: any) => ({
+        ...safeUserData(user),
+        googleId: undefined,
+        emailConfirmed: undefined,
+        deletedAt: undefined,
+      }));
   }
 
   static async create(userId: string, payload: any) {

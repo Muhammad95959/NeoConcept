@@ -3,4 +3,3 @@ export class HTTPStatusText {
   static FAIL = "fail";
   static ERROR = "error";
 }
-

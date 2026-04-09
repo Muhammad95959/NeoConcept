@@ -81,7 +81,9 @@ describe("ResourceService", () => {
       ).rejects.toThrow("db failure");
 
       expect(s3.send).toHaveBeenCalledTimes(1);
-      expect(s3.send).toHaveBeenCalledWith(expect.objectContaining({ input: expect.objectContaining({ Key: "resources/slides.pdf" }) }));
+      expect(s3.send).toHaveBeenCalledWith(
+        expect.objectContaining({ input: expect.objectContaining({ Key: "resources/slides.pdf" }) }),
+      );
     });
   });
 

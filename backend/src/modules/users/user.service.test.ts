@@ -227,9 +227,9 @@ describe("UserService", () => {
 
   describe("deleteUser", () => {
     it("throws when user is already deleted", async () => {
-      await expect(
-        UserService.deleteUser({ id: "u-1", deletedAt: new Date() }),
-      ).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(UserService.deleteUser({ id: "u-1", deletedAt: new Date() })).rejects.toMatchObject<
+        Partial<CustomError>
+      >({
         message: ErrorMessages.USER_NOT_FOUND,
         statusCode: 404,
       });
@@ -257,9 +257,7 @@ describe("UserService", () => {
     it("throws when track does not exist", async () => {
       (UserModel.findTrackById as jest.Mock).mockResolvedValue(null);
 
-      await expect(UserService.selectTrack({ user, trackId: "t-404" })).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
+      await expect(UserService.selectTrack({ user, trackId: "t-404" })).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.TRACK_NOT_FOUND,
         statusCode: 404,
       });
@@ -296,9 +294,7 @@ describe("UserService", () => {
       });
       (UserModel.deleteUserTrack as jest.Mock).mockResolvedValue({ count: 0 });
 
-      await expect(UserService.quitTrack({ user, trackId: "t-404" })).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
+      await expect(UserService.quitTrack({ user, trackId: "t-404" })).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.TRACK_NOT_FOUND,
         statusCode: 404,
       });
@@ -334,9 +330,9 @@ describe("UserService", () => {
     const instructorUser = { id: "i-1", role: Role.INSTRUCTOR };
 
     it("throws when user is not a student", async () => {
-      await expect(
-        UserService.getUserStudentRequests(instructorUser, Status.PENDING, "math"),
-      ).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(UserService.getUserStudentRequests(instructorUser, Status.PENDING, "math")).rejects.toMatchObject<
+        Partial<CustomError>
+      >({
         message: ErrorMessages.ONLY_STUDENTS_CAN_HAVE_STUDENT_REQUESTS,
         statusCode: 403,
       });

@@ -26,4 +26,3 @@ export type CoursesServicesInput = {
   user: any;
   courseId: string;
 };
-

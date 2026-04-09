@@ -5,6 +5,6 @@ export interface IAuthRequest extends Request {
     id: string;
     email: string;
     iat?: string;
-    exp?: string
+    exp?: string;
   };
 }

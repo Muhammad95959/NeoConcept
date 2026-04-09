@@ -11,10 +11,10 @@ import { Constants } from "../../types/constants";
 
 const router = express.Router();
 const getFrontendOrigin = () => {
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:9595";
+  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
   if (frontendUrl.endsWith(":")) {
-    return `${frontendUrl}9595`;
+    return `${frontendUrl}3000`;
   }
 
   return frontendUrl;

@@ -67,9 +67,7 @@ describe("TrackService", () => {
     it("throws when track does not exist", async () => {
       (TrackModel.findById as jest.Mock).mockResolvedValue(null);
 
-      await expect(TrackService.getStaff("t-404", "u-1", (u: any) => u)).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
+      await expect(TrackService.getStaff("t-404", "u-1", (u: any) => u)).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.TRACK_NOT_FOUND,
         statusCode: 404,
       });
@@ -93,7 +91,10 @@ describe("TrackService", () => {
         { id: "u-2", username: "I2", emailConfirmed: false, googleId: "g-2", deletedAt: null },
       ]);
 
-      const result = await TrackService.getStaff("t-1", "u-viewer", (user: any) => ({ id: user.id, username: user.username }));
+      const result = await TrackService.getStaff("t-1", "u-viewer", (user: any) => ({
+        id: user.id,
+        username: user.username,
+      }));
 
       expect(result).toEqual([
         {
@@ -180,9 +181,7 @@ describe("TrackService", () => {
       (TrackModel.findById as jest.Mock).mockResolvedValue({ id: "t-1", name: "Frontend" });
       (TrackModel.findByName as jest.Mock).mockResolvedValue({ id: "t-2", name: "Backend" });
 
-      await expect(
-        TrackService.update("t-1", { name: "Backend" }),
-      ).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(TrackService.update("t-1", { name: "Backend" })).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.DUPLICATE_TRACK_NAME,
         statusCode: 400,
       });

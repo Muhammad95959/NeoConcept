@@ -8,12 +8,7 @@ import { StaffRequestValidationSchemas } from "./staffRequests.validation";
 
 const router = express.Router();
 
-router.get(
-  "/",
-  protect,
-  restrict(Role.ADMIN),
-  StaffRequestController.getMany,
-);
+router.get("/", protect, restrict(Role.ADMIN), StaffRequestController.getMany);
 
 router.get(
   "/:id",

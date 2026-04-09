@@ -353,7 +353,9 @@ describe("AuthController", () => {
     const res = createMockRes();
     res.locals = { body: { email: "test@example.com", otp: "123456", newPassword: "newpass" } };
 
-    (AuthService.resetPassword as jest.Mock).mockResolvedValue({ message: SuccessMessages.PASSWORD_RESET_SUCCESSFULLY });
+    (AuthService.resetPassword as jest.Mock).mockResolvedValue({
+      message: SuccessMessages.PASSWORD_RESET_SUCCESSFULLY,
+    });
 
     await AuthController.resetPassword(req, res, next);
 

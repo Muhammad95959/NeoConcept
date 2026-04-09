@@ -83,9 +83,7 @@ describe("UserModel", () => {
 
   describe("getUserCoursesModel", () => {
     it("returns user courses with related track info", async () => {
-      const courses = [
-        { courseId: "c-1", course: { id: "c-1", title: "React", track: { id: "t-1" } } },
-      ];
+      const courses = [{ courseId: "c-1", course: { id: "c-1", title: "React", track: { id: "t-1" } } }];
       (prisma.userCourse.findMany as jest.Mock).mockResolvedValue(courses);
 
       const result = await UserModel.getUserCoursesModel("u-1");

@@ -55,8 +55,8 @@ export class StaffRequestController {
 
   static async answer(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = res.locals.params;
-        const { status } = res.locals.body;
+      const { id } = res.locals.params;
+      const { status } = res.locals.body;
 
       const message = await StaffRequestService.answer(id, status as Status);
 

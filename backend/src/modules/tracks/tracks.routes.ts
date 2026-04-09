@@ -8,17 +8,9 @@ import { TrackValidationSchemas } from "./tracks.validation";
 
 const router = express.Router();
 
-router.get(
-  "/",
-  validate({ query: TrackValidationSchemas.getManyQuery }),
-  TrackController.getTracks,
-);
+router.get("/", validate({ query: TrackValidationSchemas.getManyQuery }), TrackController.getTracks);
 
-router.get(
-  "/:id",
-  validate({ params: TrackValidationSchemas.getByIdParams }),
-  TrackController.getTrackById,
-);
+router.get("/:id", validate({ params: TrackValidationSchemas.getByIdParams }), TrackController.getTrackById);
 
 router.get(
   "/:id/staff",

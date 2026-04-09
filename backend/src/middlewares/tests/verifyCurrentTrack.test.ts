@@ -15,13 +15,14 @@ jest.mock("../../config/db", () => ({
 }));
 
 describe("verifyCurrentTrack", () => {
-  const createRes = (user?: any) => ({
-    locals: { user },
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as unknown as Response);
+  const createRes = (user?: any) =>
+    ({
+      locals: { user },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }) as unknown as Response;
 
-  const createReq = () => ({} as unknown as Request);
+  const createReq = () => ({}) as unknown as Request;
 
   afterEach(() => {
     jest.clearAllMocks();

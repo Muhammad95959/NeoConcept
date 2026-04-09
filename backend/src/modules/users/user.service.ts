@@ -73,7 +73,6 @@ export class UserService {
       if (count === 0) {
         throw new CustomError(ErrorMessages.TRACK_NOT_FOUND, 404, HTTPStatusText.FAIL);
       }
-
     });
   }
 
@@ -111,11 +110,7 @@ export class UserService {
     }
 
     if (course.protected) {
-      throw new CustomError(
-        ErrorMessages.COURSE_IS_PROTECTED,
-        403,
-        HTTPStatusText.FAIL,
-      );
+      throw new CustomError(ErrorMessages.COURSE_IS_PROTECTED, 403, HTTPStatusText.FAIL);
     }
 
     await UserModel.createUserCourse(user.id, courseId, user.role);
@@ -135,7 +130,11 @@ export class UserService {
 
   static async getUserStaffRequests({ user, status, search }: GetUserStaffRequestsInput) {
     if (![Role.INSTRUCTOR, Role.ASSISTANT].includes(user.role)) {
-      throw new CustomError(ErrorMessages.ONLY_INSTRUCTORS_AND_ASSISTANTS_CAN_HAVE_STAFF_REQUESTS, 403, HTTPStatusText.FAIL);
+      throw new CustomError(
+        ErrorMessages.ONLY_INSTRUCTORS_AND_ASSISTANTS_CAN_HAVE_STAFF_REQUESTS,
+        403,
+        HTTPStatusText.FAIL,
+      );
     }
 
     return UserModel.findStaffRequests(user.id, status, search);
