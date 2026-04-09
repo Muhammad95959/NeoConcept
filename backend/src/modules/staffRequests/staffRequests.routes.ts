@@ -1,45 +1,58 @@
 import express from "express";
 import { Role } from "../../generated/prisma";
-import * as authController from "../auth/auth.controller";
-import * as staffRequestsController from "./staffRequests.controller";
+import { protect } from "../../middlewares/protect";
+import { restrict } from "../../middlewares/restrict";
+import { validate } from "../../middlewares/validate";
+import { StaffRequestController } from "./staffRequests.controller";
+import { StaffRequestValidationSchemas } from "./staffRequests.validation";
 
 const router = express.Router();
 
-router.get("/", authController.protect, authController.restrict(Role.ADMIN), staffRequestsController.getStaffRequests);
+router.get(
+  "/",
+  protect,
+  restrict(Role.ADMIN),
+  StaffRequestController.getMany,
+);
 
 router.get(
   "/:id",
-  authController.protect,
-  authController.restrict(Role.ADMIN),
-  staffRequestsController.getStaffRequestById,
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  StaffRequestController.get,
 );
 
 router.post(
   "/",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.createStaffRequest,
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ body: StaffRequestValidationSchemas.createBody }),
+  StaffRequestController.create,
 );
 
 router.patch(
   "/:id",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.updateStaffRequest,
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.updateBody }),
+  StaffRequestController.update,
 );
 
 router.patch(
   "/:id/answer",
-  authController.protect,
-  authController.restrict(Role.ADMIN),
-  staffRequestsController.answerStaffRequest,
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.answerBody }),
+  StaffRequestController.answer,
 );
 
 router.delete(
   "/:id",
-  authController.protect,
-  authController.restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  staffRequestsController.deleteStaffRequest,
+  protect,
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  StaffRequestController.delete,
 );
 
 export default router;

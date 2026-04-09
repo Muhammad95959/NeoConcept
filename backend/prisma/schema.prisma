@@ -8,52 +8,83 @@ datasource db {
 }
 
 model User {
-  id                   String           @id @default(uuid())
-  createdAt            DateTime         @default(now())
+  id                   String    @id @default(uuid())
+  createdAt            DateTime  @default(now())
   email                String
   username             String
   password             String?
-  googleId             String?          @unique
+  googleId             String?   @unique
   role                 Role
-  emailConfirmed       Boolean          @default(false)
+  emailConfirmed       Boolean   @default(false)
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
-  currentTrackId       String?
-  createdTrack         Track?           @relation("TrackCreator")
-  currentTrack         Track?           @relation("UserTrack", fields: [currentTrackId], references: [id])
   deletedAt            DateTime?
-  courseUsers          UserCourse[]
-  Resources            Resource[]
-  Post                 Post[]
-  userTracks           UserTrack[]
-  staffRequests        StaffRequest[]
-  studentRequests      StudentRequest[]
+  otpAttempts          Int       @default(0)
+
+  posts               Post[]           @relation("UserPosts")
+  resources           Resource[]       @relation("UserResources")
+  staffRequests       StaffRequest[]
+  studentRequests     StudentRequest[]
+  createdTrack        Track?           @relation("TrackCreator")
+  courseUsers         UserCourse[]
+  userTracks          UserTrack[]
+  hostedMeetings      Meeting[]        @relation("HostRelation")
+  meetingParticipants Participant[]
 
   @@map("users")
 }
 
+model Meeting {
+  id          String        @id @default(uuid())
+  channelName String        @unique
+  title       String
+  hostId      String        @unique
+  scheduledAt DateTime?
+  status      MeetingStatus @default(SCHEDULED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  host         User          @relation("HostRelation", fields: [hostId], references: [id])
+  participants Participant[]
+
+  @@map("meetings")
+}
+
+model Participant {
+  id        String      @id @default(uuid())
+  userId    String
+  meetingId String
+  role      MeetingRole
+
+  user    User    @relation(fields: [userId], references: [id])
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, meetingId])
+  @@map("participants")
+}
+
 model Track {
-  id               String      @id @default(uuid())
+  id               String    @id @default(uuid())
   name             String
-  shortDescription String?
-  longDescription  String?
-  domain           String?
-  level            String?
-  language         String?
-  targetAudience   String?
-  learningOutcomes String[]
-  relatedJobs      String[]
-  pricingModel     String?
-  createdAt        DateTime    @default(now())
+  createdAt        DateTime  @default(now())
   deletedAt        DateTime?
-  creatorId        String?     @unique
-  creator          User?       @relation("TrackCreator", fields: [creatorId], references: [id])
-  users            User[]      @relation("UserTrack")
-  courses          Course[]
-  userTracks       UserTrack[]
+  creatorId        String?   @unique
+  domain           String?
+  language         String?
+  learningOutcomes String[]
+  level            String?
+  longDescription  String?
+  pricingModel     String?
+  relatedJobs      String[]
+  shortDescription String?
+  targetAudience   String?
+
+  courses    Course[]
+  creator    User?       @relation("TrackCreator", fields: [creatorId], references: [id])
+  userTracks UserTrack[]
 
   @@map("tracks")
 }
@@ -63,27 +94,29 @@ model UserTrack {
   trackId   String
   joinedAt  DateTime  @default(now())
   deletedAt DateTime?
-  user      User      @relation(fields: [userId], references: [id])
-  track     Track     @relation(fields: [trackId], references: [id])
+
+  track Track @relation(fields: [trackId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
 
   @@id([userId, trackId])
   @@map("user_tracks")
 }
 
 model Course {
-  id              String               @id @default(uuid())
-  name            String
-  description     String?
-  protected       Boolean              @default(true)
-  createdAt       DateTime             @default(now())
-  trackId         String
-  track           Track                @relation(fields: [trackId], references: [id])
-  deletedAt       DateTime?
-  courseUsers     UserCourse[]
-  Resources       Resource[]
-  Post            Post[]
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  trackId     String
+  deletedAt   DateTime?
+  protected   Boolean   @default(true)
+
+  track           Track            @relation(fields: [trackId], references: [id])
+  posts           Post[]
+  resources       Resource[]
   staffRequests   StaffRequest[]
   studentRequests StudentRequest[]
+  courseUsers     UserCourse[]
   prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
   requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
 
@@ -106,8 +139,9 @@ model UserCourse {
   roleInCourse Role
   joinedAt     DateTime  @default(now())
   deletedAt    DateTime?
-  user         User      @relation(fields: [userId], references: [id])
-  course       Course    @relation(fields: [courseId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@id([userId, courseId])
   @@map("user_courses")
@@ -120,8 +154,9 @@ model StaffRequest {
   message   String?
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@map("staff_requests")
 }
@@ -132,8 +167,9 @@ model StudentRequest {
   courseId  String
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@map("student_requests")
 }
@@ -147,8 +183,9 @@ model Resource {
   fileType   String
   fileUrl    String
   fileKey    String
-  user       User     @relation(fields: [uploadedBy], references: [id])
-  course     Course   @relation(fields: [courseId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation("UserResources", fields: [uploadedBy], references: [id])
 
   @@map("resources")
 }
@@ -160,8 +197,9 @@ model Post {
   title      String
   content    String
   createdAt  DateTime @default(now())
-  user       User     @relation(fields: [uploadedBy], references: [id])
-  course     Course   @relation(fields: [courseId], references: [id])
+
+  course Course @relation(fields: [courseId], references: [id])
+  user   User   @relation("UserPosts", fields: [uploadedBy], references: [id])
 
   @@map("posts")
 }
@@ -169,12 +207,23 @@ model Post {
 enum Role {
   ADMIN
   INSTRUCTOR
-  ASSISTANT
   STUDENT
+  ASSISTANT
 }
 
 enum Status {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum MeetingRole {
+  HOST
+  PARTICIPANT
 }

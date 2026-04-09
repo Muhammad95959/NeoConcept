@@ -1,0 +1,32 @@
+export class SuccessMessages {
+  static USER_DELETED = "User deleted successfully";
+  static TRACK_SELECTED = "Selected track successfully";
+  static TRACK_QUITTED = "Quitted track successfully";
+  static COURSE_QUITTED = "Quitted course successfully";
+  static COURSE_JOINED = "Joined course successfully";
+  static REQUEST_DELETED = "Request deleted successfully";
+  static TRACK_DELETED = "Track deleted successfully";
+  static RESOURCE_DELETED = "Resource deleted successfully";
+  static POST_DELETED = "Post deleted successfully";
+  static COURSE_DELETED = "Course deleted successfully";
+  static DELETED_MEETING = "Deleted successfully";
+  static DEV_SIGNUP = "api is running on development mode => email created & confirmed";
+  static CONFIRM_EMAIL = "Please confirm your email";
+  static NEW_CONFIRMATION = "New confirmation email was sent successfully";
+  static LOGGED_OUT = "Logged out successfully";
+  static PASSWORD_RESET_EMAIL_SENT = "Password reset email was sent successfully";
+  static OTP_VERIFIED = "OTP verified successfully";
+  static EMAIL_CONFIRMATION = "NeoConcept - Email Confirmation";
+  static PASSWORD_RESET_SUCCESSFULLY = "Password reset successfully";
+  static STUDENT_REQUEST_SUBMITTED = "Student request submitted successfully";
+  static STUDENT_REQUEST_ANSWERED = "Request answered successfully";
+  static PASSWORD_UPDATED = "Password updated successfully";
+  static USER_UPDATED = "User updated successfully";
+  static COURSE_CREATED = "Course created successfully";
+  static COURSE_UPDATED = "Course updated successfully";
+  static COURSE_STAFF_UPDATED = "Course staff updated successfully";
+  static MEETING_CREATED = "Meeting created successfully";
+  static UPDATED_MEETING = "Meeting updated successfully";
+  static LEFT_MEETING = "Left meeting successfully";
+  static PREREQUISITES_UPDATED = "Course prerequisites updated successfully";
+}

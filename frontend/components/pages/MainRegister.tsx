@@ -16,6 +16,10 @@ const MainRegister = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const handleGoogleRegister = () => {
+        const roleQuery = role !== "none" ? `?role=${encodeURIComponent(role)}` : "";
+        window.location.href = `http://localhost:9595/api/v1/auth/google${roleQuery}`;
+    };
     // ✅ Email regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -65,7 +69,11 @@ const MainRegister = () => {
         <div className="w-3/4 mx-auto border border-blue-300 py-8 rounded-xl mb-16">
         <div className="max-w-105 min-w-50 mx-auto px-4 flex flex-col items-center justify-center gap-6 mb-8 md:mb-16">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-[#80C1FE] to-[#58618E] bg-clip-text text-transparent">Sign Up</h1>
-            <button className="w-full flex items-center justify-center space-x-2 bg-[#1a1c1f] hover:bg-[#222428] text-white py-2 rounded-lg border border-gray-700 mb-4">
+            <button
+                type="button"
+                onClick={handleGoogleRegister}
+                className="w-full flex items-center justify-center space-x-2 bg-[#1a1c1f] hover:bg-[#222428] text-white py-2 rounded-lg border border-gray-700 mb-4"
+            >
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
                 <span>Continue with Google</span>
             </button>

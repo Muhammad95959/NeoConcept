@@ -5,3 +5,6 @@ node_modules
 neoconcept.pem
 
 todos.md
+coverage/
+dist/
+logs/

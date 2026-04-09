@@ -1,20 +1,55 @@
 import express from "express";
-import * as authController from "../auth/auth.controller";
 import { Role } from "../../generated/prisma";
-import * as tracksController from "./tracks.controller";
+import { protect } from "../../middlewares/protect";
+import { restrict } from "../../middlewares/restrict";
+import { validate } from "../../middlewares/validate";
+import { TrackController } from "./tracks.controller";
+import { TrackValidationSchemas } from "./tracks.validation";
 
 const router = express.Router();
 
-router.get("/", tracksController.getTracks);
+router.get(
+  "/",
+  validate({ query: TrackValidationSchemas.getManyQuery }),
+  TrackController.getTracks,
+);
 
-router.get("/:id", tracksController.getTrackById);
+router.get(
+  "/:id",
+  validate({ params: TrackValidationSchemas.getByIdParams }),
+  TrackController.getTrackById,
+);
 
-router.get("/:id/staff", authController.protect, authController.restrict(Role.ADMIN), tracksController.getTrackStaff);
+router.get(
+  "/:id/staff",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: TrackValidationSchemas.getByIdParams }),
+  TrackController.getTrackStaff,
+);
 
-router.post("/", authController.protect, authController.restrict(Role.ADMIN), tracksController.createTrack);
+router.post(
+  "/",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ body: TrackValidationSchemas.createBody }),
+  TrackController.createTrack,
+);
 
-router.patch("/:id", authController.protect, authController.restrict(Role.ADMIN), tracksController.updateTrack);
+router.patch(
+  "/:id",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: TrackValidationSchemas.getByIdParams, body: TrackValidationSchemas.updateBody }),
+  TrackController.updateTrack,
+);
 
-router.delete("/:id", authController.protect, authController.restrict(Role.ADMIN), tracksController.deleteTrack);
+router.delete(
+  "/:id",
+  protect,
+  restrict(Role.ADMIN),
+  validate({ params: TrackValidationSchemas.getByIdParams }),
+  TrackController.deleteTrack,
+);
 
 export default router;
