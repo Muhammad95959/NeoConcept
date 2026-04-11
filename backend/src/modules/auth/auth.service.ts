@@ -48,7 +48,7 @@ export class AuthService {
       // TODO: make email confirmation not required in development
       confirmEmailToken: confirmEmailTokenHash,
       emailConfirmed: process.env.NODE_ENV === Constants.DEVELOPMENT,
-      confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
     return {
@@ -61,7 +61,7 @@ export class AuthService {
     const failHtml = await fs.readFile(Constants.EMAIL_VERIFICATION_FAILURE_HTML, "utf-8");
 
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-  
+
     const user = await AuthModel.findUserByConfirmToken(tokenHash);
     if (!user) {
       throw new CustomError(ErrorMessages.INVALID_TOKEN, 400, HTTPStatusText.FAIL, failHtml);
@@ -74,7 +74,7 @@ export class AuthService {
     return successHtml;
   }
 
-  static async resendConfirmationEmail({email}: ResendConfirmationEmailInput) {
+  static async resendConfirmationEmail({ email }: ResendConfirmationEmailInput) {
     const user = await AuthModel.findUserByEmail(email);
     if (!user) throw new CustomError(ErrorMessages.USER_NOT_FOUND, 404, HTTPStatusText.FAIL);
     if (user.emailConfirmed) throw new CustomError(ErrorMessages.EMAIL_ALREADY_CONFIRMED, 400, HTTPStatusText.FAIL);
@@ -97,7 +97,6 @@ export class AuthService {
   }
 
   static async login({ email, password }: LoginInput) {
-
     const user = await AuthModel.findUserByEmail(email);
 
     if (!user || !user.password) {
@@ -122,7 +121,7 @@ export class AuthService {
     };
   }
 
-  static async forgotPassword({email}: ForgotPasswordInput) {
+  static async forgotPassword({ email }: ForgotPasswordInput) {
     const user = await AuthModel.findUserByEmail(email);
 
     if (!user) {
@@ -146,7 +145,7 @@ export class AuthService {
     return { message: SuccessMessages.PASSWORD_RESET_EMAIL_SENT };
   }
 
-  static async verifyOTP({email, otp}: VerifyOTPInput) {
+  static async verifyOTP({ email, otp }: VerifyOTPInput) {
     const user = await AuthModel.findUserByEmail(email.toLowerCase());
 
     if (!user) {

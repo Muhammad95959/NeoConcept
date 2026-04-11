@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import MeetingController from "./meeting.controller";
 import { MeetingService } from "./meeting.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
-import {SuccessMessages} from '../../types/successMessages';
+import { SuccessMessages } from "../../types/successMessages";
 
 jest.mock("./meeting.service", () => ({
   MeetingService: {

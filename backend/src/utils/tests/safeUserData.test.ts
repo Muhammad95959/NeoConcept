@@ -18,7 +18,6 @@ describe("safeUserData", () => {
       deletedAt: null,
       googleId: null,
       emailConfirmed: true,
-      currentTrackId: null,
       otpAttempts: 0,
     } as any;
 

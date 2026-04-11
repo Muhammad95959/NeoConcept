@@ -4,7 +4,7 @@ const GOOGLE_CALENDAR_ID = process.env.CALENDAR_ID;
 const TIMEZONE = process.env.TIMEZONE;
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: 'service-account.json',
+  keyFile: "service-account.json",
   scopes: ["https://www.googleapis.com/auth/calendar"],
 });
 

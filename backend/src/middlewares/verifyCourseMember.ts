@@ -9,7 +9,8 @@ export default async function verifyCourseMember(req: Request, res: Response, ne
     const membership = await prisma.userCourse.findUnique({
       where: { userId_courseId: { userId: res.locals.user.id, courseId } },
     });
-    if (!membership) return res.status(403).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.NOT_A_MEMBER_OF_COURSE });
+    if (!membership)
+      return res.status(403).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.NOT_A_MEMBER_OF_COURSE });
     next();
   } catch (err) {
     res.status(500).json({ status: HTTPStatusText.FAIL, message: ErrorMessages.SOMETHING_WENT_WRONG });

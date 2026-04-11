@@ -14,10 +14,7 @@ export const createMeetingSchema = z.object({
     .max(100, "Channel Name must not exceed 100 characters")
     .optional(),
 
-  scheduledAt: z
-    .string()
-    .datetime({ message: "Invalid date format" })
-    .optional(),
+  scheduledAt: z.string().datetime({ message: "Invalid date format" }).optional(),
 });
 
 export type CreateMeetingInput = z.infer<typeof createMeetingSchema>;
@@ -37,10 +34,7 @@ export const updateMeetingSchema = z.object({
     .max(100, "Channel Name must not exceed 100 characters")
     .optional(),
 
-  scheduledAt: z
-    .string()
-    .datetime({ message: "Invalid date format" })
-    .optional(),
+  scheduledAt: z.string().datetime({ message: "Invalid date format" }).optional(),
 
   status: z.enum(["SCHEDULED", "LIVE", "ENDED"]).optional(),
 });
@@ -70,9 +64,7 @@ export const removeParticipantParamSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
 });
 
-export type RemoveParticipantParam = z.infer<
-  typeof removeParticipantParamSchema
->;
+export type RemoveParticipantParam = z.infer<typeof removeParticipantParamSchema>;
 
 // export const paginationQuerySchema = z.object({
 //   page: z.coerce.number().min(1).default(1),

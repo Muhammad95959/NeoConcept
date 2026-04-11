@@ -32,11 +32,7 @@ export class ResourceController {
       const file = req.file!;
       const userId = res.locals.user.id;
 
-      const data = await ResourceService.uploadResource(
-        courseId,
-        file,
-        userId
-      );
+      const data = await ResourceService.uploadResource(courseId, file, userId);
 
       res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
@@ -51,10 +47,7 @@ export class ResourceController {
       const result = await ResourceService.downloadResource(courseId, id);
 
       res.setHeader("Content-Type", result.contentType);
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(result.fileName)}"`
-      );
+      res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(result.fileName)}"`);
 
       result.stream.pipe(res);
     } catch (err) {

@@ -213,9 +213,7 @@ describe("AuthService", () => {
     it("throws invalid token error when user not found", async () => {
       (AuthModel.findUserByConfirmToken as jest.Mock).mockResolvedValue(null);
 
-      await expect(
-        AuthService.confirmEmail({ token: "invalid-token" }),
-      ).rejects.toMatchObject({
+      await expect(AuthService.confirmEmail({ token: "invalid-token" })).rejects.toMatchObject({
         message: ErrorMessages.INVALID_TOKEN,
         statusCode: 400,
       });

@@ -14,8 +14,10 @@ import postsRouter from "./modules/posts/post.routes";
 import resourcesRouter from "./modules/resources/resources.route";
 import staffRequestsRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestsRouter from "./modules/studentRequests/studentRequests.routes";
-import tracksRouter from "./modules/tracks/tracks.routes";import meetingsRouter from "./modules/meetings/meeting.route";import userRouter from "./modules/users/user.route";
-import {errorHandler} from "./utils/errorHandler"; 
+import tracksRouter from "./modules/tracks/tracks.routes";
+import meetingsRouter from "./modules/meetings/meeting.route";
+import userRouter from "./modules/users/user.route";
+import { errorHandler } from "./utils/errorHandler";
 const app = express();
 
 app.use(helmet());
@@ -51,15 +53,15 @@ app.use(errorHandler);
 export default app;
 // {
 //   "username": "Clementine",
-  // "email": "amer.live477@gmail.com",
-  // "password": "newPassword@",
+// "email": "amer.live477@gmail.com",
+// "password": "newPassword@",
 //   "role": "ADMIN"
 // }
 
 // {
 //   "username": "Lee",
-  // "email": "amrsouriya477@gmail.com",
-  // "password": "clem1234%$",
+// "email": "amrsouriya477@gmail.com",
+// "password": "clem1234%$",
 //   "role": "ADMIN"
 // }
 

@@ -99,10 +99,7 @@ describe("ResourceController", () => {
 
     expect(ResourceService.downloadResource).toHaveBeenCalledWith("c-1", "r-1");
     expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "application/pdf");
-    expect(res.setHeader).toHaveBeenCalledWith(
-      "Content-Disposition",
-      'attachment; filename="my%20file.pdf"',
-    );
+    expect(res.setHeader).toHaveBeenCalledWith("Content-Disposition", 'attachment; filename="my%20file.pdf"');
     expect(pipeSpy).toHaveBeenCalledWith(res);
   });
 

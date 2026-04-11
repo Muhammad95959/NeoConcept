@@ -36,7 +36,10 @@ router.patch(
   "/:id/answer",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams, body: StudentRequestValidationSchemas.answerStudentRequestBody }),
+  validate({
+    params: StudentRequestValidationSchemas.getCourseStudentRequestParams,
+    body: StudentRequestValidationSchemas.answerStudentRequestBody,
+  }),
   StudentRequestController.answerStudentRequest,
 );
 

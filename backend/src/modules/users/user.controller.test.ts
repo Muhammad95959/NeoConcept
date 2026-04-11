@@ -161,11 +161,7 @@ describe("UserController", () => {
 
     await UserController.getUserStudentRequests(req, res, next);
 
-    expect(UserService.getUserStudentRequests).toHaveBeenCalledWith(
-      { id: "u-8" },
-      "APPROVED",
-      "english"
-    );
+    expect(UserService.getUserStudentRequests).toHaveBeenCalledWith({ id: "u-8" }, "APPROVED", "english");
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data: requests });
   });

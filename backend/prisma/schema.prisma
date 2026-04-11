@@ -8,31 +8,31 @@ datasource db {
 }
 
 model User {
-  id                   String           @id @default(uuid())
-  createdAt            DateTime         @default(now())
-  email                String           @unique
-  username             String           @unique
+  id                   String    @id @default(uuid())
+  createdAt            DateTime  @default(now())
+  email                String
+  username             String
   password             String?
-  googleId             String?          @unique
+  googleId             String?   @unique
   role                 Role
-  emailConfirmed       Boolean          @default(false)
+  emailConfirmed       Boolean   @default(false)
   confirmEmailToken    String?
   confirmEmailExpires  DateTime?
   resetPasswordOTP     String?
   resetPasswordExpires DateTime?
   passwordChangedAt    DateTime?
   deletedAt            DateTime?
-  otpAttempts          Int              @default(0)
+  otpAttempts          Int       @default(0)
 
-  posts                Post[]           @relation("UserPosts")
-  resources            Resource[]       @relation("UserResources")
-  staffRequests        StaffRequest[]
-  studentRequests      StudentRequest[]
-  createdTrack         Track?           @relation("TrackCreator")
-  courseUsers          UserCourse[]
-  userTracks           UserTrack[]
-  hostedMeetings       Meeting[]        @relation("HostRelation")
-  meetingParticipants  Participant[]
+  posts               Post[]           @relation("UserPosts")
+  resources           Resource[]       @relation("UserResources")
+  staffRequests       StaffRequest[]
+  studentRequests     StudentRequest[]
+  createdTrack        Track?           @relation("TrackCreator")
+  courseUsers         UserCourse[]
+  userTracks          UserTrack[]
+  hostedMeetings      Meeting[]        @relation("HostRelation")
+  meetingParticipants Participant[]
 
   @@map("users")
 }
@@ -41,7 +41,7 @@ model Meeting {
   id          String        @id @default(uuid())
   channelName String        @unique
   title       String
-  hostId      String
+  hostId      String        @unique
   scheduledAt DateTime?
   status      MeetingStatus @default(SCHEDULED)
   createdAt   DateTime      @default(now())
@@ -83,7 +83,7 @@ model Track {
   targetAudience   String?
 
   courses    Course[]
-  creator    User?      @relation("TrackCreator", fields: [creatorId], references: [id], onDelete: SetNull)
+  creator    User?       @relation("TrackCreator", fields: [creatorId], references: [id])
   userTracks UserTrack[]
 
   @@map("tracks")
@@ -111,14 +111,14 @@ model Course {
   deletedAt   DateTime?
   protected   Boolean   @default(true)
 
-  track                   Track                    @relation(fields: [trackId], references: [id])
-  posts                   Post[]
-  resources               Resource[]
-  staffRequests           StaffRequest[]
-  studentRequests         StudentRequest[]
-  courseUsers             UserCourse[]
-  coursePrerequisites     CoursePrerequisite[]     @relation("CoursePrerequisites")
-  prerequisiteFor         CoursePrerequisite[]     @relation("PrerequisitesFor")
+  track           Track            @relation(fields: [trackId], references: [id])
+  posts           Post[]
+  resources       Resource[]
+  staffRequests   StaffRequest[]
+  studentRequests StudentRequest[]
+  courseUsers     UserCourse[]
+  prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
+  requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
 
   @@map("courses")
 }
@@ -126,9 +126,8 @@ model Course {
 model CoursePrerequisite {
   courseId       String
   prerequisiteId String
-
-  course      Course @relation("CoursePrerequisites", fields: [courseId], references: [id])
-  prerequisite Course @relation("PrerequisitesFor", fields: [prerequisiteId], references: [id])
+  course         Course @relation("CourseToPrerequisite", fields: [courseId], references: [id])
+  prerequisite   Course @relation("PrerequisiteToCourse", fields: [prerequisiteId], references: [id])
 
   @@id([courseId, prerequisiteId])
   @@map("course_prerequisites")

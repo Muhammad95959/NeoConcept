@@ -5,13 +5,14 @@ import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { ErrorMessages } from "../../types/errorsMessages";
 
 describe("restrict middleware", () => {
-  const createRes = (user?: any) => ({
-    locals: { user },
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as unknown as Response);
+  const createRes = (user?: any) =>
+    ({
+      locals: { user },
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }) as unknown as Response;
 
-  const createReq = () => ({} as unknown as Request);
+  const createReq = () => ({}) as unknown as Request;
 
   it("allows user with matching role", () => {
     const next = jest.fn() as NextFunction;

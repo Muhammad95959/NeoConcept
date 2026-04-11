@@ -30,8 +30,8 @@ export class AuthValidationSchemas {
   });
 
   static login = z.object({
-      email: z.string().email("Invalid email").toLowerCase(),
-      password: z.string().min(1, "Password is required"),
+    email: z.string().email("Invalid email").toLowerCase(),
+    password: z.string().min(1, "Password is required"),
   });
 
   static forgotPassword = z.object({
@@ -39,8 +39,8 @@ export class AuthValidationSchemas {
   });
 
   static verifyOTP = z.object({
-      email: z.string().email(),
-      otp: z.string().length(6),
+    email: z.string().email(),
+    otp: z.string().length(6),
   });
 
   static resetPassword = z.object({
@@ -63,7 +63,7 @@ export type ConfirmEmailInput = z.infer<typeof AuthValidationSchemas.confirmEmai
 export type ResendConfirmationEmailInput = z.infer<typeof AuthValidationSchemas.resendConfirmationEmail>;
 export type LoginInput = z.infer<typeof AuthValidationSchemas.login>;
 export type ForgotPasswordInput = z.infer<typeof AuthValidationSchemas.forgotPassword>;
-export type VerifyOTPInput = z.infer<typeof AuthValidationSchemas.verifyOTP>
+export type VerifyOTPInput = z.infer<typeof AuthValidationSchemas.verifyOTP>;
 export type ResetPasswordInput = z.infer<typeof AuthValidationSchemas.resetPassword>;
 export type MobileGoogleAuthInput = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthBody>;
 export type MobileGoogleAuthQuery = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthQuery>;

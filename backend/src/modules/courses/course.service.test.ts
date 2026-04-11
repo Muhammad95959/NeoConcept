@@ -15,6 +15,7 @@ jest.mock("./course.model", () => ({
     findDuplicate: jest.fn(),
     update: jest.fn(),
     transaction: jest.fn(),
+    findPrerequisites: jest.fn(),
   },
 }));
 
@@ -78,6 +79,7 @@ describe("CourseService", () => {
   describe("create", () => {
     it("throws when one instructor is not assigned to track", async () => {
       (CourseModel.findTrackById as jest.Mock).mockResolvedValue({ id: "t-1" });
+      (CourseModel.findPrerequisites as jest.Mock).mockResolvedValue([]);
       (CourseModel.findUsersByIds as jest.Mock).mockResolvedValue([{ id: "i-1", role: Role.INSTRUCTOR }]);
       (CourseModel.findUsersAssignedToTrack as jest.Mock).mockResolvedValue([]);
 
@@ -85,6 +87,7 @@ describe("CourseService", () => {
         CourseService.create({
           name: "Course",
           trackId: "t-1",
+          protect: false,
           instructorIds: ["i-1"],
         }),
       ).rejects.toMatchObject<Partial<CustomError>>({
@@ -100,6 +103,7 @@ describe("CourseService", () => {
       };
 
       (CourseModel.findTrackById as jest.Mock).mockResolvedValue({ id: "t-1" });
+      (CourseModel.findPrerequisites as jest.Mock).mockResolvedValue([]);
       (CourseModel.findUsersByIds as jest.Mock)
         .mockResolvedValueOnce([{ id: "i-1", role: Role.INSTRUCTOR }])
         .mockResolvedValueOnce([{ id: "a-1", role: Role.ASSISTANT }]);
@@ -113,6 +117,7 @@ describe("CourseService", () => {
         name: "  Algorithms  ",
         description: "Core CS",
         trackId: "t-1",
+        protect: false,
         instructorIds: ["i-1"],
         assistantIds: ["a-1"],
       });
@@ -122,6 +127,7 @@ describe("CourseService", () => {
           name: "Algorithms",
           description: "Core CS",
           trackId: "t-1",
+          protected: false,
         },
       });
       expect(tx.userCourse.createMany).toHaveBeenCalledWith({
@@ -131,6 +137,36 @@ describe("CourseService", () => {
         ],
       });
       expect(result).toEqual({ id: "c-2", name: "Algorithms" });
+    });
+
+    it("creates protected course when protect is true", async () => {
+      const tx = {
+        course: { create: jest.fn().mockResolvedValue({ id: "c-3", name: "Protected Course" }) },
+        userCourse: { createMany: jest.fn().mockResolvedValue({ count: 1 }) },
+      };
+
+      (CourseModel.findTrackById as jest.Mock).mockResolvedValue({ id: "t-1" });
+      (CourseModel.findPrerequisites as jest.Mock).mockResolvedValue([]);
+      (CourseModel.findUsersByIds as jest.Mock).mockResolvedValue([{ id: "i-1", role: Role.INSTRUCTOR }]);
+      (CourseModel.findUsersAssignedToTrack as jest.Mock).mockResolvedValue([{ id: "i-1" }]);
+      (CourseModel.findDuplicate as jest.Mock).mockResolvedValue(null);
+      (CourseModel.transaction as jest.Mock).mockImplementation(async (cb: any) => cb(tx));
+
+      await CourseService.create({
+        name: "Protected Course",
+        trackId: "t-1",
+        protect: true,
+        instructorIds: ["i-1"],
+      });
+
+      expect(tx.course.create).toHaveBeenCalledWith({
+        data: {
+          name: "Protected Course",
+          description: undefined,
+          trackId: "t-1",
+          protected: true,
+        },
+      });
     });
   });
 
@@ -143,6 +179,16 @@ describe("CourseService", () => {
         message: ErrorMessages.DUPLICATE_COURSE_NAME,
         statusCode: 400,
       });
+    });
+
+    it("updates course protect field", async () => {
+      (CourseModel.findById as jest.Mock).mockResolvedValue({ id: "c-1", trackId: "t-1" });
+      (CourseModel.findDuplicate as jest.Mock).mockResolvedValue(null);
+      (CourseModel.update as jest.Mock).mockResolvedValue({ id: "c-1", protected: true });
+
+      await CourseService.update("c-1", { protect: true });
+
+      expect(CourseModel.update).toHaveBeenCalledWith("c-1", { protected: true });
     });
   });
 
@@ -157,6 +203,7 @@ describe("CourseService", () => {
 
       (CourseModel.findById as jest.Mock).mockResolvedValue({ id: "c-1" });
       (CourseModel.findTrackById as jest.Mock).mockResolvedValue({ id: "t-1" });
+      (CourseModel.findPrerequisites as jest.Mock).mockResolvedValue([]);
       (CourseModel.findUsersByIds as jest.Mock)
         .mockResolvedValueOnce([{ id: "i-1", role: Role.INSTRUCTOR }])
         .mockResolvedValueOnce([{ id: "a-1", role: Role.ASSISTANT }]);

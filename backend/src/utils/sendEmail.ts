@@ -5,7 +5,7 @@ export default function sendEmail(
   userEmail: string | Address | (string | Address)[] | undefined,
   subject: string,
   message: string,
-  html?: boolean
+  html?: boolean,
 ) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -20,7 +20,7 @@ export default function sendEmail(
     to: userEmail,
     subject,
     text: html ? undefined : message,
-    html: html ? message : undefined
+    html: html ? message : undefined,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

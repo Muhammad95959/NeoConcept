@@ -4,17 +4,19 @@ import { validate } from "../validate";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 
 describe("validate middleware", () => {
-  const createRes = () => ({
-    locals: {},
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  } as unknown as Response);
+  const createRes = () =>
+    ({
+      locals: {},
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    }) as unknown as Response;
 
-  const createReq = (body?: any, params?: any, query?: any) => ({
-    body: body || {},
-    params: params || {},
-    query: query || {},
-  } as unknown as Request);
+  const createReq = (body?: any, params?: any, query?: any) =>
+    ({
+      body: body || {},
+      params: params || {},
+      query: query || {},
+    }) as unknown as Request;
 
   const createNext = () => jest.fn() as NextFunction;
   const consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);

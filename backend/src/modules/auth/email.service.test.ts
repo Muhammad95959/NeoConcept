@@ -32,8 +32,7 @@ describe("sendConfirmationEmail", () => {
   });
 
   it("handles multiple placeholder replacements", async () => {
-    const template =
-      "Confirm at: %%CONFIRMATION_LINK%% and also here: %%CONFIRMATION_LINK%%";
+    const template = "Confirm at: %%CONFIRMATION_LINK%% and also here: %%CONFIRMATION_LINK%%";
     (fs.readFile as jest.Mock).mockResolvedValue(template);
     (sendEmail as jest.Mock).mockResolvedValue(undefined);
 
@@ -79,9 +78,7 @@ describe("sendConfirmationEmail", () => {
     const fileError = new Error("File not found");
     (fs.readFile as jest.Mock).mockRejectedValue(fileError);
 
-    await expect(
-      sendConfirmationEmail("user@example.com", "token", mockRequest),
-    ).rejects.toThrow("File not found");
+    await expect(sendConfirmationEmail("user@example.com", "token", mockRequest)).rejects.toThrow("File not found");
 
     expect(sendEmail).not.toHaveBeenCalled();
   });
@@ -91,8 +88,6 @@ describe("sendConfirmationEmail", () => {
     const sendError = new Error("SMTP error");
     (sendEmail as jest.Mock).mockRejectedValue(sendError);
 
-    await expect(
-      sendConfirmationEmail("user@example.com", "token", mockRequest),
-    ).rejects.toThrow("SMTP error");
+    await expect(sendConfirmationEmail("user@example.com", "token", mockRequest)).rejects.toThrow("SMTP error");
   });
 });

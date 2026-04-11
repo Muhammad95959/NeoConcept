@@ -15,8 +15,7 @@ export function uploadToS3() {
     storage: multerS3({
       s3,
       bucket: process.env.AWS_S3_BUCKET!,
-      key: (_req, file, cb) =>
-        cb(null, `resources/${Date.now()}-${file.originalname}`),
+      key: (_req, file, cb) => cb(null, `resources/${Date.now()}-${file.originalname}`),
     }),
   });
 
