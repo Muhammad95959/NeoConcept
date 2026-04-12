@@ -42,12 +42,14 @@ model Meeting {
   channelName String        @unique
   title       String
   hostId      String        @unique
+  courseId    String
   scheduledAt DateTime?
   status      MeetingStatus @default(SCHEDULED)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   host         User          @relation("HostRelation", fields: [hostId], references: [id])
+  course       Course        @relation(fields: [courseId], references: [id])
   participants Participant[]
 
   @@map("meetings")
@@ -111,7 +113,7 @@ model Course {
   deletedAt   DateTime?
   protected   Boolean   @default(true)
 
-  track           Track            @relation(fields: [trackId], references: [id])
+  track           Track                @relation(fields: [trackId], references: [id])
   posts           Post[]
   resources       Resource[]
   staffRequests   StaffRequest[]
@@ -119,6 +121,7 @@ model Course {
   courseUsers     UserCourse[]
   prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
   requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
+  meetings        Meeting[]
 
   @@map("courses")
 }

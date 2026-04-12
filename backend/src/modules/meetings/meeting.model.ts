@@ -2,11 +2,12 @@ import prisma from "../../config/db";
 import { MeetingStatus } from "../../generated/prisma";
 
 export class MeetingModel {
-  static async create(data: { title: string; hostId: string; channelName: string; scheduledAt?: Date | null }) {
+  static async create(data: { title: string; hostId: string; courseId: string; channelName: string; scheduledAt?: Date | null }) {
     const meeting = await prisma.meeting.create({
       data: {
         title: data.title,
         hostId: data.hostId,
+        courseId: data.courseId,
         channelName: data.channelName,
         scheduledAt: data.scheduledAt ?? null,
       },

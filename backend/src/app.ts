@@ -45,7 +45,7 @@ app.use("/api/v1/tracks", tracksRouter);
 app.use("/api/v1/courses", coursessRouter);
 app.use("/api/v1/staff-requests", staffRequestsRouter);
 app.use("/api/v1/student-requests", studentRequestsRouter);
-app.use("/api/v1/meetings", meetingsRouter);
+app.use("/api/v1/courses/:courseId/meetings", meetingsRouter);
 app.use("/api/v1/courses/:courseId/posts", postsRouter);
 app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
 app.use(errorHandler);

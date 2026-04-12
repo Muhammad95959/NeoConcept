@@ -1,6 +1,5 @@
 import { Role } from "../../generated/prisma/client";
 import express from "express";
-import * as authController from "../auth/auth.controller";
 import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
 import verifyPostOwner from "../../middlewares/verifyPostOwner";

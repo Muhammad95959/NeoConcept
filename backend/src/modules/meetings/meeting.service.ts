@@ -9,12 +9,17 @@ import { generateAgoraToken } from "../../utils/agoraToken";
 import { ErrorMessages } from "../../types/errorsMessages";
 
 export class MeetingService {
-  static async create(userId: string, data: { title: string; channelName?: string; scheduledAt?: Date }) {
+  static async create(
+    userId: string,
+    courseId: string,
+    data: { title: string; channelName?: string; scheduledAt?: Date },
+  ) {
     const channelName = data.channelName ?? crypto.randomUUID();
 
     const meeting = await MeetingModel.create({
       title: data.title,
       hostId: userId,
+      courseId,
       channelName,
       scheduledAt: data.scheduledAt ?? null,
     });
@@ -60,11 +65,7 @@ export class MeetingService {
     return MeetingModel.findAllByUser(userId);
   }
 
-  static async update(
-    userId: string,
-    meetingId: string | string[] | undefined,
-    data: any,
-  ) {
+  static async update(userId: string, meetingId: string | string[] | undefined, data: any) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
     await this.checkHost(userId, id!);
     return MeetingModel.update(id!, data);
@@ -76,10 +77,7 @@ export class MeetingService {
     return MeetingModel.delete(id!);
   }
 
-  static async joinMeeting(
-    userId: string,
-    meetingId: string | string[] | undefined,
-  ) {
+  static async joinMeeting(userId: string, meetingId: string | string[] | undefined) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
     const meeting = await MeetingModel.findById(id!);
     if (!meeting) throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
@@ -104,10 +102,7 @@ export class MeetingService {
     };
   }
 
-  static async leaveMeeting(
-    userId: string,
-    meetingId: string | string[] | undefined,
-  ) {
+  static async leaveMeeting(userId: string, meetingId: string | string[] | undefined) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
     const participant = await MeetingModel.findParticipant(userId, id!);
 
@@ -124,7 +119,7 @@ export class MeetingService {
 
   static async checkHost(userId: string, meetingId: string | string[] | undefined) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    const participant = await MeetingModel.findParticipant(userId, id);
+    const participant = await MeetingModel.findParticipant(userId, id!);
     if (!participant || participant.role !== "HOST") {
       throw new CustomError(ErrorMessages.ONLY_HOST_CAN_PERFORM_THIS_ACTION, 403, HTTPStatusText.FAIL);
     }

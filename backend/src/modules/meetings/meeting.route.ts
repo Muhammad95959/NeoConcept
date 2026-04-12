@@ -3,18 +3,98 @@ import MeetingController from "./meeting.controller";
 import { protect } from "../../middlewares/protect";
 import { validate } from "../../middlewares/validate";
 import { createMeetingSchema, meetingIdParamSchema, idParamSchema, updateMeetingSchema } from "./meeting.validation";
+import { restrict } from "../../middlewares/restrict";
+import { Role } from "../../generated/prisma";
+import checkCourseExists from "../../middlewares/checkCourseExists";
+import verifyCourseMember from "../../middlewares/verifyCourseMember";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
-router.get("/", protect, MeetingController.getAllUser);
-router.get("/:id", protect, validate({ params: idParamSchema }), MeetingController.getOne);
-router.post("/", protect, validate({ body: createMeetingSchema }), MeetingController.create);
-router.put("/:id", protect, validate({ body: updateMeetingSchema, params: idParamSchema }), MeetingController.update);
-router.delete("/:id", protect, validate({ params: idParamSchema }), MeetingController.delete);
-router.post("/:meetingId/join", protect, validate({ params: meetingIdParamSchema }), MeetingController.join);
-router.post("/:meetingId/leave", protect, validate({ params: meetingIdParamSchema }), MeetingController.leave);
+router.get(
+  "/",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.getAllUser,
+);
 
-router.post("/:meetingId/start", protect, MeetingController.startMeeting);
+router.get(
+  "/:id",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: idParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.getOne,
+);
 
-router.get("/:meetingId/checkHost", protect, MeetingController.checkHost);
+router.post(
+  "/",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ body: createMeetingSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.create,
+);
+
+router.put(
+  "/:id",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ body: updateMeetingSchema, params: idParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.update,
+);
+
+router.delete(
+  "/:id",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: idParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.delete,
+);
+
+router.post(
+  "/:meetingId/join",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: meetingIdParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.join,
+);
+
+router.post(
+  "/:meetingId/leave",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: meetingIdParamSchema }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.leave,
+);
+
+router.post(
+  "/:meetingId/start",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.startMeeting,
+);
+
+router.get(
+  "/:meetingId/checkHost",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.checkHost,
+);
+
 export default router;

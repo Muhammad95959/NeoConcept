@@ -66,6 +66,12 @@ export const removeParticipantParamSchema = z.object({
 
 export type RemoveParticipantParam = z.infer<typeof removeParticipantParamSchema>;
 
+export const courseIdParamSchema = z.object({
+  courseId: z.string().uuid("Invalid course ID"),
+});
+
+export type CourseIdParam = z.infer<typeof courseIdParamSchema>;
+
 // export const paginationQuerySchema = z.object({
 //   page: z.coerce.number().min(1).default(1),
 //   limit: z.coerce.number().min(1).max(100).default(10),

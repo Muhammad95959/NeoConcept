@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { MeetingService } from "./meeting.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
+import { CourseIdParam } from "./meeting.validation";
 
 export default class MeetingController {
   static async getAllUser(req: Request, res: Response, next: NextFunction) {
@@ -25,7 +26,8 @@ export default class MeetingController {
 
   static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await MeetingService.create(res.locals.user.id, req.body);
+      const {courseId} = req.params as CourseIdParam;
+      const result = await MeetingService.create(res.locals.user.id, courseId, req.body);
       res.status(201).json({ status: HTTPStatusText.SUCCESS, data: result });
     } catch (err: any) {
       next(err);
