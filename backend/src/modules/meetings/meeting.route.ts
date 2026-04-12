@@ -62,7 +62,6 @@ router.delete(
 router.post(
   "/:meetingId/join",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
   validate({ params: meetingIdParamSchema }),
   checkCourseExists,
   verifyCourseMember,
@@ -72,7 +71,6 @@ router.post(
 router.post(
   "/:meetingId/leave",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
   validate({ params: meetingIdParamSchema }),
   checkCourseExists,
   verifyCourseMember,
@@ -88,13 +86,6 @@ router.post(
   MeetingController.startMeeting,
 );
 
-router.get(
-  "/:meetingId/checkHost",
-  protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  checkCourseExists,
-  verifyCourseMember,
-  MeetingController.checkHost,
-);
+router.get("/:meetingId/checkHost", protect, checkCourseExists, verifyCourseMember, MeetingController.checkHost);
 
 export default router;
