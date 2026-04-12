@@ -50,7 +50,7 @@ describe("MeetingController", () => {
   });
 
   it("create returns created meeting payload", async () => {
-    const req = { body: { title: "Daily" } } as Request;
+    const req = { params: { courseId: "c-1" }, body: { title: "Daily" } } as unknown as Request;
     const res = createMockRes();
     const data = { meeting: { id: "m-1" } };
     res.locals = { user: { id: "u-1" } };
@@ -58,7 +58,7 @@ describe("MeetingController", () => {
 
     await MeetingController.create(req, res, next);
 
-    expect(MeetingService.create).toHaveBeenCalledWith("u-1", { title: "Daily" });
+    expect(MeetingService.create).toHaveBeenCalledWith("u-1", "c-1", { title: "Daily" });
     expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
@@ -168,7 +168,7 @@ describe("MeetingController", () => {
   });
 
   it("create error is forwarded to next", async () => {
-    const req = { body: { title: "Daily" } } as Request;
+    const req = { params: { courseId: "c-1" }, body: { title: "Daily" } } as unknown as Request;
     const res = createMockRes();
     res.locals = { user: { id: "u-1" } };
     const error = new Error("create failed");

@@ -561,18 +561,29 @@ paths:
         "500":
           description: Something went wrong
 
-  /meetings:
+  /courses/{courseId}/meetings:
     get:
       tags:
         - Meetings
-      summary: list all meetings for the logged-in user
+      summary: list all meetings for a course
       security:
         - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
       responses:
         "200":
           description: success
         "401":
           description: Unauthorized
+        "403":
+          description: You're not a member of this course
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
     post:
@@ -581,6 +592,13 @@ paths:
       summary: create a new meeting
       security:
         - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
       requestBody:
         required: true
         content:
@@ -607,10 +625,14 @@ paths:
           description: Title must be at least 3 characters || Title must not exceed 100 characters || Channel Name must be at least 3 characters || Channel Name must not exceed 100 characters || Invalid date format
         "401":
           description: Unauthorized
+        "403":
+          description: You're not a member of this course
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
 
-  /meetings/{id}:
+  /courses/{courseId}/meetings/{id}:
     get:
       tags:
         - Meetings
@@ -618,6 +640,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
           required: true
@@ -631,8 +659,10 @@ paths:
           description: Invalid ID
         "401":
           description: Unauthorized
+        "403":
+          description: You're not a member of this course
         "404":
-          description: Meeting not found
+          description: Course not found || Meeting not found
         "500":
           description: Something went wrong
     put:
@@ -642,6 +672,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
           required: true
@@ -676,7 +712,9 @@ paths:
         "401":
           description: Unauthorized
         "403":
-          description: Only host can perform this action
+          description: Only host can perform this action || You're not a member of this course
+        "404":
+          description: Course not found || Meeting not found
         "500":
           description: Something went wrong
     delete:
@@ -686,6 +724,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: id
           in: path
           required: true
@@ -700,11 +744,13 @@ paths:
         "401":
           description: Unauthorized
         "403":
-          description: Only host can perform this action
+          description: Only host can perform this action || You're not a member of this course
+        "404":
+          description: Course not found || Meeting not found
         "500":
           description: Something went wrong
 
-  /meetings/{meetingId}/join:
+  /courses/{courseId}/meetings/{meetingId}/join:
     post:
       tags:
         - Meetings
@@ -712,6 +758,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: meetingId
           in: path
           required: true
@@ -725,12 +777,14 @@ paths:
           description: Invalid meeting ID || Meeting has already ended || Meeting has not started yet || User is already in the meeting
         "401":
           description: Unauthorized
+        "403":
+          description: You're not a member of this course
         "404":
-          description: Meeting not found
+          description: Course not found || Meeting not found
         "500":
           description: Something went wrong
 
-  /meetings/{meetingId}/leave:
+  /courses/{courseId}/meetings/{meetingId}/leave:
     post:
       tags:
         - Meetings
@@ -738,6 +792,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: meetingId
           in: path
           required: true
@@ -751,10 +811,14 @@ paths:
           description: Invalid meeting ID || User is not in the meeting || Host cannot leave the meeting
         "401":
           description: Unauthorized
+        "403":
+          description: You're not a member of this course
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
 
-  /meetings/{meetingId}/start:
+  /courses/{courseId}/meetings/{meetingId}/start:
     post:
       tags:
         - Meetings
@@ -762,6 +826,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: meetingId
           in: path
           required: true
@@ -774,11 +844,13 @@ paths:
         "401":
           description: Unauthorized
         "403":
-          description: Only host can perform this action
+          description: You're not a member of this course || Only host can perform this action
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
 
-  /meetings/{meetingId}/checkHost:
+  /courses/{courseId}/meetings/{meetingId}/checkHost:
     get:
       tags:
         - Meetings
@@ -786,6 +858,12 @@ paths:
       security:
         - cookieAuth: []
       parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
         - name: meetingId
           in: path
           required: true
@@ -798,7 +876,9 @@ paths:
         "401":
           description: Unauthorized
         "403":
-          description: Only host can perform this action
+          description: You're not a member of this course || Only host can perform this action
+        "404":
+          description: Course not found
         "500":
           description: Something went wrong
 

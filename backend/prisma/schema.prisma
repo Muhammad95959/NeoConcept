@@ -41,7 +41,7 @@ model Meeting {
   id          String        @id @default(uuid())
   channelName String        @unique
   title       String
-  hostId      String        @unique
+  hostId      String
   courseId    String
   scheduledAt DateTime?
   status      MeetingStatus @default(SCHEDULED)

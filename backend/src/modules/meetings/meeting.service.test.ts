@@ -56,11 +56,12 @@ describe("MeetingService", () => {
       (stringToUid as jest.Mock).mockReturnValue(321);
       (generateAgoraToken as jest.Mock).mockReturnValue("agora-token");
 
-      const result = await MeetingService.create("u-1", { title: "Daily" });
+      const result = await MeetingService.create("u-1", "c-1", { title: "Daily" });
 
       expect(MeetingModel.create).toHaveBeenCalledWith({
         title: "Daily",
         hostId: "u-1",
+        courseId: "c-1",
         channelName: "ch-random",
         scheduledAt: null,
       });
@@ -83,7 +84,7 @@ describe("MeetingService", () => {
       (stringToUid as jest.Mock).mockReturnValue(555);
       (generateAgoraToken as jest.Mock).mockReturnValue("token-2");
 
-      const result = await MeetingService.create("u-2", {
+      const result = await MeetingService.create("u-2", "c-1", {
         title: "Planning",
         channelName: "ch-planning",
         scheduledAt,
@@ -101,13 +102,6 @@ describe("MeetingService", () => {
   });
 
   describe("getById", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.getById(undefined)).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("returns meeting when found", async () => {
       const meeting = { id: "m-1", title: "Meeting" };
       (MeetingModel.findById as jest.Mock).mockResolvedValue(meeting);
@@ -139,13 +133,6 @@ describe("MeetingService", () => {
   });
 
   describe("update", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.update("u-1", undefined, {})).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("updates meeting when user is host", async () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (MeetingModel.update as jest.Mock).mockResolvedValue({ id: "m-1", title: "Updated" });
@@ -159,13 +146,6 @@ describe("MeetingService", () => {
   });
 
   describe("delete", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.delete("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("deletes meeting when user is host", async () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (MeetingModel.delete as jest.Mock).mockResolvedValue({ id: "m-1" });
@@ -179,13 +159,6 @@ describe("MeetingService", () => {
   });
 
   describe("joinMeeting", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.joinMeeting("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("throws when meeting not found", async () => {
       (MeetingModel.findById as jest.Mock).mockResolvedValue(null);
 
@@ -247,13 +220,6 @@ describe("MeetingService", () => {
   });
 
   describe("leaveMeeting", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.leaveMeeting("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("throws when participant not found", async () => {
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
@@ -284,13 +250,6 @@ describe("MeetingService", () => {
   });
 
   describe("checkHost", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.checkHost("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("throws when participant not found", async () => {
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
@@ -415,15 +374,6 @@ describe("MeetingService", () => {
   });
 
   describe("removeParticipant", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.removeParticipant("u-host", undefined, "u-user")).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
     it("throws when user id is missing", async () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
 
