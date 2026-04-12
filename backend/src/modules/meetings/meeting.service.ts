@@ -119,6 +119,13 @@ export class MeetingService {
 
   static async checkHost(userId: string, meetingId: string | string[] | undefined) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
+    const meeting = await MeetingModel.findById(id!);
+    if (!meeting) {
+      throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
+    }
+    if (meeting.hostId === userId) {
+      return;
+    }
     const participant = await MeetingModel.findParticipant(userId, id!);
     if (!participant || participant.role !== "HOST") {
       throw new CustomError(ErrorMessages.ONLY_HOST_CAN_PERFORM_THIS_ACTION, 403, HTTPStatusText.FAIL);
