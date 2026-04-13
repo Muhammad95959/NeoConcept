@@ -56,7 +56,7 @@ describe("verifyCurrentTrack", () => {
 
   it("returns 400 when non-student has active track", async () => {
     const next = jest.fn() as NextFunction;
-    const res = createRes({ id: "u-3", role: Role.INSTRUCTOR });
+    const res = createRes({ id: "u-3", role: Role.ADMIN });
     const req = createReq();
 
     (prisma.userTrack.count as jest.Mock).mockResolvedValue(1);
