@@ -64,7 +64,7 @@ export class StaffRequestModel {
   }
 
   static findUserTracks(userId: string) {
-    return prisma.userTrack.findMany({ where: { userId } });
+    return prisma.userTrack.findMany({ where: { userId, deletedAt: null } });
   }
 
   static transaction(cb: any) {

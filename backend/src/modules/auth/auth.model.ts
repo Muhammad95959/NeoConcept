@@ -21,11 +21,11 @@ export class AuthModel {
   }
 
   static async findUserByConfirmToken(tokenHash: string) {
-    console.log(await prisma.user.findMany());
     return prisma.user.findFirst({
       where: {
         confirmEmailToken: tokenHash,
         confirmEmailExpires: { gt: new Date() },
+        deletedAt: null
       },
     });
   }
@@ -98,7 +98,7 @@ export class AuthModel {
   }
 
   static async findUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+    return prisma.user.findUnique({ where: { id, deletedAt: null } });
   }
 
   static async createUserWithGoogle(email: string, username: string, googleId: string, role: Role) {

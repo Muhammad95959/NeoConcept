@@ -24,7 +24,7 @@ passport.use(
     },
     async (payload, done) => {
       try {
-        const user = await prisma.user.findUnique({ where: { id: payload.id } });
+        const user = await prisma.user.findUnique({ where: { id: payload.id, deletedAt: null } });
         if (user) return done(null, user);
         return done(null, false);
       } catch (err) {
@@ -41,7 +41,7 @@ passport.use(
       const role = JSON.parse(String(req.query.state)).instructor;
       try {
         let user = await prisma.user.findFirst({
-          where: { email: profile.emails?.[0].value.toLowerCase() },
+          where: { email: profile.emails?.[0].value.toLowerCase(), deletedAt: null },
         });
         if (user) {
           // Attach the Google ID to an existing user

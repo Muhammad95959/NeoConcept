@@ -20,13 +20,14 @@ export class StudentRequestModel {
         courseId,
         userId,
         roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] },
+        deletedAt: null
       },
     });
   }
 
   static findEnrollment(userId: string, courseId: string) {
     return prisma.userCourse.findFirst({
-      where: { userId, courseId },
+      where: { userId, courseId, deletedAt: null },
     });
   }
 
@@ -53,7 +54,7 @@ export class StudentRequestModel {
   }
 
   static findUserTracks(userId: string) {
-    return prisma.userTrack.findMany({ where: { userId } });
+    return prisma.userTrack.findMany({ where: { userId, deletedAt: null } });
   }
 
   static transaction(cb: any) {

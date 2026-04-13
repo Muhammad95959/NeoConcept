@@ -4,7 +4,7 @@ import { Role, Status } from "../../generated/prisma";
 export class UserModel {
   static findById(id: string) {
     return prisma.user.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
     });
   }
 
@@ -16,7 +16,7 @@ export class UserModel {
 
   static getUserCoursesModel(userId: string) {
     return prisma.userCourse.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       include: {
         course: {
           include: { track: true },
@@ -38,14 +38,14 @@ export class UserModel {
 
   static getUserCourses(userId: string) {
     return prisma.userCourse.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       select: { courseId: true },
     });
   }
 
   static findUserEnrollment(userId: string, courseId: string) {
     return prisma.userCourse.findFirst({
-      where: { userId, courseId },
+      where: { userId, courseId, deletedAt: null },
     });
   }
 
@@ -86,7 +86,7 @@ export class UserModel {
 
   static findUserCoursesUserTrackRequest(userId: string) {
     return prisma.userCourse.findMany({
-      where: { userId },
+      where: { userId, deletedAt: null },
       select: { courseId: true },
     });
   }
