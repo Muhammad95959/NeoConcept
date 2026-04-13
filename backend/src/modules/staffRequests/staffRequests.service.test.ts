@@ -14,6 +14,7 @@ jest.mock("./staffRequests.model", () => ({
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    findUserTracks: jest.fn(),
     transaction: jest.fn(),
   },
 }));
@@ -78,7 +79,8 @@ describe("StaffRequestService", () => {
     });
 
     it("throws when pending request already exists", async () => {
-      (StaffRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1" });
+      (StaffRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", trackId: "t-1" });
+      (StaffRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
       (StaffRequestModel.findPendingRequest as jest.Mock).mockResolvedValue({ id: "sr-1" });
 
       await expect(StaffRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
@@ -89,7 +91,8 @@ describe("StaffRequestService", () => {
 
     it("creates request when course exists and no pending request", async () => {
       const created = { id: "sr-2", userId: "u-1", courseId: "c-1", message: "test" };
-      (StaffRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1" });
+      (StaffRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", trackId: "t-1" });
+      (StaffRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
       (StaffRequestModel.findPendingRequest as jest.Mock).mockResolvedValue(null);
       (StaffRequestModel.create as jest.Mock).mockResolvedValue(created);
 

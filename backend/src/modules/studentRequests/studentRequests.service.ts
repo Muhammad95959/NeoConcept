@@ -31,6 +31,16 @@ export class StudentRequestService {
     const course = await StudentRequestModel.findCourse(courseId);
     if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
+    const trackId = course.trackId;
+    const userTracks = await StudentRequestModel.findUserTracks(userId);
+    if (!userTracks.some((ut) => ut.trackId === trackId)) {
+      throw new CustomError(
+        ErrorMessages.YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS,
+        403,
+        HTTPStatusText.FAIL,
+      );
+    }
+
     const isEnrolled = await StudentRequestModel.findEnrollment(userId, courseId);
     if (isEnrolled)
       throw new CustomError(ErrorMessages.YOU_ARE_ALREADY_ENROLLED_IN_THIS_COURSE, 400, HTTPStatusText.FAIL);

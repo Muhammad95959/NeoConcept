@@ -14,6 +14,7 @@ jest.mock("./studentRequests.model", () => ({
     findManyByCourse: jest.fn(),
     create: jest.fn(),
     delete: jest.fn(),
+    findUserTracks: jest.fn(),
     transaction: jest.fn(),
   },
 }));
@@ -36,7 +37,8 @@ describe("StudentRequestService", () => {
   });
 
   it("create throws when course is not protected", async () => {
-    (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: false });
+    (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: false, trackId: "t-1" });
+    (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
     (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue(null);
 
     await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
@@ -46,7 +48,8 @@ describe("StudentRequestService", () => {
   });
 
   it("create throws when pending request already exists", async () => {
-    (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true });
+    (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true, trackId: "t-1" });
+    (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
     (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue(null);
     (StudentRequestModel.findPendingRequest as jest.Mock).mockResolvedValue({ id: "st-1" });
 
@@ -121,7 +124,8 @@ describe("StudentRequestService", () => {
 });
 
 it("create throws when already enrolled", async () => {
-  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true });
+  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true, trackId: "t-1" });
+  (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
   (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue({ id: "uc-1" });
 
   await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
@@ -139,9 +143,20 @@ it("create throws when course not found", async () => {
   });
 });
 
+it("create throws when user not in course track", async () => {
+  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true, trackId: "t-1" });
+  (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-other" }]);
+
+  await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
+    message: ErrorMessages.YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS,
+    statusCode: 403,
+  });
+});
+
 it("create succeeds when all validations pass", async () => {
   const created = { id: "st-1", userId: "u-1", courseId: "c-1" };
-  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true });
+  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true, trackId: "t-1" });
+  (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
   (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue(null);
   (StudentRequestModel.findPendingRequest as jest.Mock).mockResolvedValue(null);
   (StudentRequestModel.create as jest.Mock).mockResolvedValue(created);

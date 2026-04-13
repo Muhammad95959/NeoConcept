@@ -29,6 +29,16 @@ export class StaffRequestService {
       throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
 
+    const trackId = course.trackId;
+    const userTracks = await StaffRequestModel.findUserTracks(userId);
+    if (!userTracks.some((ut) => ut.trackId === trackId)) {
+      throw new CustomError(
+        ErrorMessages.YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS,
+        403,
+        HTTPStatusText.FAIL,
+      );
+    }
+
     const existingRequest = await StaffRequestModel.findPendingRequest(userId, courseId);
 
     if (existingRequest) {

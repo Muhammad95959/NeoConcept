@@ -52,6 +52,10 @@ export class StudentRequestModel {
     });
   }
 
+  static findUserTracks(userId: string) {
+    return prisma.userTrack.findMany({ where: { userId } });
+  }
+
   static transaction(cb: any) {
     return prisma.$transaction(cb);
   }
