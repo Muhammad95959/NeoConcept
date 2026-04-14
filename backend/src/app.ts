@@ -9,13 +9,13 @@ import swaggerUi from "swagger-ui-express";
 import yaml from "yamljs";
 import "./config/passport";
 import authRouter from "./modules/auth/auth.route";
-import coursessRouter from "./modules/courses/course.route";
-import postsRouter from "./modules/posts/post.routes";
-import resourcesRouter from "./modules/resources/resources.route";
-import staffRequestsRouter from "./modules/staffRequests/staffRequests.routes";
-import studentRequestsRouter from "./modules/studentRequests/studentRequests.routes";
-import tracksRouter from "./modules/tracks/tracks.routes";
-import meetingsRouter from "./modules/meetings/meeting.route";
+import courseRouter from "./modules/courses/course.route";
+import postRouter from "./modules/posts/post.routes";
+import resourceRouter from "./modules/resources/resource.route";
+import staffRequestRouter from "./modules/staffRequests/staffRequests.routes";
+import studentRequestRouter from "./modules/studentRequests/studentRequests.routes";
+import trackRouter from "./modules/tracks/tracks.routes";
+import meetingRouter from "./modules/meetings/meeting.route";
 import userRouter from "./modules/users/user.route";
 import { errorHandler } from "./utils/errorHandler";
 const app = express();
@@ -41,43 +41,13 @@ app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFu
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/tracks", tracksRouter);
-app.use("/api/v1/courses", coursessRouter);
-app.use("/api/v1/staff-requests", staffRequestsRouter);
-app.use("/api/v1/student-requests", studentRequestsRouter);
-app.use("/api/v1/courses/:courseId/meetings", meetingsRouter);
-app.use("/api/v1/courses/:courseId/posts", postsRouter);
-app.use("/api/v1/courses/:courseId/resources", resourcesRouter);
+app.use("/api/v1/tracks", trackRouter);
+app.use("/api/v1/courses", courseRouter);
+app.use("/api/v1/staff-requests", staffRequestRouter);
+app.use("/api/v1/student-requests", studentRequestRouter);
+app.use("/api/v1/courses/:courseId/meetings", meetingRouter);
+app.use("/api/v1/courses/:courseId/posts", postRouter);
+app.use("/api/v1/courses/:courseId/resources", resourceRouter);
 app.use(errorHandler);
 
 export default app;
-// {
-//   "username": "Clementine",
-// "email": "amer.live477@gmail.com",
-// "password": "newPassword@",
-//   "role": "ADMIN"
-// }
-
-// {
-//   "username": "Lee",
-// "email": "amrsouriya477@gmail.com",
-// "password": "clem1234%$",
-//   "role": "ADMIN"
-// }
-
-// {
-//   "username": "Lee",
-//   "email": "amrsouriya477@gmail.com",
-//   "password": "clem1234%$",
-//   "role": "ADMIN"
-// }
-
-// {
-//   "name": "test course",
-//   "description": "test description",
-//   "trackId": "83f00ecd-3053-44c9-b453-296635346c27",
-//   "instructorIds": [
-//     "46d2d81d-d735-4685-ae8b-546028a108fd"
-//   ],
-//   "assistantIds": []
-// }

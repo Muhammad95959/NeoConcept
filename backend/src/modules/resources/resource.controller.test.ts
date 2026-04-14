@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Readable } from "stream";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
-import { ResourceController } from "./resources.controller";
+import { ResourceController } from "./resource.controller";
 import { ResourceService } from "./resource.service";
 
 jest.mock("./resource.service", () => ({

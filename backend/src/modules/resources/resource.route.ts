@@ -4,7 +4,7 @@ import checkCourseExists from "../../middlewares/checkCourseExists";
 import verifyCourseMember from "../../middlewares/verifyCourseMember";
 import { protect } from "../../middlewares/protect";
 import { restrict } from "../../middlewares/restrict";
-import { ResourceController } from "./resources.controller";
+import { ResourceController } from "./resource.controller";
 import { uploadToS3 } from "./resource.upload";
 import { validate } from "../../middlewares/validate";
 import { ResourceValidationSchemas } from "./resource.validation";
