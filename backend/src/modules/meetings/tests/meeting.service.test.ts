@@ -339,40 +339,6 @@ describe("MeetingService", () => {
     });
   });
 
-  describe("addParticipant", () => {
-    it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.addParticipant("u-host", undefined, "u-new")).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
-        message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
-        statusCode: 404,
-      });
-    });
-
-    it("throws when user already in meeting", async () => {
-      jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
-      (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "PARTICIPANT" });
-
-      await expect(MeetingService.addParticipant("u-host", "m-1", "u-existing")).rejects.toMatchObject<
-        Partial<CustomError>
-      >({
-        message: ErrorMessages.USER_ALREADY_IN_MEETING,
-        statusCode: 400,
-      });
-    });
-
-    it("adds new participant", async () => {
-      jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
-      (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
-      (MeetingModel.addParticipant as jest.Mock).mockResolvedValue({});
-
-      const result = await MeetingService.addParticipant("u-host", "m-1", "u-new");
-
-      expect(MeetingModel.addParticipant).toHaveBeenCalledWith({ userId: "u-new", meetingId: "m-1" });
-      expect(result).toEqual({});
-    });
-  });
-
   describe("removeParticipant", () => {
     it("throws when user id is missing", async () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);

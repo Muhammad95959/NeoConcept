@@ -2,28 +2,6 @@ import prisma from "../../config/db";
 import { MeetingStatus } from "../../generated/prisma";
 
 export class MeetingModel {
-  static async create(data: { title: string; hostId: string; courseId: string; channelName: string; scheduledAt?: Date | null }) {
-    const meeting = await prisma.meeting.create({
-      data: {
-        title: data.title,
-        hostId: data.hostId,
-        courseId: data.courseId,
-        channelName: data.channelName,
-        scheduledAt: data.scheduledAt ?? null,
-      },
-    });
-
-    await prisma.participant.create({
-      data: {
-        userId: data.hostId,
-        role: "HOST",
-        meetingId: meeting.id,
-      },
-    });
-
-    return meeting;
-  }
-
   static findById(id: string) {
     return prisma.meeting.findUnique({
       where: { id },
@@ -55,6 +33,39 @@ export class MeetingModel {
     });
   }
 
+  static findParticipant(userId: string, meetingId: string) {
+    return prisma.participant.findUnique({
+      where: {
+        userId_meetingId: {
+          userId,
+          meetingId,
+        },
+      },
+    });
+  }
+
+  static async create(data: { title: string; hostId: string; courseId: string; channelName: string; scheduledAt?: Date | null }) {
+    const meeting = await prisma.meeting.create({
+      data: {
+        title: data.title,
+        hostId: data.hostId,
+        courseId: data.courseId,
+        channelName: data.channelName,
+        scheduledAt: data.scheduledAt ?? null,
+      },
+    });
+
+    await prisma.participant.create({
+      data: {
+        userId: data.hostId,
+        role: "HOST",
+        meetingId: meeting.id,
+      },
+    });
+
+    return meeting;
+  }
+
   static update(
     id: string,
     data: Partial<{
@@ -70,29 +81,12 @@ export class MeetingModel {
     });
   }
 
-  static delete(id: string) {
-    return prisma.meeting.delete({
-      where: { id },
-    });
-  }
-
   static addParticipant(data: { userId: string; meetingId: string; role?: "HOST" | "PARTICIPANT" }) {
     return prisma.participant.create({
       data: {
         userId: data.userId,
         meetingId: data.meetingId,
         role: data.role || "PARTICIPANT",
-      },
-    });
-  }
-
-  static findParticipant(userId: string, meetingId: string) {
-    return prisma.participant.findUnique({
-      where: {
-        userId_meetingId: {
-          userId,
-          meetingId,
-        },
       },
     });
   }
@@ -105,6 +99,12 @@ export class MeetingModel {
           meetingId,
         },
       },
+    });
+  }
+
+  static delete(id: string) {
+    return prisma.meeting.delete({
+      where: { id },
     });
   }
 }

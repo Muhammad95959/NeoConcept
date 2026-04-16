@@ -2,9 +2,23 @@ import prisma from "../../config/db";
 import { Role, User } from "../../generated/prisma";
 
 export class AuthModel {
+  static async findUserById(id: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { id, deletedAt: null } });
+  }
+
   static async findUserByEmail(email: string) {
     return prisma.user.findFirst({
       where: { email, deletedAt: null },
+    });
+  }
+
+  static async findUserByConfirmToken(tokenHash: string) {
+    return prisma.user.findFirst({
+      where: {
+        confirmEmailToken: tokenHash,
+        confirmEmailExpires: { gt: new Date() },
+        deletedAt: null,
+      },
     });
   }
 
@@ -20,13 +34,9 @@ export class AuthModel {
     return prisma.user.create({ data });
   }
 
-  static async findUserByConfirmToken(tokenHash: string) {
-    return prisma.user.findFirst({
-      where: {
-        confirmEmailToken: tokenHash,
-        confirmEmailExpires: { gt: new Date() },
-        deletedAt: null
-      },
+  static async createUserWithGoogle(email: string, username: string, googleId: string, role: Role) {
+    return prisma.user.create({
+      data: { email, username, googleId, emailConfirmed: true, role },
     });
   }
 
@@ -59,6 +69,23 @@ export class AuthModel {
     });
   }
 
+  static async updateUserPassword(userId: string, hashedPassword: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        passwordChangedAt: new Date(),
+      },
+    });
+  }
+
+  static async updateUserGoogleId(userId: string, googleId: string) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { googleId, emailConfirmed: true },
+    });
+  }
+
   static async incrementOtpAttempts(userId: string) {
     return prisma.user.update({
       where: { id: userId },
@@ -84,33 +111,6 @@ export class AuthModel {
         resetPasswordOTP: null,
         resetPasswordExpires: null,
       },
-    });
-  }
-
-  static async updateUserPassword(userId: string, hashedPassword: string) {
-    return prisma.user.update({
-      where: { id: userId },
-      data: {
-        password: hashedPassword,
-        passwordChangedAt: new Date(),
-      },
-    });
-  }
-
-  static async findUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id, deletedAt: null } });
-  }
-
-  static async createUserWithGoogle(email: string, username: string, googleId: string, role: Role) {
-    return prisma.user.create({
-      data: { email, username, googleId, emailConfirmed: true, role },
-    });
-  }
-
-  static async updateUserGoogleId(userId: string, googleId: string) {
-    return prisma.user.update({
-      where: { id: userId },
-      data: { googleId, emailConfirmed: true },
     });
   }
 

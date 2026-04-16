@@ -14,17 +14,6 @@ export class UserModel {
     });
   }
 
-  static getUserCoursesModel(userId: string) {
-    return prisma.userCourse.findMany({
-      where: { userId, deletedAt: null },
-      include: {
-        course: {
-          include: { track: true },
-        },
-      },
-    });
-  }
-
   static findCourseWithInstructors(courseId: string) {
     return prisma.course.findFirst({
       where: { id: courseId, deletedAt: null },
@@ -36,10 +25,14 @@ export class UserModel {
     });
   }
 
-  static getUserCourses(userId: string) {
+  static getUserCoursesModel(userId: string) {
     return prisma.userCourse.findMany({
       where: { userId, deletedAt: null },
-      select: { courseId: true },
+      include: {
+        course: {
+          include: { track: true },
+        },
+      },
     });
   }
 
@@ -49,9 +42,10 @@ export class UserModel {
     });
   }
 
-  static deleteUserCourse(userId: string, courseId: string) {
-    return prisma.userCourse.deleteMany({
-      where: { userId, courseId, deletedAt: null },
+  static getUserCourses(userId: string) {
+    return prisma.userCourse.findMany({
+      where: { userId, deletedAt: null },
+      select: { courseId: true },
     });
   }
 
@@ -175,13 +169,6 @@ export class UserModel {
     });
   }
 
-  static updateById(id: string, data: any) {
-    return prisma.user.update({
-      where: { id },
-      data,
-    });
-  }
-
   static upsertUserTrack(tx: any, userId: string, trackId: string) {
     return tx.userTrack.upsert({
       where: {
@@ -190,6 +177,19 @@ export class UserModel {
       },
       update: {},
       create: { userId, trackId },
+    });
+  }
+
+  static updateById(id: string, data: any) {
+    return prisma.user.update({
+      where: { id },
+      data,
+    });
+  }
+
+  static deleteUserCourse(userId: string, courseId: string) {
+    return prisma.userCourse.deleteMany({
+      where: { userId, courseId, deletedAt: null },
     });
   }
 
@@ -244,6 +244,7 @@ export class UserModel {
       }
     });
   }
+
   static transaction(callback: any) {
     return prisma.$transaction(callback);
   }

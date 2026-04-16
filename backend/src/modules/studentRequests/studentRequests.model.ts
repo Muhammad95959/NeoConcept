@@ -20,7 +20,7 @@ export class StudentRequestModel {
         courseId,
         userId,
         roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] },
-        deletedAt: null
+        deletedAt: null,
       },
     });
   }
@@ -43,6 +43,10 @@ export class StudentRequestModel {
     });
   }
 
+  static findUserTracks(userId: string) {
+    return prisma.userTrack.findMany({ where: { userId, deletedAt: null } });
+  }
+
   static create(data: any) {
     return prisma.studentRequest.create({ data });
   }
@@ -51,10 +55,6 @@ export class StudentRequestModel {
     return prisma.studentRequest.delete({
       where: { id },
     });
-  }
-
-  static findUserTracks(userId: string) {
-    return prisma.userTrack.findMany({ where: { userId, deletedAt: null } });
   }
 
   static transaction(cb: any) {
