@@ -33,11 +33,12 @@ describe("MeetingModel", () => {
       const result = await MeetingModel.create({
         title: "Team Meeting",
         hostId: "u-1",
+        courseId: "c-1",
         channelName: "meeting-1",
       });
 
       expect(prisma.meeting.create).toHaveBeenCalledWith({
-        data: { title: "Team Meeting", hostId: "u-1", channelName: "meeting-1", scheduledAt: null },
+        data: { title: "Team Meeting", hostId: "u-1", courseId: "c-1", channelName: "meeting-1", scheduledAt: null },
       });
       expect(prisma.participant.create).toHaveBeenCalledWith({
         data: { userId: "u-1", role: "HOST", meetingId: "m-1" },
@@ -54,12 +55,13 @@ describe("MeetingModel", () => {
       await MeetingModel.create({
         title: "Scheduled",
         hostId: "u-2",
+        courseId: "c-1",
         channelName: "meeting-2",
         scheduledAt: date,
       });
 
       expect(prisma.meeting.create).toHaveBeenCalledWith({
-        data: { title: "Scheduled", hostId: "u-2", channelName: "meeting-2", scheduledAt: date },
+        data: { title: "Scheduled", hostId: "u-2", courseId: "c-1", channelName: "meeting-2", scheduledAt: date },
       });
     });
   });

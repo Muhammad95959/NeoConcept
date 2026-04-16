@@ -45,7 +45,6 @@ export class AuthService {
       username,
       password: hashedPassword,
       role: role,
-      // TODO: make email confirmation not required in development
       confirmEmailToken: confirmEmailTokenHash,
       emailConfirmed: process.env.NODE_ENV === Constants.DEVELOPMENT,
       confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),

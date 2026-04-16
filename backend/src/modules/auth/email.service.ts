@@ -8,5 +8,5 @@ export async function sendConfirmationEmail(email: string, confirmEmailToken: st
 
   const message = rawMessage.replaceAll("%%CONFIRMATION_LINK%%", confirmationLink);
 
-  await sendEmail(email, "NeoConcept - Email Confirmation", message, true);
+  sendEmail(email, "NeoConcept - Email Confirmation", message, true);
 }

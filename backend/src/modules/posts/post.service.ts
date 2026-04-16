@@ -4,7 +4,7 @@ import { ErrorMessages } from "../../types/errorsMessages";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { PostModel } from "./post.model";
 import { CreatePostInputService, DeletePostInput, GetPostsInput, UpdatePostInputService } from "./post.type";
-import { GetByIdParams } from "./post.validation";
+import { IdParams } from "./post.validation";
 
 export class PostService {
   static async getPosts({ courseId, search }: GetPostsInput) {
@@ -23,7 +23,7 @@ export class PostService {
     return PostModel.findMany(where);
   }
 
-  static async getPost({ courseId, id }: GetByIdParams) {
+  static async getPost({ courseId, id }: IdParams) {
     const post = await PostModel.findFirst({
       courseId,
       id,

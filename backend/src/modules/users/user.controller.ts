@@ -6,14 +6,14 @@ import {
   GetUserStaffRequestsQuery,
   GetUserStudentRequestsQuery,
   TrackIdBody,
-  UpdateUserInput,
+  UpdateBody,
 } from "./user.validation";
 import { SuccessMessages } from "../../types/successMessages";
 
 export class UserController {
   static async updateUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const { username, password } = req.body as UpdateUserInput;
+      const { username, password } = req.body as UpdateBody;
       const user = res.locals.user;
 
       const result = await UserService.updateUser({ userId: user.id, username, password, deletedAt: user.deletedAt });
