@@ -50,10 +50,6 @@ export class MeetingValidationSchemas {
     status: z.enum(["SCHEDULED", "LIVE", "ENDED"]).optional(),
   });
 
-  static addParticipantBody = z.object({
-    userId: z.string().min(1, "User ID is required"),
-  });
-
   static removeParticipantParams = z.object({
     meetingId: z.string().min(1, "Meeting ID is required"),
     userId: z.string().min(1, "User ID is required"),
@@ -65,5 +61,4 @@ export type MeetingIdParams = z.infer<typeof MeetingValidationSchemas.meetingIdP
 export type IdParams = z.infer<typeof MeetingValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof MeetingValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof MeetingValidationSchemas.updateBody>;
-export type AddParticipantBody = z.infer<typeof MeetingValidationSchemas.addParticipantBody>;
 export type RemoveParticipantParams = z.infer<typeof MeetingValidationSchemas.removeParticipantParams>;

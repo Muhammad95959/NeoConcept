@@ -174,21 +174,6 @@ export class MeetingService {
     });
   }
 
-  static async addParticipant(hostId: string, meetingId: string | string[] | undefined, userId: string) {
-    if (!meetingId) {
-      throw new CustomError(ErrorMessages.MEETING_ID_MUST_BE_PROVIDED, 404, HTTPStatusText.FAIL);
-    }
-    const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(hostId, id!);
-
-    const existing = await MeetingModel.findParticipant(userId, id!);
-    if (existing) {
-      throw new CustomError(ErrorMessages.USER_ALREADY_IN_MEETING, 400, HTTPStatusText.FAIL);
-    }
-
-    return MeetingModel.addParticipant({ userId, meetingId: id! });
-  }
-
   static async removeParticipant(
     hostId: string,
     meetingId: string | string[] | undefined,

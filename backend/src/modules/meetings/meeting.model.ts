@@ -85,6 +85,7 @@ export class MeetingModel {
       },
     });
   }
+
   static findParticipant(userId: string, meetingId: string) {
     return prisma.participant.findUnique({
       where: {
@@ -95,6 +96,7 @@ export class MeetingModel {
       },
     });
   }
+
   static removeParticipant(userId: string, meetingId: string) {
     return prisma.participant.delete({
       where: {

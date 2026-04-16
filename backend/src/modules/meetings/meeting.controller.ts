@@ -8,7 +8,6 @@ import {
   MeetingIdParams,
   CreateBody,
   UpdateBody,
-  AddParticipantBody,
   RemoveParticipantParams,
 } from "./meeting.validation";
 
@@ -86,19 +85,6 @@ export default class MeetingController {
       const { meetingId } = res.locals.params as MeetingIdParams;
 
       const result = await MeetingService.leaveMeeting(userId, meetingId);
-      res.json({ status: HTTPStatusText.SUCCESS, data: result });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  static async addParticipant(req: Request, res: Response, next: NextFunction) {
-    try {
-      const hostId = res.locals.user.id;
-      const { meetingId } = res.locals.params as MeetingIdParams;
-      const { userId } = res.locals.body as AddParticipantBody;
-
-      const result = await MeetingService.addParticipant(hostId, meetingId, userId);
       res.json({ status: HTTPStatusText.SUCCESS, data: result });
     } catch (err) {
       next(err);

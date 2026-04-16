@@ -96,4 +96,14 @@ router.get(
   MeetingController.checkHost,
 );
 
+router.delete(
+  "/:meetingId/remove-participant",
+  protect,
+  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: MeetingValidationSchemas.removeParticipantParams }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.removeParticipant,
+);
+
 export default router;
