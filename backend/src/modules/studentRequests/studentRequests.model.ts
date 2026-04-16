@@ -51,6 +51,13 @@ export class StudentRequestModel {
     return prisma.studentRequest.create({ data });
   }
 
+  static update(id: string, data: any) {
+    return prisma.studentRequest.update({
+      where: { id },
+      data,
+    });
+  }
+
   static delete(id: string) {
     return prisma.studentRequest.delete({
       where: { id },

@@ -27,7 +27,7 @@ export class StudentRequestService {
     return request;
   }
 
-  static async create(userId: string, courseId: string) {
+  static async create(userId: string, courseId: string, message?: string) {
     const course = await StudentRequestModel.findCourse(courseId);
     if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
@@ -55,7 +55,23 @@ export class StudentRequestService {
         HTTPStatusText.FAIL,
       );
 
-    return StudentRequestModel.create({ courseId, userId });
+    return StudentRequestModel.create({ courseId, userId, message });
+  }
+
+  static async update(id: string, userId: string, message: string) {
+    const request = await StudentRequestModel.findById(id);
+
+    if (!request) throw new CustomError(ErrorMessages.REQUEST_NOT_FOUND, 404, HTTPStatusText.FAIL);
+
+    if (request.userId !== userId) {
+      throw new CustomError(ErrorMessages.YOU_CAN_ONLY_UPDATE_YOUR_OWN_REQUESTS, 401, HTTPStatusText.FAIL);
+    }
+
+    if (request.status !== Status.PENDING) {
+      throw new CustomError(ErrorMessages.ONLY_PENDING_REQUESTS_CAN_BE_UPDATED, 400, HTTPStatusText.FAIL);
+    }
+
+    return StudentRequestModel.update(id, { message });
   }
 
   static async answer(userId: string, id: string, status: Status) {

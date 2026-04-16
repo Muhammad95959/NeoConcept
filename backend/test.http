@@ -453,7 +453,19 @@ Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
 
 {
-  "courseId": "fb108099-66c7-4baf-a035-4eb54b42e962"
+  "courseId": "fb108099-66c7-4baf-a035-4eb54b42e962",
+  "message": "I would like to join this course."
+}
+
+
+### update-student-request
+
+PATCH http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a21d8c9e26 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "message": "I would like to join this course because I am very interested in its content."
 }
 
 

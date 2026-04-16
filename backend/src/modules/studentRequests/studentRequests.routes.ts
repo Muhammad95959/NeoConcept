@@ -33,6 +33,14 @@ router.post(
 );
 
 router.patch(
+  "/:id",
+  protect,
+  restrict(Role.STUDENT),
+  validate({ params: StudentRequestValidationSchemas.idParams, body: StudentRequestValidationSchemas.updateBody }),
+  StudentRequestController.update,
+);
+
+router.patch(
   "/:id/answer",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),

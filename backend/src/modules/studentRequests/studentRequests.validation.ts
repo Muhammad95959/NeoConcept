@@ -18,6 +18,11 @@ export class StudentRequestValidationSchemas {
 
   static createBody = z.object({
     courseId: z.string().uuid("Invalid course ID"),
+    message: z.string().optional(),
+  });
+
+  static updateBody = z.object({
+    message: z.string().min(1, "Message is required"),
   });
 
   static answerBody = z.object({
@@ -28,4 +33,5 @@ export class StudentRequestValidationSchemas {
 export type GetManyQuery = z.infer<typeof StudentRequestValidationSchemas.getManyQuery>;
 export type IdParams = z.infer<typeof StudentRequestValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof StudentRequestValidationSchemas.createBody>;
+export type UpdateBody = z.infer<typeof StudentRequestValidationSchemas.updateBody>;
 export type AnswerBody = z.infer<typeof StudentRequestValidationSchemas.answerBody>;

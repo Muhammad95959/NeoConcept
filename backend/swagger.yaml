@@ -1733,6 +1733,9 @@ paths:
                 courseId:
                   type: string
                   example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+                message:
+                  type: string
+                  example: I would like to join this course
       responses:
         "201":
           description: success
@@ -1764,6 +1767,43 @@ paths:
           description: You're not a staff member of this course
         "404":
           description: Student request not found
+        "500":
+          description: Something went wrong
+    patch:
+      tags:
+        - Student-Requests
+      summary: update the message of your request
+      description: restricted to student
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                  example: I would like to join this course because I am very interested
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Provide the new message || Only pending requests can be updated
+        "401":
+          description: You can only update your own requests
+        "404":
+          description: Request not found
         "500":
           description: Something went wrong
     delete:

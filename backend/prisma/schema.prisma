@@ -184,6 +184,7 @@ model StudentRequest {
   createdAt DateTime @default(now())
   userId    String
   courseId  String
+  message   String?
   status    Status   @default(PENDING)
 
   user   User   @relation(fields: [userId], references: [id])

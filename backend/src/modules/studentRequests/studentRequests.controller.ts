@@ -3,7 +3,7 @@ import { Status } from "../../generated/prisma";
 import { StudentRequestService } from "./studentRequests.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
-import { GetManyQuery, IdParams, CreateBody, AnswerBody } from "./studentRequests.validation";
+import { GetManyQuery, IdParams, CreateBody, AnswerBody, UpdateBody } from "./studentRequests.validation";
 
 export class StudentRequestController {
   static async getMany(_req: Request, res: Response, next: NextFunction) {
@@ -33,10 +33,23 @@ export class StudentRequestController {
 
   static async create(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId } = res.locals.body as CreateBody;
-      const data = await StudentRequestService.create(res.locals.user.id, courseId);
+      const { courseId, message } = res.locals.body as CreateBody;
+      const data = await StudentRequestService.create(res.locals.user.id, courseId, message);
 
       res.status(201).json({ status: HTTPStatusText.SUCCESS, data });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async update(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = res.locals.params as IdParams;
+      const { message } = res.locals.body as UpdateBody;
+
+      const data = await StudentRequestService.update(res.locals.user.id, id, message);
+
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
     } catch (err) {
       next(err);
     }
