@@ -2,11 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { ResourceService } from "./resource.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
+import { GetManyQuery, IdParams, UploadBody } from "./resource.validation";
 
 export class ResourceController {
   static async getMany(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId } = res.locals.params;
+      const { courseId } = res.locals.query as GetManyQuery;
       const data = await ResourceService.getResources(courseId);
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
@@ -17,7 +18,7 @@ export class ResourceController {
 
   static async get(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, id } = res.locals.params;
+      const { courseId, id } = res.locals.params as IdParams;
       const data = await ResourceService.getResourceById(courseId, id);
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data });
@@ -28,7 +29,7 @@ export class ResourceController {
 
   static async upload(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId } = res.locals.params;
+      const { courseId } = res.locals.body as UploadBody;
       const file = req.file!;
       const userId = res.locals.user.id;
 
@@ -42,7 +43,7 @@ export class ResourceController {
 
   static async download(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, id } = res.locals.params;
+      const { courseId, id } = res.locals.params as IdParams;
 
       const result = await ResourceService.downloadResource(courseId, id);
 
@@ -57,7 +58,7 @@ export class ResourceController {
 
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, id } = res.locals.params;
+      const { courseId, id } = res.locals.params as IdParams;
 
       await ResourceService.deleteResource(courseId, id);
 

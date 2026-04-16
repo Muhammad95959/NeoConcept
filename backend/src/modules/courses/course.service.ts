@@ -45,7 +45,7 @@ export class CourseService {
   static async create(body: {
     name: string;
     description?: string;
-    protect: boolean;
+    protect?: boolean;
     trackId: string;
     prerequisiteIds?: string[];
     instructorIds?: string[];
@@ -153,7 +153,7 @@ export class CourseService {
   static async updatePrerequisites(
     id: string,
     body: {
-      prerequisiteIds: string[];
+      prerequisiteIds?: string[];
     },
   ) {
     const { prerequisiteIds = [] } = body;

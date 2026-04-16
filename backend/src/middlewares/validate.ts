@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodSchema } from "zod";
+import { z } from "zod";
 import { HTTPStatusText } from "../types/HTTPStatusText";
 
 export const validate =
-  (schema: { body?: ZodSchema; params?: ZodSchema; query?: ZodSchema }) =>
+  (schema: { body?: z.ZodType; params?: z.ZodType; query?: z.ZodType }) =>
   (req: Request, res: Response, next: NextFunction) => {
     try {
       if (schema.body) res.locals.body = schema.body.parse(req.body);

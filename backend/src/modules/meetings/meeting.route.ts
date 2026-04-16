@@ -33,7 +33,7 @@ router.post(
   "/",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ body: MeetingValidationSchemas.createBody }),
+  validate({ params: MeetingValidationSchemas.courseIdParams, body: MeetingValidationSchemas.createBody }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.create,
@@ -81,11 +81,19 @@ router.post(
   "/:meetingId/start",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: MeetingValidationSchemas.meetingIdParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.startMeeting,
 );
 
-router.get("/:meetingId/checkHost", protect, checkCourseExists, verifyCourseMember, MeetingController.checkHost);
+router.get(
+  "/:meetingId/checkHost",
+  protect,
+  validate({ params: MeetingValidationSchemas.meetingIdParams }),
+  checkCourseExists,
+  verifyCourseMember,
+  MeetingController.checkHost,
+);
 
 export default router;

@@ -47,8 +47,9 @@ describe("AuthController", () => {
   });
 
   it("signup sends confirmation email in non-dev mode", async () => {
-    const req = { body: { email: "neo@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "neo@example.com", username: "neo", password: "password", role: "STUDENT" } };
 
     (AuthService.signup as jest.Mock).mockResolvedValue({
       confirmEmailToken: "confirm-token",
@@ -66,8 +67,9 @@ describe("AuthController", () => {
   });
 
   it("signup skips confirmation email in dev mode", async () => {
-    const req = { body: { email: "neo@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "neo@example.com", username: "neo", password: "password", role: "STUDENT" } };
 
     (AuthService.signup as jest.Mock).mockResolvedValue({
       confirmEmailToken: "confirm-token",
@@ -139,8 +141,9 @@ describe("AuthController", () => {
   });
 
   it("forgotPassword returns success payload", async () => {
-    const req = { body: { email: "neo@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "neo@example.com" } };
 
     (AuthService.forgotPassword as jest.Mock).mockResolvedValue({ message: SuccessMessages.PASSWORD_RESET_EMAIL_SENT });
 
@@ -210,8 +213,9 @@ describe("AuthController", () => {
   });
 
   it("signup handles email service error and passes to next", async () => {
-    const req = { body: { email: "neo@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "neo@example.com", username: "neo", password: "password", role: "STUDENT" } };
     const sendError = new Error("email send failed");
 
     (AuthService.signup as jest.Mock).mockResolvedValue({
@@ -226,8 +230,9 @@ describe("AuthController", () => {
   });
 
   it("signup propagates service errors to next", async () => {
-    const req = { body: { email: "taken@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "taken@example.com", username: "neo", password: "password", role: "STUDENT" } };
     const serviceError = new Error("Email already exists");
 
     (AuthService.signup as jest.Mock).mockRejectedValue(serviceError);
@@ -322,8 +327,9 @@ describe("AuthController", () => {
   });
 
   it("forgotPassword handles service errors", async () => {
-    const req = { body: { email: "notfound@example.com" } } as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { body: { email: "notfound@example.com" } };
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
     const error = new Error("User not found");
 

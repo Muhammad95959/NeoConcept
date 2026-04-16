@@ -38,8 +38,9 @@ describe("MeetingController", () => {
   });
 
   it("getOne returns meeting by id", async () => {
-    const req = { params: { id: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { params: { id: "m-1" } };
     const meeting = { id: "m-1", title: "Meeting 1" };
     (MeetingService.getById as jest.Mock).mockResolvedValue(meeting);
 
@@ -50,10 +51,10 @@ describe("MeetingController", () => {
   });
 
   it("create returns created meeting payload", async () => {
-    const req = { params: { courseId: "c-1" }, body: { title: "Daily" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { user: { id: "u-1" }, params: { courseId: "c-1" }, body: { title: "Daily" } };
     const data = { meeting: { id: "m-1" } };
-    res.locals = { user: { id: "u-1" } };
     (MeetingService.create as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.create(req, res, next);
@@ -66,8 +67,8 @@ describe("MeetingController", () => {
   it("getAllUser returns user meetings", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    const data = [{ id: "m-1" }];
     res.locals = { user: { id: "u-1" } };
+    const data = [{ id: "m-1" }];
     (MeetingService.getUserMeetings as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.getAllUser(req, res, next);
@@ -77,10 +78,10 @@ describe("MeetingController", () => {
   });
 
   it("update returns updated meeting payload", async () => {
-    const req = { params: { id: "m-1" }, body: { title: "Updated" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1" }, body: { title: "Updated" } };
     const updatedMeeting = { id: "m-1", title: "Updated" };
-    res.locals = { user: { id: "u-host" } };
     (MeetingService.update as jest.Mock).mockResolvedValue(updatedMeeting);
 
     await MeetingController.update(req, res, next);
@@ -93,10 +94,10 @@ describe("MeetingController", () => {
   });
 
   it("join returns join data", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
     const data = { token: "abc" };
-    res.locals = { user: { id: "u-join" } };
     (MeetingService.joinMeeting as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.join(req, res, next);
@@ -106,10 +107,10 @@ describe("MeetingController", () => {
   });
 
   it("leave returns leave payload", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
     const data = { left: true };
-    res.locals = { user: { id: "u-join" } };
     (MeetingService.leaveMeeting as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.leave(req, res, next);
@@ -119,9 +120,9 @@ describe("MeetingController", () => {
   });
 
   it("delete returns deleted message", async () => {
-    const req = { params: { id: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1" } };
 
     await MeetingController.delete(req, res, next);
 
@@ -133,10 +134,10 @@ describe("MeetingController", () => {
   });
 
   it("startMeeting returns meeting object", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
     const meeting = { id: "m-1", status: "LIVE" };
-    res.locals = { user: { id: "u-host" } };
     (MeetingService.startMeeting as jest.Mock).mockResolvedValue(meeting);
 
     await MeetingController.startMeeting(req, res, next);
@@ -146,9 +147,9 @@ describe("MeetingController", () => {
   });
 
   it("checkHost returns isHost true", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
 
     await MeetingController.checkHost(req, res, next);
 
@@ -157,8 +158,9 @@ describe("MeetingController", () => {
   });
 
   it("forwards errors to next", async () => {
-    const req = { params: { id: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
+    res.locals = { params: { id: "m-1" } };
     const error = new Error("service failed");
     (MeetingService.getById as jest.Mock).mockRejectedValue(error);
 
@@ -168,9 +170,9 @@ describe("MeetingController", () => {
   });
 
   it("create error is forwarded to next", async () => {
-    const req = { params: { courseId: "c-1" }, body: { title: "Daily" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-1" } };
+    res.locals = { user: { id: "u-1" }, params: { courseId: "c-1" }, body: { title: "Daily" } };
     const error = new Error("create failed");
     (MeetingService.create as jest.Mock).mockRejectedValue(error);
 
@@ -180,9 +182,9 @@ describe("MeetingController", () => {
   });
 
   it("update error is forwarded to next", async () => {
-    const req = { params: { id: "m-1" }, body: { title: "Updated" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1" }, body: { title: "Updated" } };
     const error = new Error("update failed");
     (MeetingService.update as jest.Mock).mockRejectedValue(error);
 
@@ -192,9 +194,9 @@ describe("MeetingController", () => {
   });
 
   it("delete error is forwarded to next", async () => {
-    const req = { params: { id: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1" } };
     const error = new Error("delete failed");
     (MeetingService.delete as jest.Mock).mockRejectedValue(error);
 
@@ -204,9 +206,9 @@ describe("MeetingController", () => {
   });
 
   it("join error is forwarded to next", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-join" } };
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
     const error = new Error("join failed");
     (MeetingService.joinMeeting as jest.Mock).mockRejectedValue(error);
 
@@ -216,9 +218,9 @@ describe("MeetingController", () => {
   });
 
   it("leave error is forwarded to next", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-join" } };
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
     const error = new Error("leave failed");
     (MeetingService.leaveMeeting as jest.Mock).mockRejectedValue(error);
 
@@ -228,9 +230,9 @@ describe("MeetingController", () => {
   });
 
   it("startMeeting error is forwarded to next", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
     const error = new Error("start failed");
     (MeetingService.startMeeting as jest.Mock).mockRejectedValue(error);
 
@@ -240,9 +242,9 @@ describe("MeetingController", () => {
   });
 
   it("checkHost error is forwarded to next", async () => {
-    const req = { params: { meetingId: "m-1" } } as unknown as Request;
+    const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" } };
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
     const error = new Error("check failed");
     (MeetingService.checkHost as jest.Mock).mockRejectedValue(error);
 

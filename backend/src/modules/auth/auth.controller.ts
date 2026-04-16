@@ -19,10 +19,10 @@ import { Constants } from "../../types/constants";
 export class AuthController {
   static async signup(req: Request, res: Response, next: NextFunction) {
     try {
-      const { confirmEmailToken, isDev } = await AuthService.signup(req.body);
+      const { confirmEmailToken, isDev } = await AuthService.signup(res.locals.body);
 
       if (!isDev) {
-        await sendConfirmationEmail(req.body.email, confirmEmailToken, req);
+        await sendConfirmationEmail(res.locals.body.email, confirmEmailToken, req);
       }
 
       res.status(201).json({
@@ -84,7 +84,7 @@ export class AuthController {
 
   static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.body as ForgotPasswordBody;
+      const { email } = res.locals.body as ForgotPasswordBody;
 
       const result = await AuthService.forgotPassword({ email });
 

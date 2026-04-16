@@ -37,7 +37,7 @@ describe("ResourceController", () => {
     const req = {} as Request;
     const res = createMockRes();
     const data = [{ id: "r-1" }];
-    res.locals = { params: { courseId: "c-1" } };
+    res.locals = { query: { courseId: "c-1" } };
     (ResourceService.getResources as jest.Mock).mockResolvedValue(data);
 
     await ResourceController.getMany(req, res, next);
@@ -67,7 +67,7 @@ describe("ResourceController", () => {
     } as Request;
     const res = createMockRes();
     const data = { id: "r-2" };
-    res.locals = { params: { courseId: "c-1" }, user: { id: "u-1" } };
+    res.locals = { body: { courseId: "c-1" }, user: { id: "u-1" } };
     (ResourceService.uploadResource as jest.Mock).mockResolvedValue(data);
 
     await ResourceController.upload(req, res, next);
@@ -119,13 +119,15 @@ describe("ResourceController", () => {
   });
 
   it("forwards service errors to next", async () => {
-    const req = {} as Request;
+    const req = {
+      file: {},
+    } as Request;
     const res = createMockRes();
     const error = new Error("upload failed");
-    res.locals = { params: { courseId: "c-1" }, user: { id: "u-1" } };
+    res.locals = { body: { courseId: "c-1" }, user: { id: "u-1" } };
     (ResourceService.uploadResource as jest.Mock).mockRejectedValue(error);
 
-    await ResourceController.upload({ file: {} } as Request, res, next);
+    await ResourceController.upload(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
   });

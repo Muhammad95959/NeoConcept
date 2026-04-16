@@ -7,7 +7,7 @@ import { UserValidationSchemas } from "./user.validation";
 
 const router = express.Router();
 
-router.patch("/", protect, validate({ body: UserValidationSchemas.updateUser }), UserController.updateUser);
+router.patch("/", protect, validate({ body: UserValidationSchemas.updateBody }), UserController.updateUser);
 
 router.delete("/", protect, UserController.deleteUser);
 
@@ -21,7 +21,7 @@ router.patch(
   UserController.selectTrack,
 );
 
-router.patch("/quit-track", protect, validate({ body: UserValidationSchemas.trackIdBody }), UserController.quitTrack);
+router.patch("/quit-track", protect, validate({ body: UserValidationSchemas.quitTrackBody }), UserController.quitTrack);
 
 router.get("/courses", protect, UserController.getUserCourses);
 
@@ -42,14 +42,14 @@ router.patch(
 router.get(
   "/staff-requests",
   protect,
-  validate({ query: UserValidationSchemas.getUserStaffRequests }),
+  validate({ query: UserValidationSchemas.getUserStaffRequestsQuery }),
   UserController.getUserStaffRequests,
 );
 
 router.get(
   "/student-requests",
   protect,
-  validate({ query: UserValidationSchemas.getUserStudentRequests }),
+  validate({ query: UserValidationSchemas.getUserStudentRequestsQuery }),
   UserController.getUserStudentRequests,
 );
 

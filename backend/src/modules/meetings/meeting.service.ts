@@ -12,22 +12,23 @@ export class MeetingService {
   static async create(
     userId: string,
     courseId: string,
-    data: { title: string; channelName?: string; scheduledAt?: Date },
+    data: { title: string; channelName?: string; scheduledAt?: string | Date },
   ) {
     const channelName = data.channelName ?? crypto.randomUUID();
+    const scheduledAt = data.scheduledAt ? new Date(data.scheduledAt) : null;
 
     const meeting = await MeetingModel.create({
       title: data.title,
       hostId: userId,
       courseId,
       channelName,
-      scheduledAt: data.scheduledAt ?? null,
+      scheduledAt,
     });
 
     let calendarEvent = null;
 
-    if (data.scheduledAt) {
-      const startDate = new Date(data.scheduledAt);
+    if (scheduledAt) {
+      const startDate = new Date(scheduledAt);
       const endDate = new Date(startDate);
       endDate.setHours(endDate.getHours() + 1);
 
