@@ -11,7 +11,7 @@ const router = express.Router({ mergeParams: true });
 router.get(
   "/",
   protect,
-  validate({ params: CommentValidationSchemas.coursePostParams }),
+  validate({ params: CommentValidationSchemas.postIdParams }),
   checkCourseExists,
   verifyCourseMember,
   CommentController.getMany,
@@ -29,7 +29,7 @@ router.get(
 router.post(
   "/",
   protect,
-  validate({ params: CommentValidationSchemas.coursePostParams, body: CommentValidationSchemas.contentBody }),
+  validate({ params: CommentValidationSchemas.postIdParams, body: CommentValidationSchemas.contentBody }),
   checkCourseExists,
   verifyCourseMember,
   CommentController.create,

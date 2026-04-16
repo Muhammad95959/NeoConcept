@@ -1,13 +1,11 @@
 import z from "zod";
 
 export class CommentValidationSchemas {
-  static coursePostParams = z.object({
-    courseId: z.string().uuid("Invalid course ID"),
+  static postIdParams = z.object({
     postId: z.string().uuid("Invalid post ID"),
   });
 
   static idParams = z.object({
-    courseId: z.string().uuid("Invalid course ID"),
     postId: z.string().uuid("Invalid post ID"),
     id: z.string().uuid("Invalid comment ID"),
   });
@@ -17,6 +15,6 @@ export class CommentValidationSchemas {
   });
 }
 
-export type CoursePostParams = z.infer<typeof CommentValidationSchemas.coursePostParams>;
+export type PostIdParams = z.infer<typeof CommentValidationSchemas.postIdParams>;
 export type IdParams = z.infer<typeof CommentValidationSchemas.idParams>;
 export type ContentBody = z.infer<typeof CommentValidationSchemas.contentBody>;

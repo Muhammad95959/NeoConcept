@@ -76,6 +76,7 @@ export class ErrorMessages {
   static ASSISTANT_NOT_ASSIGNED_TO_TRACK = "One or more assistants are not assigned to the track of this course";
   static INVALID_PREREQUISITES = "One or more prerequisiteIds are invalid";
   static CANNOT_PREREQUISITE_SELF = "A course cannot be a prerequisite of itself";
+  static COMMENT_NOT_FOUND = "Comment not found";
   static YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS =
     "You can only request access to courses in your tracks";
 }

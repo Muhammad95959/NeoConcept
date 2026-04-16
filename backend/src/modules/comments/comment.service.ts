@@ -1,13 +1,55 @@
+import CustomError from "../../types/customError";
+import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { ErrorMessages } from "../../types/errorsMessages";
 import { CreateCommentInput, GetCommentsInput, GetOrDeleteCommentInput, UpdateCommentInput } from "./comment.type";
+import { CommentModel } from "./comment.model";
 
 export class CommentService {
-  static async getMany({ courseId, postId }: GetCommentsInput) {}
+  static async getMany({ postId }: GetCommentsInput) {
+    const comments = await CommentModel.findMany(postId);
 
-  static async get({ courseId, postId, id }: GetOrDeleteCommentInput) {}
+    return comments;
+  }
 
-  static async create({courseId, postId, userId, content}: CreateCommentInput) {}
+  static async get({ postId, id }: GetOrDeleteCommentInput) {
+    const comment = await CommentModel.findById(postId, id);
 
-  static async update({courseId, postId, id, userId, content}: UpdateCommentInput) {}
+    if (!comment) {
+      throw new CustomError(ErrorMessages.COMMENT_NOT_FOUND, 404, HTTPStatusText.FAIL);
+    }
 
-  static async delete({courseId, postId, id}: GetOrDeleteCommentInput) {}
+    return comment;
+  }
+
+  static async create({ postId, userId, content }: CreateCommentInput) {
+    const newComment = await CommentModel.create({ content, postId, userId });
+
+    return newComment;
+  }
+
+  static async update({ postId, id, userId, content }: UpdateCommentInput) {
+    const comment = await CommentModel.findById(postId, id);
+
+    if (!comment) {
+      throw new CustomError(ErrorMessages.COMMENT_NOT_FOUND, 404, HTTPStatusText.FAIL);
+    }
+
+    if (comment.userId !== userId) {
+      throw new CustomError(ErrorMessages.UNAUTHORIZED, 403, HTTPStatusText.FAIL);
+    }
+
+    const updatedComment = await CommentModel.update(id, { content });
+
+    return updatedComment;
+  }
+
+  static async delete({ postId, id }: GetOrDeleteCommentInput) {
+    const comment = await CommentModel.findById(postId, id);
+
+    if (!comment) {
+      throw new CustomError(ErrorMessages.COMMENT_NOT_FOUND, 404, HTTPStatusText.FAIL);
+    }
+
+    await CommentModel.delete(id);
+  }
 }

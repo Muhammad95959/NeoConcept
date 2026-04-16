@@ -1,15 +1,14 @@
 import { Request, Response, NextFunction } from "express";
-import { ContentBody, CoursePostParams, IdParams } from "./comment.validation";
+import { ContentBody, PostIdParams, IdParams } from "./comment.validation";
 import { CommentService } from "./comment.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
-import { ErrorMessages } from "../../types/errorsMessages";
 import { SuccessMessages } from "../../types/successMessages";
 
 export class CommentController {
   static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, postId } = res.locals.params as CoursePostParams;
-      const comments = await CommentService.getMany({ courseId, postId });
+      const { postId } = res.locals.params as PostIdParams;
+      const comments = await CommentService.getMany({ postId });
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: comments });
     } catch (err: any) {
@@ -19,8 +18,8 @@ export class CommentController {
 
   static async get(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, postId, id } = res.locals.params as IdParams;
-      const comment = await CommentService.get({ courseId, postId, id });
+      const { postId, id } = res.locals.params as IdParams;
+      const comment = await CommentService.get({ postId, id });
       
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: comment });
     } catch (err: any) {
@@ -30,10 +29,10 @@ export class CommentController {
 
   static async create(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, postId } = res.locals.params as CoursePostParams;
+      const { postId } = res.locals.params as PostIdParams;
       const { content } = res.locals.body as ContentBody;
       
-      const comment = await CommentService.create({ courseId, postId, userId: res.locals.user.id, content });
+      const comment = await CommentService.create({ postId, userId: res.locals.user.id, content });
 
       res.status(201).json({ status: HTTPStatusText.SUCCESS, data: comment });
     } catch (err: any) {
@@ -43,10 +42,10 @@ export class CommentController {
 
   static async update(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, postId, id } = res.locals.params as IdParams;
+      const { postId, id } = res.locals.params as IdParams;
       const { content } = res.locals.body as ContentBody;
       
-      const comment = await CommentService.update({ courseId, postId, id, userId: res.locals.user.id, content });
+      const comment = await CommentService.update({ postId, id, userId: res.locals.user.id, content });
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: comment });
     } catch (err: any) {
@@ -56,8 +55,8 @@ export class CommentController {
 
   static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { courseId, postId, id } = res.locals.params as IdParams;
-      await CommentService.delete({ courseId, postId, id });
+      const { postId, id } = res.locals.params as IdParams;
+      await CommentService.delete({ postId, id });
       
       res.status(200).json({ status: HTTPStatusText.SUCCESS, message: SuccessMessages.COMMENT_DELETED });
     } catch (err: any) {
