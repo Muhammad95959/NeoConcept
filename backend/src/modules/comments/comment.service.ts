@@ -3,6 +3,8 @@ import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { ErrorMessages } from "../../types/errorsMessages";
 import { CreateCommentInput, GetCommentsInput, GetOrDeleteCommentInput, UpdateCommentInput } from "./comment.type";
 import { CommentModel } from "./comment.model";
+import { emitToPost } from "../../config/socket";
+import { SocketEvents } from "../../types/socketEvents";
 
 export class CommentService {
   static async getMany({ postId }: GetCommentsInput) {
@@ -24,6 +26,8 @@ export class CommentService {
   static async create({ postId, userId, content }: CreateCommentInput) {
     const newComment = await CommentModel.create({ content, postId, userId });
 
+    emitToPost(postId, SocketEvents.NEW_COMMENT, newComment);
+
     return newComment;
   }
 
@@ -40,6 +44,8 @@ export class CommentService {
 
     const updatedComment = await CommentModel.update(id, { content });
 
+    emitToPost(postId, SocketEvents.UPDATED_COMMENT, updatedComment);
+
     return updatedComment;
   }
 
@@ -51,5 +57,7 @@ export class CommentService {
     }
 
     await CommentModel.delete(id);
+
+    emitToPost(postId, SocketEvents.DELETED_COMMENT, { id });
   }
 }
