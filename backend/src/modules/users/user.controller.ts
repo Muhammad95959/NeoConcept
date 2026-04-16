@@ -83,7 +83,7 @@ export class UserController {
     }
   }
 
-  static async getUserCourses(req: Request, res: Response, next: NextFunction) {
+  static async getUserCourses(_req: Request, res: Response, next: NextFunction) {
     try {
       const courses = await UserService.getUserCourses({ userId: res.locals.user.id });
 

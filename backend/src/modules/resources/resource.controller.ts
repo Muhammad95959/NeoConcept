@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../types/successMessages";
 import { GetManyQuery, IdParams, UploadBody } from "./resource.validation";
 
 export class ResourceController {
-  static async getMany(req: Request, res: Response, next: NextFunction) {
+  static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.query as GetManyQuery;
       const data = await ResourceService.getResources(courseId);
@@ -16,7 +16,7 @@ export class ResourceController {
     }
   }
 
-  static async get(req: Request, res: Response, next: NextFunction) {
+  static async get(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals.params as IdParams;
       const data = await ResourceService.getResourceById(courseId, id);
@@ -41,7 +41,7 @@ export class ResourceController {
     }
   }
 
-  static async download(req: Request, res: Response, next: NextFunction) {
+  static async download(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals.params as IdParams;
 
@@ -56,7 +56,7 @@ export class ResourceController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals.params as IdParams;
 

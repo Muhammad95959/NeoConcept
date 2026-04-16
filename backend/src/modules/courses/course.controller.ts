@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../types/successMessages";
 import { GetManyQuery, IdParams, CreateBody, UpdateBody, UpdatePrerequisitesBody, UpdateStaffBody } from "./course.validation";
 
 export class CourseController {
-  static async getMany(req: Request, res: Response, next: NextFunction) {
+  static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
       const query = res.locals.query as GetManyQuery;
       const data = await CourseService.getMany(query);
@@ -15,7 +15,7 @@ export class CourseController {
     }
   }
 
-  static async get(req: Request, res: Response, next: NextFunction) {
+  static async get(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const data = await CourseService.get(id);
@@ -25,7 +25,7 @@ export class CourseController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(_req: Request, res: Response, next: NextFunction) {
     try {
       const body = res.locals.body as CreateBody;
       const data = await CourseService.create(body);
@@ -35,7 +35,7 @@ export class CourseController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const body = res.locals.body as UpdateBody;
@@ -46,7 +46,7 @@ export class CourseController {
     }
   }
 
-  static async updatePrerequisites(req: Request, res: Response, next: NextFunction) {
+  static async updatePrerequisites(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const body = res.locals.body as UpdatePrerequisitesBody;
@@ -57,7 +57,7 @@ export class CourseController {
     }
   }
 
-  static async updateStaff(req: Request, res: Response, next: NextFunction) {
+  static async updateStaff(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const body = res.locals.body as UpdateStaffBody;
@@ -72,7 +72,7 @@ export class CourseController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       await CourseService.delete(id);

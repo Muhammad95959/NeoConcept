@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../types/successMessages";
 import { IdParams, CreateBody, UpdateBody, AnswerBody } from "./staffRequests.validation";
 
 export class StaffRequestController {
-  static async getMany(req: Request, res: Response, next: NextFunction) {
+  static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
       const data = await StaffRequestService.getMany(res.locals.user.id);
 
@@ -15,7 +15,7 @@ export class StaffRequestController {
     }
   }
 
-  static async get(req: Request, res: Response, next: NextFunction) {
+  static async get(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
 
@@ -27,7 +27,7 @@ export class StaffRequestController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(_req: Request, res: Response, next: NextFunction) {
     try {
       const user = res.locals.user;
       const { courseId, message } = res.locals.body as CreateBody;
@@ -40,7 +40,7 @@ export class StaffRequestController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const { message } = res.locals.body as UpdateBody;
@@ -53,7 +53,7 @@ export class StaffRequestController {
     }
   }
 
-  static async answer(req: Request, res: Response, next: NextFunction) {
+  static async answer(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const { status } = res.locals.body as AnswerBody;
@@ -66,7 +66,7 @@ export class StaffRequestController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
 

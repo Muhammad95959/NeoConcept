@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { HTTPStatusText } from "../types/HTTPStatusText";
 import { ErrorMessages } from "../types/errorsMessages";
 
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
+export const errorHandler = (err: any, _req: Request, res: Response, _next: NextFunction): void => {
   let statusCode = err.statusCode ?? 500;
   let message = err.message ?? "Internal Server Error";
   let statusText = err.statusText ?? HTTPStatusText.ERROR;

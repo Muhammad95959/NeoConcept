@@ -34,7 +34,7 @@ export class AuthController {
     }
   }
 
-  static async confirmEmail(req: Request, res: Response, next: NextFunction) {
+  static async confirmEmail(_req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = res.locals.params as ConfirmEmailParams;
       const html = await AuthService.confirmEmail({ token });
@@ -46,7 +46,7 @@ export class AuthController {
     }
   }
 
-  static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
+  static async resendConfirmationEmail(_req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = res.locals.body as ResendConfirmationEmailBody;
 
@@ -61,7 +61,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction) {
+  static async login(_req: Request, res: Response, next: NextFunction) {
     try {
       const data = res.locals.body as LoginBody;
       const { token, user } = await AuthService.login(data);
@@ -82,7 +82,7 @@ export class AuthController {
     }
   }
 
-  static async forgotPassword(req: Request, res: Response, next: NextFunction) {
+  static async forgotPassword(_req: Request, res: Response, next: NextFunction) {
     try {
       const { email } = res.locals.body as ForgotPasswordBody;
 
@@ -97,7 +97,7 @@ export class AuthController {
     }
   }
 
-  static async verifyOTP(req: Request, res: Response, next: NextFunction) {
+  static async verifyOTP(_req: Request, res: Response, next: NextFunction) {
     try {
       const { email, otp } = res.locals.body as VerifyOTPBody;
 
@@ -112,7 +112,7 @@ export class AuthController {
     }
   }
 
-  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+  static async resetPassword(_req: Request, res: Response, next: NextFunction) {
     try {
       const { email, otp, newPassword } = res.locals.body as ResetPasswordBody;
 
@@ -142,7 +142,7 @@ export class AuthController {
     });
   }
 
-  static async mobileGoogleAuth(req: Request, res: Response, next: NextFunction) {
+  static async mobileGoogleAuth(_req: Request, res: Response, next: NextFunction) {
     try {
       const body = res.locals.body as MobileGoogleAuthBody;
       const query = res.locals.query as MobileGoogleAuthQuery;

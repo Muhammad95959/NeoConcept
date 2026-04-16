@@ -5,7 +5,7 @@ import { ErrorMessages } from "../types/errorsMessages";
 
 export const restrict =
   (...roles: Role[]) =>
-  (req: Request, res: Response, next: NextFunction) => {
+  (_req: Request, res: Response, next: NextFunction) => {
     try {
       const user = res.locals.user;
 

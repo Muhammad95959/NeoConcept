@@ -6,7 +6,7 @@ import { SuccessMessages } from "../../types/successMessages";
 import { GetManyQuery, IdParams, CreateBody, UpdateBody } from "./tracks.validation";
 
 export class TrackController {
-  static async getTracks(req: Request, res: Response, next: NextFunction) {
+  static async getTracks(_req: Request, res: Response, next: NextFunction) {
     try {
       const { search } = res.locals.query as GetManyQuery;
       const data = await TrackService.getMany(search);
@@ -17,7 +17,7 @@ export class TrackController {
     }
   }
 
-  static async getTrackById(req: Request, res: Response, next: NextFunction) {
+  static async getTrackById(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const data = await TrackService.getById(id);
@@ -28,7 +28,7 @@ export class TrackController {
     }
   }
 
-  static async getTrackStaff(req: Request, res: Response, next: NextFunction) {
+  static async getTrackStaff(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const data = await TrackService.getStaff(id, res.locals.user.id, safeUserData);
@@ -39,7 +39,7 @@ export class TrackController {
     }
   }
 
-  static async createTrack(req: Request, res: Response, next: NextFunction) {
+  static async createTrack(_req: Request, res: Response, next: NextFunction) {
     try {
       const payload = res.locals.body as CreateBody;
       const data = await TrackService.create(res.locals.user.id, payload);
@@ -50,7 +50,7 @@ export class TrackController {
     }
   }
 
-  static async updateTrack(req: Request, res: Response, next: NextFunction) {
+  static async updateTrack(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const payload = res.locals.body as UpdateBody;
@@ -62,7 +62,7 @@ export class TrackController {
     }
   }
 
-  static async deleteTrack(req: Request, res: Response, next: NextFunction) {
+  static async deleteTrack(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       await TrackService.delete(id);

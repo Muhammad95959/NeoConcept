@@ -6,7 +6,7 @@ import { SuccessMessages } from "../../types/successMessages";
 import { GetManyQuery, IdParams, CreateBody, AnswerBody } from "./studentRequests.validation";
 
 export class StudentRequestController {
-  static async getMany(req: Request, res: Response, next: NextFunction) {
+  static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, status } = res.locals.query as GetManyQuery;
       const statusValue = status ? (status.toUpperCase() as Status) : undefined;
@@ -19,7 +19,7 @@ export class StudentRequestController {
     }
   }
 
-  static async getById(req: Request, res: Response, next: NextFunction) {
+  static async getById(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
 
@@ -31,7 +31,7 @@ export class StudentRequestController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.body as CreateBody;
       const data = await StudentRequestService.create(res.locals.user.id, courseId);
@@ -42,7 +42,7 @@ export class StudentRequestController {
     }
   }
 
-  static async answer(req: Request, res: Response, next: NextFunction) {
+  static async answer(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const { status } = res.locals.body as AnswerBody;
@@ -55,7 +55,7 @@ export class StudentRequestController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
 

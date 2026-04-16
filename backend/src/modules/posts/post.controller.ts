@@ -5,7 +5,7 @@ import { CourseIdParams, CreateBody, GetManyQuery, IdParams } from "./post.valid
 import { SuccessMessages } from "../../types/successMessages";
 
 export class PostsController {
-  static async getPosts(req: Request, res: Response, next: NextFunction) {
+  static async getPosts(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.params as CourseIdParams;
       const { search } = res.locals.query as GetManyQuery;
@@ -17,7 +17,7 @@ export class PostsController {
       next(err);
     }
   }
-  static async getPost(req: Request, res: Response, next: NextFunction) {
+  static async getPost(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals.params as IdParams;
 
@@ -28,7 +28,7 @@ export class PostsController {
       next(err);
     }
   }
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.params as CourseIdParams;
       const { title, content } = res.locals.body as CreateBody;
@@ -41,7 +41,7 @@ export class PostsController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals.params as IdParams;
       const { title, content } = res.locals!.body as CreateBody;
@@ -54,7 +54,7 @@ export class PostsController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, id } = res.locals!.params as IdParams;
 

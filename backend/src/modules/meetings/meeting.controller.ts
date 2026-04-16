@@ -12,7 +12,7 @@ import {
 } from "./meeting.validation";
 
 export default class MeetingController {
-  static async getAllUser(req: Request, res: Response, next: NextFunction) {
+  static async getAllUser(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
       const meetings = await MeetingService.getUserMeetings(userId);
@@ -22,7 +22,7 @@ export default class MeetingController {
     }
   }
 
-  static async getOne(req: Request, res: Response, next: NextFunction) {
+  static async getOne(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const meeting = await MeetingService.getById(id);
@@ -32,7 +32,7 @@ export default class MeetingController {
     }
   }
 
-  static async create(req: Request, res: Response, next: NextFunction) {
+  static async create(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.params as CourseIdParams;
       const body = res.locals.body as CreateBody;
@@ -43,7 +43,7 @@ export default class MeetingController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  static async update(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       const body = res.locals.body as UpdateBody;
@@ -54,7 +54,7 @@ export default class MeetingController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as IdParams;
       await MeetingService.delete(res.locals.user.id, id);
@@ -67,7 +67,7 @@ export default class MeetingController {
     }
   }
 
-  static async join(req: Request, res: Response, next: NextFunction) {
+  static async join(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
       const { meetingId } = res.locals.params as MeetingIdParams;
@@ -79,7 +79,7 @@ export default class MeetingController {
     }
   }
 
-  static async leave(req: Request, res: Response, next: NextFunction) {
+  static async leave(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
       const { meetingId } = res.locals.params as MeetingIdParams;
@@ -91,7 +91,7 @@ export default class MeetingController {
     }
   }
 
-  static async removeParticipant(req: Request, res: Response, next: NextFunction) {
+  static async removeParticipant(_req: Request, res: Response, next: NextFunction) {
     try {
       const hostId = res.locals.user.id;
       const { meetingId, userId } = res.locals.params as RemoveParticipantParams;
@@ -103,7 +103,7 @@ export default class MeetingController {
     }
   }
 
-  static async startMeeting(req: Request, res: Response, next: NextFunction) {
+  static async startMeeting(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
       const { meetingId } = res.locals.params as MeetingIdParams;
@@ -114,7 +114,7 @@ export default class MeetingController {
     }
   }
 
-  static async checkHost(req: Request, res: Response, next: NextFunction) {
+  static async checkHost(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
       const { meetingId } = res.locals.params as MeetingIdParams;
