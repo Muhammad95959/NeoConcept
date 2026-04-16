@@ -20,7 +20,7 @@ export class StaffRequestValidationSchemas {
   });
 }
 
-export type GetStaffRequestByIdParams = z.infer<typeof StaffRequestValidationSchemas.getByIdParams>;
-export type CreateStaffRequestBody = z.infer<typeof StaffRequestValidationSchemas.createBody>;
-export type UpdateStaffRequestBody = z.infer<typeof StaffRequestValidationSchemas.updateBody>;
-export type AnswerStaffRequestBody = z.infer<typeof StaffRequestValidationSchemas.answerBody>;
+export type GetByIdParams = z.infer<typeof StaffRequestValidationSchemas.getByIdParams>;
+export type CreateBody = z.infer<typeof StaffRequestValidationSchemas.createBody>;
+export type UpdateBody = z.infer<typeof StaffRequestValidationSchemas.updateBody>;
+export type AnswerBody = z.infer<typeof StaffRequestValidationSchemas.answerBody>;

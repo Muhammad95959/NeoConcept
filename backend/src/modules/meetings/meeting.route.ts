@@ -2,7 +2,7 @@ import { Router } from "express";
 import MeetingController from "./meeting.controller";
 import { protect } from "../../middlewares/protect";
 import { validate } from "../../middlewares/validate";
-import { createMeetingSchema, meetingIdParamSchema, idParamSchema, updateMeetingSchema } from "./meeting.validation";
+import { MeetingValidationSchemas } from "./meeting.validation";
 import { restrict } from "../../middlewares/restrict";
 import { Role } from "../../generated/prisma";
 import checkCourseExists from "../../middlewares/checkCourseExists";
@@ -23,7 +23,7 @@ router.get(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ params: idParamSchema }),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.getOne,
@@ -33,7 +33,7 @@ router.post(
   "/",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ body: createMeetingSchema }),
+  validate({ body: MeetingValidationSchemas.createBody }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.create,
@@ -43,7 +43,7 @@ router.put(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ body: updateMeetingSchema, params: idParamSchema }),
+  validate({ body: MeetingValidationSchemas.updateBody, params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.update,
@@ -53,7 +53,7 @@ router.delete(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ params: idParamSchema }),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.delete,
@@ -62,7 +62,7 @@ router.delete(
 router.post(
   "/:meetingId/join",
   protect,
-  validate({ params: meetingIdParamSchema }),
+  validate({ params: MeetingValidationSchemas.meetingIdParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.join,
@@ -71,7 +71,7 @@ router.post(
 router.post(
   "/:meetingId/leave",
   protect,
-  validate({ params: meetingIdParamSchema }),
+  validate({ params: MeetingValidationSchemas.meetingIdParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.leave,

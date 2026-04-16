@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export class CourseValidationSchemas {
-  static getMany = z.object({
+  static getManyQuery = z.object({
     search: z.string().optional(),
     track: z.string().optional(),
   });
 
-  static get = z.object({
+  static getByIdParams = z.object({
     id: z.string(),
   });
 
-  static create = z.object({
+  static createBody = z.object({
     name: z.string().min(1, "Course name is required"),
     description: z.string().optional(),
     protect: z.boolean().optional(),
@@ -26,16 +26,16 @@ export class CourseValidationSchemas {
     protect: z.boolean().optional(),
   });
 
-  static updateParmas = z.object({
-    id: z.string(),
-  });
-
-  static updatePrerequisitesParams = z.object({
+  static updateParams = z.object({
     id: z.string(),
   });
 
   static updatePrerequisitesBody = z.object({
     prerequisiteIds: z.array(z.string()).optional(),
+  });
+
+  static updatePrerequisitesParams = z.object({
+    id: z.string(),
   });
 
   static updateStaffBody = z
@@ -52,7 +52,18 @@ export class CourseValidationSchemas {
     id: z.string(),
   });
 
-  static delete = z.object({
+  static deleteParams = z.object({
     id: z.string(),
   });
 }
+
+export type GetManyQuery = z.infer<typeof CourseValidationSchemas.getManyQuery>;
+export type GetByIdParams = z.infer<typeof CourseValidationSchemas.getByIdParams>;
+export type CreateBody = z.infer<typeof CourseValidationSchemas.createBody>;
+export type UpdateBody = z.infer<typeof CourseValidationSchemas.updateBody>;
+export type UpdateParams = z.infer<typeof CourseValidationSchemas.updateParams>;
+export type UpdatePrerequisitesBody = z.infer<typeof CourseValidationSchemas.updatePrerequisitesBody>;
+export type UpdatePrerequisitesParams = z.infer<typeof CourseValidationSchemas.updatePrerequisitesParams>;
+export type UpdateStaffBody = z.infer<typeof CourseValidationSchemas.updateStaffBody>;
+export type UpdateStaffParams = z.infer<typeof CourseValidationSchemas.updateStaffParams>;
+export type DeleteParams = z.infer<typeof CourseValidationSchemas.deleteParams>;

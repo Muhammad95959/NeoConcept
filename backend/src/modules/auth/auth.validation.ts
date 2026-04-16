@@ -2,8 +2,6 @@ import { z } from "zod";
 import { Role } from "../../generated/prisma";
 
 export class AuthValidationSchemas {
-  static RoleEnum = z.enum(["STUDENT", "INSTRUCTOR", "ASSISTANT", "ADMIN"]);
-
   static signup = z.object({
     email: z
       .string()
@@ -21,29 +19,29 @@ export class AuthValidationSchemas {
     role: z.nativeEnum(Role),
   });
 
-  static confirmEmail = z.object({
-    token: z.string().min(1),
-  });
-
-  static resendConfirmationEmail = z.object({
-    email: z.string().email("Invalid email address"),
-  });
-
-  static login = z.object({
+  static loginBody = z.object({
     email: z.string().email("Invalid email").toLowerCase(),
     password: z.string().min(1, "Password is required"),
   });
 
-  static forgotPassword = z.object({
+  static confirmEmailParams = z.object({
+    token: z.string().min(1),
+  });
+
+  static resendConfirmationEmailBody = z.object({
+    email: z.string().email("Invalid email address"),
+  });
+
+  static forgotPasswordBody = z.object({
     email: z.string().email("Invalid email address").toLowerCase(),
   });
 
-  static verifyOTP = z.object({
+  static verifyOTPBody = z.object({
     email: z.string().email(),
     otp: z.string().length(6),
   });
 
-  static resetPassword = z.object({
+  static resetPasswordBody = z.object({
     email: z.string().email("Invalid email"),
     otp: z.string().length(6, "OTP must be 6 digits"),
     newPassword: z.string().min(6, "Password must be at least 6 characters"),
@@ -58,12 +56,12 @@ export class AuthValidationSchemas {
   });
 }
 
-export type SignupInput = z.infer<typeof AuthValidationSchemas.signup>;
-export type ConfirmEmailInput = z.infer<typeof AuthValidationSchemas.confirmEmail>;
-export type ResendConfirmationEmailInput = z.infer<typeof AuthValidationSchemas.resendConfirmationEmail>;
-export type LoginInput = z.infer<typeof AuthValidationSchemas.login>;
-export type ForgotPasswordInput = z.infer<typeof AuthValidationSchemas.forgotPassword>;
-export type VerifyOTPInput = z.infer<typeof AuthValidationSchemas.verifyOTP>;
-export type ResetPasswordInput = z.infer<typeof AuthValidationSchemas.resetPassword>;
-export type MobileGoogleAuthInput = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthBody>;
+export type SignupBody = z.infer<typeof AuthValidationSchemas.signup>;
+export type LoginBody = z.infer<typeof AuthValidationSchemas.loginBody>;
+export type ConfirmEmailParams = z.infer<typeof AuthValidationSchemas.confirmEmailParams>;
+export type ResendConfirmationEmailBody = z.infer<typeof AuthValidationSchemas.resendConfirmationEmailBody>;
+export type ForgotPasswordBody = z.infer<typeof AuthValidationSchemas.forgotPasswordBody>;
+export type VerifyOTPBody = z.infer<typeof AuthValidationSchemas.verifyOTPBody>;
+export type ResetPasswordBody = z.infer<typeof AuthValidationSchemas.resetPasswordBody>;
+export type MobileGoogleAuthBody = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthBody>;
 export type MobileGoogleAuthQuery = z.infer<typeof AuthValidationSchemas.mobileGoogleAuthQuery>;

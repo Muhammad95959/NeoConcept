@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Status } from "../../generated/prisma";
 
 export class StudentRequestValidationSchemas {
-  static getCourseStudentRequestsQuery = z
+  static getManyQuery = z
     .object({
       courseId: z.string().uuid("Invalid course ID"),
       status: z.string().optional(),
@@ -12,25 +12,20 @@ export class StudentRequestValidationSchemas {
       path: ["status"],
     });
 
-  static getCourseStudentRequestParams = z.object({
+  static getByIdParams = z.object({
     id: z.string().uuid("Invalid request ID"),
   });
 
-  static createStudentRequestBody = z.object({
+  static createBody = z.object({
     courseId: z.string().uuid("Invalid course ID"),
   });
 
-  static answerStudentRequestBody = z.object({
+  static answerBody = z.object({
     status: z.enum([Status.APPROVED, Status.REJECTED]),
   });
 }
 
-export type GetCourseStudentRequestsQuery = z.infer<
-  typeof StudentRequestValidationSchemas.getCourseStudentRequestsQuery
->;
-
-export type CourseStudentRequestParams = z.infer<typeof StudentRequestValidationSchemas.getCourseStudentRequestParams>;
-
-export type CreateStudentRequestBody = z.infer<typeof StudentRequestValidationSchemas.createStudentRequestBody>;
-
-export type AnswerStudentRequestBody = z.infer<typeof StudentRequestValidationSchemas.answerStudentRequestBody>;
+export type GetManyQuery = z.infer<typeof StudentRequestValidationSchemas.getManyQuery>;
+export type GetByIdParams = z.infer<typeof StudentRequestValidationSchemas.getByIdParams>;
+export type CreateBody = z.infer<typeof StudentRequestValidationSchemas.createBody>;
+export type AnswerBody = z.infer<typeof StudentRequestValidationSchemas.answerBody>;

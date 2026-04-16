@@ -1,25 +1,25 @@
 import { z } from "zod";
 
 export class PostValidationSchemas {
-  static courseIdParam = z.object({
+  static getManyQuery = z.object({
+    search: z.string().optional(),
+  });
+
+  static courseIdParams = z.object({
     courseId: z.string().uuid("Invalid course ID"),
   });
 
-  static postIdParam = z.object({
+  static getByIdParams = z.object({
     courseId: z.string().uuid("Invalid course ID"),
     id: z.string().uuid("Invalid post ID"),
   });
 
-  static getPostsQuery = z.object({
-    search: z.string().optional(),
-  });
-
-  static create = z.object({
+  static createBody = z.object({
     title: z.string().min(1).max(255).trim(),
     content: z.string().min(1).trim(),
   });
 
-  static update = z
+  static updateBody = z
     .object({
       title: z.string().min(1).max(255).trim().optional(),
       content: z.string().min(1).trim().optional(),
@@ -27,14 +27,16 @@ export class PostValidationSchemas {
     .refine((data) => data.title || data.content, {
       message: "Title or content is required",
     });
+
+  static deleteParams = z.object({
+    courseId: z.string().uuid("Invalid course ID"),
+    id: z.string().uuid("Invalid post ID"),
+  });
 }
 
-export type CourseIdParam = z.infer<typeof PostValidationSchemas.courseIdParam>;
-
-export type PostIdParam = z.infer<typeof PostValidationSchemas.postIdParam>;
-
-export type GetPostsQuery = z.infer<typeof PostValidationSchemas.getPostsQuery>;
-
-export type CreatePostInput = z.infer<typeof PostValidationSchemas.create>;
-
-export type UpdatePostInput = z.infer<typeof PostValidationSchemas.update>;
+export type GetManyQuery = z.infer<typeof PostValidationSchemas.getManyQuery>;
+export type CourseIdParams = z.infer<typeof PostValidationSchemas.courseIdParams>;
+export type GetByIdParams = z.infer<typeof PostValidationSchemas.getByIdParams>;
+export type CreateBody = z.infer<typeof PostValidationSchemas.createBody>;
+export type UpdateBody = z.infer<typeof PostValidationSchemas.updateBody>;
+export type DeleteParams = z.infer<typeof PostValidationSchemas.deleteParams>;

@@ -26,29 +26,29 @@ router.post("/signup", validate({ body: AuthValidationSchemas.signup }), AuthCon
 
 router.get(
   "/confirm-email/:token",
-  validate({ params: AuthValidationSchemas.confirmEmail }),
+  validate({ params: AuthValidationSchemas.confirmEmailParams }),
   AuthController.confirmEmail,
 );
 
 router.post(
   "/resend-confirmation-email",
-  validate({ body: AuthValidationSchemas.resendConfirmationEmail }),
+  validate({ body: AuthValidationSchemas.resendConfirmationEmailBody }),
   AuthController.resendConfirmationEmail,
 );
 
-router.post("/login", validate({ body: AuthValidationSchemas.login }), AuthController.login);
+router.post("/login", validate({ body: AuthValidationSchemas.loginBody }), AuthController.login);
 
 router.get("/logout", AuthController.logout);
 
 router.post(
   "/forgot-password",
-  validate({ body: AuthValidationSchemas.forgotPassword }),
+  validate({ body: AuthValidationSchemas.forgotPasswordBody }),
   AuthController.forgotPassword,
 );
 
-router.post("/verify-otp", validate({ body: AuthValidationSchemas.verifyOTP }), AuthController.verifyOTP);
+router.post("/verify-otp", validate({ body: AuthValidationSchemas.verifyOTPBody }), AuthController.verifyOTP);
 
-router.patch("/reset-password", validate({ body: AuthValidationSchemas.resetPassword }), AuthController.resetPassword);
+router.patch("/reset-password", validate({ body: AuthValidationSchemas.resetPasswordBody }), AuthController.resetPassword);
 
 router.post(
   "/google/mobile",

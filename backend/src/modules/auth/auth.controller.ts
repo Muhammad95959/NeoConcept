@@ -4,14 +4,14 @@ import { sendConfirmationEmail } from "./email.service";
 import { AuthService } from "./auth.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import {
-  ConfirmEmailInput,
-  ForgotPasswordInput,
-  LoginInput,
-  MobileGoogleAuthInput,
+  ConfirmEmailParams,
+  ForgotPasswordBody,
+  LoginBody,
+  MobileGoogleAuthBody,
   MobileGoogleAuthQuery,
-  ResendConfirmationEmailInput,
-  ResetPasswordInput,
-  VerifyOTPInput,
+  ResendConfirmationEmailBody,
+  ResetPasswordBody,
+  VerifyOTPBody,
 } from "./auth.validation";
 import { SuccessMessages } from "../../types/successMessages";
 import { Constants } from "../../types/constants";
@@ -36,7 +36,7 @@ export class AuthController {
 
   static async confirmEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { token } = res.locals.params as ConfirmEmailInput;
+      const { token } = res.locals.params as ConfirmEmailParams;
       const html = await AuthService.confirmEmail({ token });
 
       res.status(200).send(html);
@@ -48,7 +48,7 @@ export class AuthController {
 
   static async resendConfirmationEmail(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = res.locals.body as ResendConfirmationEmailInput;
+      const { email } = res.locals.body as ResendConfirmationEmailBody;
 
       await AuthService.resendConfirmationEmail({ email });
 
@@ -63,7 +63,7 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = res.locals.body as LoginInput;
+      const data = res.locals.body as LoginBody;
       const { token, user } = await AuthService.login(data);
 
       res.cookie("jwt", token, {
@@ -84,7 +84,7 @@ export class AuthController {
 
   static async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email } = req.body as ForgotPasswordInput;
+      const { email } = req.body as ForgotPasswordBody;
 
       const result = await AuthService.forgotPassword({ email });
 
@@ -99,7 +99,7 @@ export class AuthController {
 
   static async verifyOTP(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, otp } = res.locals.body as VerifyOTPInput;
+      const { email, otp } = res.locals.body as VerifyOTPBody;
 
       const result = await AuthService.verifyOTP({ email, otp });
 
@@ -114,7 +114,7 @@ export class AuthController {
 
   static async resetPassword(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, otp, newPassword } = res.locals.body as ResetPasswordInput;
+      const { email, otp, newPassword } = res.locals.body as ResetPasswordBody;
 
       const result = await AuthService.resetPassword({ email, otp, newPassword });
 
@@ -144,7 +144,7 @@ export class AuthController {
 
   static async mobileGoogleAuth(req: Request, res: Response, next: NextFunction) {
     try {
-      const body = res.locals.body as MobileGoogleAuthInput;
+      const body = res.locals.body as MobileGoogleAuthBody;
       const query = res.locals.query as MobileGoogleAuthQuery;
 
       const { token, user } = await AuthService.mobileGoogleAuth(body, query);

@@ -4,15 +4,15 @@ import { promises as fs } from "fs";
 import CustomError from "../../types/customError";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import {
-  ConfirmEmailInput,
-  ForgotPasswordInput,
-  LoginInput,
-  MobileGoogleAuthInput,
+  ConfirmEmailParams,
+  ForgotPasswordBody,
+  LoginBody,
+  MobileGoogleAuthBody,
   MobileGoogleAuthQuery,
-  ResendConfirmationEmailInput,
-  ResetPasswordInput,
-  SignupInput,
-  VerifyOTPInput,
+  ResendConfirmationEmailBody,
+  ResetPasswordBody,
+  SignupBody,
+  VerifyOTPBody,
 } from "./auth.validation";
 import sendEmail from "../../utils/sendEmail";
 import signToken from "../../utils/signToken";
@@ -29,7 +29,7 @@ export class AuthService {
   private static readonly MAX_OTP_ATTEMPTS = 5;
   private static oauthClient: OAuth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-  static async signup({ email, username, password, role }: SignupInput) {
+  static async signup({ email, username, password, role }: SignupBody) {
     const existingUser = await AuthModel.findUserByEmail(email.toLowerCase());
     if (existingUser) {
       throw new CustomError(ErrorMessages.EMAIL_ALREADY_EXISTS, 409, HTTPStatusText.FAIL);
@@ -57,7 +57,7 @@ export class AuthService {
     };
   }
 
-  static async confirmEmail({ token }: ConfirmEmailInput) {
+  static async confirmEmail({ token }: ConfirmEmailParams) {
     const failHtml = await fs.readFile(Constants.EMAIL_VERIFICATION_FAILURE_HTML, "utf-8");
 
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
@@ -74,7 +74,7 @@ export class AuthService {
     return successHtml;
   }
 
-  static async resendConfirmationEmail({ email }: ResendConfirmationEmailInput) {
+  static async resendConfirmationEmail({ email }: ResendConfirmationEmailBody) {
     const user = await AuthModel.findUserByEmail(email);
     if (!user) throw new CustomError(ErrorMessages.USER_NOT_FOUND, 404, HTTPStatusText.FAIL);
     if (user.emailConfirmed) throw new CustomError(ErrorMessages.EMAIL_ALREADY_CONFIRMED, 400, HTTPStatusText.FAIL);
@@ -96,7 +96,7 @@ export class AuthService {
     return { success: true };
   }
 
-  static async login({ email, password }: LoginInput) {
+  static async login({ email, password }: LoginBody) {
     const user = await AuthModel.findUserByEmail(email);
 
     if (!user || !user.password) {
@@ -121,7 +121,7 @@ export class AuthService {
     };
   }
 
-  static async forgotPassword({ email }: ForgotPasswordInput) {
+  static async forgotPassword({ email }: ForgotPasswordBody) {
     const user = await AuthModel.findUserByEmail(email);
 
     if (!user) {
@@ -145,7 +145,7 @@ export class AuthService {
     return { message: SuccessMessages.PASSWORD_RESET_EMAIL_SENT };
   }
 
-  static async verifyOTP({ email, otp }: VerifyOTPInput) {
+  static async verifyOTP({ email, otp }: VerifyOTPBody) {
     const user = await AuthModel.findUserByEmail(email.toLowerCase());
 
     if (!user) {
@@ -180,7 +180,7 @@ export class AuthService {
     };
   }
 
-  static async resetPassword({ email, otp, newPassword }: ResetPasswordInput) {
+  static async resetPassword({ email, otp, newPassword }: ResetPasswordBody) {
     const user = await AuthModel.findUserByEmail(email.toLowerCase());
 
     if (!user) {
@@ -221,7 +221,7 @@ export class AuthService {
     };
   }
 
-  static async mobileGoogleAuth(body: MobileGoogleAuthInput, query: MobileGoogleAuthQuery) {
+  static async mobileGoogleAuth(body: MobileGoogleAuthBody, query: MobileGoogleAuthQuery) {
     let role: Role = Role.STUDENT;
 
     switch (String(query.role)?.toUpperCase()) {
