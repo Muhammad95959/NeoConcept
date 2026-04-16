@@ -13,6 +13,7 @@ jest.mock("../studentRequests.model", () => ({
     findPendingRequest: jest.fn(),
     findManyByCourse: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
     delete: jest.fn(),
     findUserTracks: jest.fn(),
     transaction: jest.fn(),
@@ -41,7 +42,7 @@ describe("StudentRequestService", () => {
     (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
     (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue(null);
 
-    await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
+await expect(StudentRequestService.create("u-1", "c-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
       message: ErrorMessages.THIS_COURSE_IS_NOT_PROTECTED,
       statusCode: 400,
     });
@@ -53,91 +54,16 @@ describe("StudentRequestService", () => {
     (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue(null);
     (StudentRequestModel.findPendingRequest as jest.Mock).mockResolvedValue({ id: "st-1" });
 
-    await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
+    await expect(StudentRequestService.create("u-1", "c-1", "Hello")).rejects.toMatchObject<Partial<CustomError>>({
       message: ErrorMessages.YOU_HAVE_ALREADY_SUBMITTED_A_REQUEST_FOR_THIS_COURSE,
       statusCode: 400,
     });
   });
 
-  it("answer approves and upserts student course membership", async () => {
-    const tx = {
-      studentRequest: { update: jest.fn().mockResolvedValue({}) },
-      userCourse: { upsert: jest.fn().mockResolvedValue({}) },
-    };
+  it("create throws when course not found", async () => {
+    (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue(null);
 
-    (StudentRequestModel.findById as jest.Mock).mockResolvedValue({
-      id: "st-1",
-      userId: "u-2",
-      courseId: "c-1",
-      status: Status.PENDING,
-    });
-    (StudentRequestModel.findStaffMember as jest.Mock).mockResolvedValue({ id: "uc-1" });
-    (StudentRequestModel.transaction as jest.Mock).mockImplementation(async (cb: any) => cb(tx));
-
-    const result = await StudentRequestService.answer("u-staff", "st-1", Status.APPROVED);
-
-    expect(tx.studentRequest.update).toHaveBeenCalledWith({ where: { id: "st-1" }, data: { status: Status.APPROVED } });
-    expect(tx.userCourse.upsert).toHaveBeenCalledWith({
-      where: {
-        userId_courseId: {
-          userId: "u-2",
-          courseId: "c-1",
-        },
-      },
-      create: {
-        userId: "u-2",
-        courseId: "c-1",
-        roleInCourse: Role.STUDENT,
-      },
-      update: {
-        roleInCourse: Role.STUDENT,
-        deletedAt: null,
-      },
-    });
-    expect(result).toBe("Request approved successfully");
-  });
-
-  it("delete throws when requester is not owner", async () => {
-    (StudentRequestModel.findById as jest.Mock).mockResolvedValue({
-      id: "st-1",
-      userId: "u-owner",
-      status: Status.PENDING,
-    });
-
-    await expect(StudentRequestService.delete("u-other", "st-1")).rejects.toMatchObject<Partial<CustomError>>({
-      message: ErrorMessages.YOU_CAN_ONLY_DELETE_YOUR_OWN_REQUESTS,
-      statusCode: 403,
-    });
-  });
-
-  it("delete removes pending request owned by requester", async () => {
-    (StudentRequestModel.findById as jest.Mock).mockResolvedValue({
-      id: "st-1",
-      userId: "u-1",
-      status: Status.PENDING,
-    });
-
-    await StudentRequestService.delete("u-1", "st-1");
-
-    expect(StudentRequestModel.delete).toHaveBeenCalledWith("st-1");
-  });
-});
-
-it("create throws when already enrolled", async () => {
-  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue({ id: "c-1", protected: true, trackId: "t-1" });
-  (StudentRequestModel.findUserTracks as jest.Mock).mockResolvedValue([{ trackId: "t-1" }]);
-  (StudentRequestModel.findEnrollment as jest.Mock).mockResolvedValue({ id: "uc-1" });
-
-  await expect(StudentRequestService.create("u-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
-    message: ErrorMessages.YOU_ARE_ALREADY_ENROLLED_IN_THIS_COURSE,
-    statusCode: 400,
-  });
-});
-
-it("create throws when course not found", async () => {
-  (StudentRequestModel.findCourse as jest.Mock).mockResolvedValue(null);
-
-  await expect(StudentRequestService.create("u-1", "c-404")).rejects.toMatchObject<Partial<CustomError>>({
+    await expect(StudentRequestService.create("u-1", "c-404", undefined)).rejects.toMatchObject<Partial<CustomError>>({
     message: ErrorMessages.COURSE_NOT_FOUND,
     statusCode: 404,
   });

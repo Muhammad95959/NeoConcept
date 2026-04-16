@@ -10,6 +10,7 @@ jest.mock("../studentRequests.service", () => ({
     getMany: jest.fn(),
     getById: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
     answer: jest.fn(),
     delete: jest.fn(),
   },
@@ -78,13 +79,27 @@ describe("StudentRequestController", () => {
     const req = {} as Request;
     const res = createMockRes();
     const data = { id: "st-1", courseId: "c-1", userId: "u-2" };
-    res.locals = { user: { id: "u-2" }, body: { courseId: "c-1" } };
+    res.locals = { user: { id: "u-2" }, body: { courseId: "c-1", message: "Hello" } };
     (StudentRequestService.create as jest.Mock).mockResolvedValue(data);
 
     await StudentRequestController.create(req, res, next);
 
-    expect(StudentRequestService.create).toHaveBeenCalledWith("u-2", "c-1");
+    expect(StudentRequestService.create).toHaveBeenCalledWith("u-2", "c-1", "Hello");
     expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
+  });
+
+  it("update returns updated request", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    const data = { id: "st-1", message: "Updated message" };
+    res.locals = { user: { id: "u-1" }, params: { id: "st-1" }, body: { message: "Updated message" } };
+    (StudentRequestService.update as jest.Mock).mockResolvedValue(data);
+
+    await StudentRequestController.update(req, res, next);
+
+    expect(StudentRequestService.update).toHaveBeenCalledWith("u-1", "st-1", "Updated message");
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
 
@@ -147,10 +162,22 @@ describe("StudentRequestController", () => {
     const req = {} as Request;
     const res = createMockRes();
     const error = new Error("service failed");
-    res.locals = { user: { id: "u-1" }, body: { courseId: "c-1" } };
+    res.locals = { user: { id: "u-1" }, body: { courseId: "c-1", message: "Hello" } };
     (StudentRequestService.create as jest.Mock).mockRejectedValue(error);
 
     await StudentRequestController.create(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+  });
+
+  it("update forwards errors to next", async () => {
+    const req = {} as Request;
+    const res = createMockRes();
+    const error = new Error("update failed");
+    res.locals = { user: { id: "u-1" }, params: { id: "st-1" }, body: { message: "new message" } };
+    (StudentRequestService.update as jest.Mock).mockRejectedValue(error);
+
+    await StudentRequestController.update(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
   });

@@ -4,11 +4,12 @@ describe("studentRequests routes", () => {
   it("registers all expected endpoints", () => {
     const routes = (router as any).stack.filter((layer: any) => layer.route);
 
-    expect(routes).toHaveLength(5);
+    expect(routes).toHaveLength(6);
     expect(routes.map((layer: any) => [Object.keys(layer.route.methods)[0], layer.route.path])).toEqual([
       ["get", "/"],
       ["get", "/:id"],
       ["post", "/"],
+      ["patch", "/:id"],
       ["patch", "/:id/answer"],
       ["delete", "/:id"],
     ]);
