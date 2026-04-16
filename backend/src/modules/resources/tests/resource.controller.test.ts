@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { ResourceController } from "../resource.controller";
 import { ResourceService } from "../resource.service";
 
-jest.mock("./resource.service", () => ({
+jest.mock("../resource.service", () => ({
   ResourceService: {
     getResources: jest.fn(),
     getResourceById: jest.fn(),

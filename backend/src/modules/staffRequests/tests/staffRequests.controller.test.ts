@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { StaffRequestController } from "../staffRequests.controller";
 import { StaffRequestService } from "../staffRequests.service";
 
-jest.mock("./staffRequests.service", () => ({
+jest.mock("../staffRequests.service", () => ({
   StaffRequestService: {
     getMany: jest.fn(),
     get: jest.fn(),

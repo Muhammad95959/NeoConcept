@@ -4,7 +4,7 @@ import { ErrorMessages } from "../../../types/errorsMessages";
 import { StaffRequestModel } from "../staffRequests.model";
 import { StaffRequestService } from "../staffRequests.service";
 
-jest.mock("./staffRequests.model", () => ({
+jest.mock("../staffRequests.model", () => ({
   StaffRequestModel: {
     findTrackIdsByUser: jest.fn(),
     findManyByTrackIds: jest.fn(),

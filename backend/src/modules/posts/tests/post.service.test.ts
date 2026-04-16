@@ -4,7 +4,7 @@ import { ErrorMessages } from "../../../types/errorsMessages";
 import { PostModel } from "../post.model";
 import { PostService } from "../post.service";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     course: {
@@ -13,7 +13,7 @@ jest.mock("../../config/db", () => ({
   },
 }));
 
-jest.mock("./post.model", () => ({
+jest.mock("../post.model", () => ({
   PostModel: {
     findMany: jest.fn(),
     findFirst: jest.fn(),

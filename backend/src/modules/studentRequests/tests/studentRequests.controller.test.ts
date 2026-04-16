@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { StudentRequestController } from "../studentRequests.controller";
 import { StudentRequestService } from "../studentRequests.service";
 
-jest.mock("./studentRequests.service", () => ({
+jest.mock("../studentRequests.service", () => ({
   StudentRequestService: {
     getMany: jest.fn(),
     getById: jest.fn(),

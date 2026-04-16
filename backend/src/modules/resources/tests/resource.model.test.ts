@@ -1,7 +1,7 @@
 import prisma from "../../../config/db";
 import { ResourceModel } from "../resource.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     course: { findFirst: jest.fn() },

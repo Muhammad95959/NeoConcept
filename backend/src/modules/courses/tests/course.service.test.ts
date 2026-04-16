@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { CourseModel } from "../course.model";
 import { CourseService } from "../course.service";
 
-jest.mock("./course.model", () => ({
+jest.mock("../course.model", () => ({
   CourseModel: {
     findTrackById: jest.fn(),
     findMany: jest.fn(),

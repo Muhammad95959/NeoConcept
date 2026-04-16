@@ -4,7 +4,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { CourseController } from "../course.controller";
 import { CourseService } from "../course.service";
 
-jest.mock("./course.service", () => ({
+jest.mock("../course.service", () => ({
   CourseService: {
     getMany: jest.fn(),
     get: jest.fn(),

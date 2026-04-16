@@ -2,7 +2,7 @@ import { Role, Status } from "../../../generated/prisma";
 import prisma from "../../../config/db";
 import { UserModel } from "../user.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     user: {
@@ -54,7 +54,7 @@ describe("UserModel", () => {
 
       const result = await UserModel.findById("u-1");
 
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: "u-1" } });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: "u-1", deletedAt: null } });
       expect(result).toEqual(user);
     });
 
@@ -89,7 +89,7 @@ describe("UserModel", () => {
       const result = await UserModel.getUserCoursesModel("u-1");
 
       expect(prisma.userCourse.findMany).toHaveBeenCalledWith({
-        where: { userId: "u-1" },
+        where: { userId: "u-1", deletedAt: null },
         include: { course: { include: { track: true } } },
       });
       expect(result).toEqual(courses);
@@ -123,7 +123,7 @@ describe("UserModel", () => {
       const result = await UserModel.getUserCourses("u-1");
 
       expect(prisma.userCourse.findMany).toHaveBeenCalledWith({
-        where: { userId: "u-1" },
+        where: { userId: "u-1", deletedAt: null },
         select: { courseId: true },
       });
       expect(result).toEqual(courses);
@@ -138,7 +138,7 @@ describe("UserModel", () => {
       const result = await UserModel.findUserEnrollment("u-1", "c-1");
 
       expect(prisma.userCourse.findFirst).toHaveBeenCalledWith({
-        where: { userId: "u-1", courseId: "c-1" },
+        where: { userId: "u-1", courseId: "c-1", deletedAt: null },
       });
       expect(result).toEqual(enrollment);
     });

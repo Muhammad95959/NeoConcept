@@ -26,7 +26,7 @@ describe("uploadToS3", () => {
     jest.doMock("multer", () => multerFactory);
     jest.doMock("multer-s3", () => multerS3Factory);
 
-    const { uploadToS3 } = require("./resource.upload") as typeof import("../resource.upload");
+    const { uploadToS3 } = require("../resource.upload") as typeof import("../resource.upload");
 
     const middleware = uploadToS3();
 

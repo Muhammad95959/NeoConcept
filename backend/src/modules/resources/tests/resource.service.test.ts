@@ -5,7 +5,7 @@ import { ErrorMessages } from "../../../types/errorsMessages";
 import { ResourceModel } from "../resource.model";
 import { ResourceService } from "../resource.service";
 
-jest.mock("./resource.model", () => ({
+jest.mock("../resource.model", () => ({
   ResourceModel: {
     findCourseById: jest.fn(),
     findResourceById: jest.fn(),
@@ -15,7 +15,7 @@ jest.mock("./resource.model", () => ({
   },
 }));
 
-jest.mock("./resource.upload", () => ({
+jest.mock("../resource.upload", () => ({
   s3: {
     send: jest.fn(),
   },

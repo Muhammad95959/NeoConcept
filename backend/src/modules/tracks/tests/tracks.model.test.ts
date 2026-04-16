@@ -2,7 +2,7 @@ import { Role } from "../../../generated/prisma";
 import prisma from "../../../config/db";
 import { TrackModel } from "../tracks.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     track: {

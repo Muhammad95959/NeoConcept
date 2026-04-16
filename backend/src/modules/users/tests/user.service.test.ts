@@ -6,7 +6,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { UserModel } from "../user.model";
 import { UserService } from "../user.service";
 
-jest.mock("./user.model", () => ({
+jest.mock("../user.model", () => ({
   UserModel: {
     updateById: jest.fn(),
     findCourseWithInstructors: jest.fn(),

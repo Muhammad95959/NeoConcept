@@ -5,7 +5,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { TrackController } from "../tracks.controller";
 import { TrackService } from "../tracks.service";
 
-jest.mock("./tracks.service", () => ({
+jest.mock("../tracks.service", () => ({
   TrackService: {
     getMany: jest.fn(),
     getById: jest.fn(),
@@ -16,7 +16,7 @@ jest.mock("./tracks.service", () => ({
   },
 }));
 
-jest.mock("../../utils/safeUserData", () => jest.fn());
+jest.mock("../../../utils/safeUserData", () => jest.fn());
 
 const createMockRes = () => {
   const res: Partial<Response> = {

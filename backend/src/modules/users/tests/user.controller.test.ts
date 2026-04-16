@@ -4,7 +4,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { UserController } from "../user.controller";
 import { UserService } from "../user.service";
 
-jest.mock("./user.service", () => ({
+jest.mock("../user.service", () => ({
   UserService: {
     updateUser: jest.fn(),
     deleteUser: jest.fn(),

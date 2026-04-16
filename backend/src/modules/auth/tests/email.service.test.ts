@@ -3,7 +3,7 @@ import { sendConfirmationEmail } from "../email.service";
 import sendEmail from "../../../utils/sendEmail";
 
 jest.mock("fs/promises");
-jest.mock("../../utils/sendEmail");
+jest.mock("../../../utils/sendEmail");
 
 describe("sendConfirmationEmail", () => {
   const mockRequest = {

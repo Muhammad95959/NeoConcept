@@ -2,7 +2,7 @@ import { Status } from "../../../generated/prisma";
 import prisma from "../../../config/db";
 import { StaffRequestModel } from "../staffRequests.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     userTrack: {

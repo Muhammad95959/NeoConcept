@@ -4,7 +4,7 @@ import { ErrorMessages } from "../../../types/errorsMessages";
 import { StudentRequestModel } from "../studentRequests.model";
 import { StudentRequestService } from "../studentRequests.service";
 
-jest.mock("./studentRequests.model", () => ({
+jest.mock("../studentRequests.model", () => ({
   StudentRequestModel: {
     findById: jest.fn(),
     findCourse: jest.fn(),

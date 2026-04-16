@@ -2,7 +2,7 @@ import { Role } from "../../../generated/prisma";
 import prisma from "../../../config/db";
 import { AuthModel } from "../auth.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     user: {
@@ -58,24 +58,20 @@ describe("AuthModel", () => {
   describe("findUserByConfirmToken", () => {
     it("looks up user by token hash and non-expired timestamp", async () => {
       const user = { id: "u-3" };
-      const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-      (prisma.user.findMany as jest.Mock).mockResolvedValue([]);
       (prisma.user.findFirst as jest.Mock).mockResolvedValue(user);
 
       const result = await AuthModel.findUserByConfirmToken("token-hash");
 
-      expect(prisma.user.findMany).toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalledWith([]);
       expect(prisma.user.findFirst).toHaveBeenCalledWith({
         where: {
           confirmEmailToken: "token-hash",
           confirmEmailExpires: {
             gt: expect.any(Date),
           },
+          deletedAt: null,
         },
       });
       expect(result).toEqual(user);
-      consoleSpy.mockRestore();
     });
   });
 
@@ -199,7 +195,7 @@ describe("AuthModel", () => {
 
       const result = await AuthModel.findUserById("u-11");
 
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: "u-11" } });
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: "u-11", deletedAt: null } });
       expect(result).toEqual(user);
     });
   });

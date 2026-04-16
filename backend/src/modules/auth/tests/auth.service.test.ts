@@ -9,7 +9,7 @@ import signToken from "../../../utils/signToken";
 import { AuthModel } from "../auth.model";
 import { AuthService } from "../auth.service";
 
-jest.mock("./auth.model", () => ({
+jest.mock("../auth.model", () => ({
   AuthModel: {
     findUserByEmail: jest.fn(),
     findUserByConfirmToken: jest.fn(),
@@ -26,10 +26,10 @@ jest.mock("./auth.model", () => ({
   },
 }));
 
-jest.mock("../../utils/signToken", () => jest.fn());
-jest.mock("../../utils/safeUserData", () => jest.fn());
-jest.mock("../../utils/sendEmail", () => jest.fn());
-jest.mock("../../utils/createRandomOTP", () => jest.fn(() => "654321"));
+jest.mock("../../../utils/signToken", () => jest.fn());
+jest.mock("../../../utils/safeUserData", () => jest.fn());
+jest.mock("../../../utils/sendEmail", () => jest.fn());
+jest.mock("../../../utils/createRandomOTP", () => jest.fn(() => "654321"));
 jest.mock("fs", () => ({
   promises: {
     readFile: jest.fn(),

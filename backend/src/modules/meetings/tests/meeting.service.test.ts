@@ -8,7 +8,7 @@ import { createCalendarEvent } from "../../../utils/googleCalendar";
 import { stringToUid } from "../../../utils/stringToUid";
 import { generateAgoraToken } from "../../../utils/agoraToken";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     meeting: {
@@ -17,7 +17,7 @@ jest.mock("../../config/db", () => ({
   },
 }));
 
-jest.mock("./meeting.model", () => ({
+jest.mock("../meeting.model", () => ({
   MeetingModel: {
     create: jest.fn(),
     findById: jest.fn(),
@@ -30,15 +30,15 @@ jest.mock("./meeting.model", () => ({
   },
 }));
 
-jest.mock("../../utils/googleCalendar", () => ({
+jest.mock("../../../utils/googleCalendar", () => ({
   createCalendarEvent: jest.fn(),
 }));
 
-jest.mock("../../utils/stringToUid", () => ({
+jest.mock("../../../utils/stringToUid", () => ({
   stringToUid: jest.fn(),
 }));
 
-jest.mock("../../utils/agoraToken", () => ({
+jest.mock("../../../utils/agoraToken", () => ({
   generateAgoraToken: jest.fn(),
 }));
 

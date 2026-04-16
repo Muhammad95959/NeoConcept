@@ -1,7 +1,7 @@
 import prisma from "../../../config/db";
 import { PostModel } from "../post.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     post: {

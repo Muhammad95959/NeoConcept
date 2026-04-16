@@ -2,7 +2,7 @@ import { Role, Status } from "../../../generated/prisma";
 import prisma from "../../../config/db";
 import { StudentRequestModel } from "../studentRequests.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     studentRequest: {
@@ -82,6 +82,7 @@ describe("StudentRequestModel", () => {
         where: {
           courseId: "c-1",
           userId: "u-staff",
+          deletedAt: null,
           roleInCourse: { in: [Role.INSTRUCTOR, Role.ASSISTANT] },
         },
       });
@@ -105,7 +106,7 @@ describe("StudentRequestModel", () => {
       const result = await StudentRequestModel.findEnrollment("u-1", "c-1");
 
       expect(prisma.userCourse.findFirst).toHaveBeenCalledWith({
-        where: { userId: "u-1", courseId: "c-1" },
+        where: { userId: "u-1", courseId: "c-1", deletedAt: null },
       });
       expect(result).toEqual(enrollment);
     });

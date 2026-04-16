@@ -4,7 +4,7 @@ import { MeetingService } from "../meeting.service";
 import { HTTPStatusText } from "../../../types/HTTPStatusText";
 import { SuccessMessages } from "../../../types/successMessages";
 
-jest.mock("./meeting.service", () => ({
+jest.mock("../meeting.service", () => ({
   MeetingService: {
     getUserMeetings: jest.fn(),
     getById: jest.fn(),

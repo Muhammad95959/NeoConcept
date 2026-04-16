@@ -4,7 +4,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { PostsController } from "../post.controller";
 import { PostService } from "../post.service";
 
-jest.mock("./post.service", () => ({
+jest.mock("../post.service", () => ({
   PostService: {
     getPosts: jest.fn(),
     getPost: jest.fn(),

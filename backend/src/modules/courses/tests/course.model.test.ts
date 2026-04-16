@@ -1,7 +1,7 @@
 import prisma from "../../../config/db";
 import { CourseModel } from "../course.model";
 
-jest.mock("../../config/db", () => ({
+jest.mock("../../../config/db", () => ({
   __esModule: true,
   default: {
     course: {

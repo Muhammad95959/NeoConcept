@@ -7,7 +7,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 import { Constants } from "../../../types/constants";
 import safeUserData from "../../../utils/safeUserData";
 
-jest.mock("./auth.service", () => ({
+jest.mock("../auth.service", () => ({
   AuthService: {
     signup: jest.fn(),
     confirmEmail: jest.fn(),
@@ -20,11 +20,11 @@ jest.mock("./auth.service", () => ({
   },
 }));
 
-jest.mock("./email.service", () => ({
+jest.mock("../email.service", () => ({
   sendConfirmationEmail: jest.fn(),
 }));
 
-jest.mock("../../utils/safeUserData", () => jest.fn());
+jest.mock("../../../utils/safeUserData", () => jest.fn());
 
 const createMockRes = () => {
   const res: Partial<Response> = {

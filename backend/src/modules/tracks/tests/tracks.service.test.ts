@@ -3,7 +3,7 @@ import { ErrorMessages } from "../../../types/errorsMessages";
 import { TrackModel } from "../tracks.model";
 import { TrackService } from "../tracks.service";
 
-jest.mock("./tracks.model", () => ({
+jest.mock("../tracks.model", () => ({
   TrackModel: {
     findMany: jest.fn(),
     findById: jest.fn(),
