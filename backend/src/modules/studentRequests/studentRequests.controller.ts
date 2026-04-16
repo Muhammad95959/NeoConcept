@@ -5,7 +5,7 @@ import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
 
 export class StudentRequestController {
-  static async getCourseStudentRequests(req: Request, res: Response, next: NextFunction) {
+  static async getMany(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId, status } = res.locals.query as { courseId: string; status?: string };
       const statusValue = status ? (status.toUpperCase() as Status) : undefined;
@@ -18,7 +18,7 @@ export class StudentRequestController {
     }
   }
 
-  static async getCourseStudentRequestById(req: Request, res: Response, next: NextFunction) {
+  static async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as { id: string };
 
@@ -30,7 +30,7 @@ export class StudentRequestController {
     }
   }
 
-  static async createStudentRequest(req: Request, res: Response, next: NextFunction) {
+  static async create(req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.body as { courseId: string };
       const data = await StudentRequestService.create(res.locals.user.id, courseId);
@@ -41,7 +41,7 @@ export class StudentRequestController {
     }
   }
 
-  static async answerStudentRequest(req: Request, res: Response, next: NextFunction) {
+  static async answer(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as { id: string };
       const { status } = res.locals.body as { status: Status };
@@ -54,7 +54,7 @@ export class StudentRequestController {
     }
   }
 
-  static async deleteStudentRequest(req: Request, res: Response, next: NextFunction) {
+  static async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = res.locals.params as { id: string };
 

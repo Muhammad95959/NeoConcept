@@ -12,24 +12,24 @@ router.get(
   "/",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ query: StudentRequestValidationSchemas.getCourseStudentRequestsQuery }),
-  StudentRequestController.getCourseStudentRequests,
+  validate({ query: StudentRequestValidationSchemas.getManyQuery }),
+  StudentRequestController.getMany,
 );
 
 router.get(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams }),
-  StudentRequestController.getCourseStudentRequestById,
+  validate({ params: StudentRequestValidationSchemas.idParams }),
+  StudentRequestController.getById,
 );
 
 router.post(
   "/",
   protect,
   restrict(Role.STUDENT),
-  validate({ body: StudentRequestValidationSchemas.createStudentRequestBody }),
-  StudentRequestController.createStudentRequest,
+  validate({ body: StudentRequestValidationSchemas.createBody }),
+  StudentRequestController.create,
 );
 
 router.patch(
@@ -37,18 +37,18 @@ router.patch(
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({
-    params: StudentRequestValidationSchemas.getCourseStudentRequestParams,
-    body: StudentRequestValidationSchemas.answerStudentRequestBody,
+    params: StudentRequestValidationSchemas.idParams,
+    body: StudentRequestValidationSchemas.answerBody,
   }),
-  StudentRequestController.answerStudentRequest,
+  StudentRequestController.answer,
 );
 
 router.delete(
   "/:id",
   protect,
   restrict(Role.STUDENT),
-  validate({ params: StudentRequestValidationSchemas.getCourseStudentRequestParams }),
-  StudentRequestController.deleteStudentRequest,
+  validate({ params: StudentRequestValidationSchemas.idParams }),
+  StudentRequestController.delete,
 );
 
 export default router;

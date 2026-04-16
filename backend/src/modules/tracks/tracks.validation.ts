@@ -5,7 +5,7 @@ export class TrackValidationSchemas {
     search: z.string().optional(),
   });
 
-  static getByIdParams = z.object({
+  static idParams = z.object({
     id: z.string().uuid("Invalid track ID"),
   });
 
@@ -38,19 +38,9 @@ export class TrackValidationSchemas {
     .refine((data) => Object.values(data).some((value) => value !== undefined), {
       message: "You must provide at least one field to update",
     });
-
-  static updateParams = z.object({
-    id: z.string().uuid("Invalid track ID"),
-  });
-
-  static deleteParams = z.object({
-    id: z.string().uuid("Invalid track ID"),
-  });
 }
 
 export type GetManyQuery = z.infer<typeof TrackValidationSchemas.getManyQuery>;
-export type GetByIdParams = z.infer<typeof TrackValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof TrackValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof TrackValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof TrackValidationSchemas.updateBody>;
-export type UpdateParams = z.infer<typeof TrackValidationSchemas.updateParams>;
-export type DeleteParams = z.infer<typeof TrackValidationSchemas.deleteParams>;

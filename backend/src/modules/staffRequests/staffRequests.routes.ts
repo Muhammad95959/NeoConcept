@@ -14,7 +14,7 @@ router.get(
   "/:id",
   protect,
   restrict(Role.ADMIN),
-  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  validate({ params: StaffRequestValidationSchemas.idParams }),
   StaffRequestController.get,
 );
 
@@ -30,7 +30,7 @@ router.patch(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.updateBody }),
+  validate({ params: StaffRequestValidationSchemas.idParams, body: StaffRequestValidationSchemas.updateBody }),
   StaffRequestController.update,
 );
 
@@ -38,7 +38,7 @@ router.patch(
   "/:id/answer",
   protect,
   restrict(Role.ADMIN),
-  validate({ params: StaffRequestValidationSchemas.getByIdParams, body: StaffRequestValidationSchemas.answerBody }),
+  validate({ params: StaffRequestValidationSchemas.idParams, body: StaffRequestValidationSchemas.answerBody }),
   StaffRequestController.answer,
 );
 
@@ -46,7 +46,7 @@ router.delete(
   "/:id",
   protect,
   restrict(Role.INSTRUCTOR, Role.ASSISTANT),
-  validate({ params: StaffRequestValidationSchemas.getByIdParams }),
+  validate({ params: StaffRequestValidationSchemas.idParams }),
   StaffRequestController.delete,
 );
 

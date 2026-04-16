@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Status } from "../../generated/prisma";
 
 export class StaffRequestValidationSchemas {
-  static getByIdParams = z.object({
+  static idParams = z.object({
     id: z.string().uuid("Invalid request ID"),
   });
 
@@ -20,7 +20,7 @@ export class StaffRequestValidationSchemas {
   });
 }
 
-export type GetByIdParams = z.infer<typeof StaffRequestValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof StaffRequestValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof StaffRequestValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof StaffRequestValidationSchemas.updateBody>;
 export type AnswerBody = z.infer<typeof StaffRequestValidationSchemas.answerBody>;

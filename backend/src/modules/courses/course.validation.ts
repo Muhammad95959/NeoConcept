@@ -6,7 +6,7 @@ export class CourseValidationSchemas {
     track: z.string().optional(),
   });
 
-  static getByIdParams = z.object({
+  static idParams = z.object({
     id: z.string(),
   });
 
@@ -26,16 +26,8 @@ export class CourseValidationSchemas {
     protect: z.boolean().optional(),
   });
 
-  static updateParams = z.object({
-    id: z.string(),
-  });
-
   static updatePrerequisitesBody = z.object({
     prerequisiteIds: z.array(z.string()).optional(),
-  });
-
-  static updatePrerequisitesParams = z.object({
-    id: z.string(),
   });
 
   static updateStaffBody = z
@@ -47,23 +39,11 @@ export class CourseValidationSchemas {
     .refine((data) => data.instructorIds || data.assistantIds, {
       message: "Instructor ids or assistant ids are required",
     });
-
-  static updateStaffParams = z.object({
-    id: z.string(),
-  });
-
-  static deleteParams = z.object({
-    id: z.string(),
-  });
 }
 
 export type GetManyQuery = z.infer<typeof CourseValidationSchemas.getManyQuery>;
-export type GetByIdParams = z.infer<typeof CourseValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof CourseValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof CourseValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof CourseValidationSchemas.updateBody>;
-export type UpdateParams = z.infer<typeof CourseValidationSchemas.updateParams>;
 export type UpdatePrerequisitesBody = z.infer<typeof CourseValidationSchemas.updatePrerequisitesBody>;
-export type UpdatePrerequisitesParams = z.infer<typeof CourseValidationSchemas.updatePrerequisitesParams>;
 export type UpdateStaffBody = z.infer<typeof CourseValidationSchemas.updateStaffBody>;
-export type UpdateStaffParams = z.infer<typeof CourseValidationSchemas.updateStaffParams>;
-export type DeleteParams = z.infer<typeof CourseValidationSchemas.deleteParams>;

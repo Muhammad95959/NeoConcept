@@ -10,13 +10,13 @@ const router = express.Router();
 
 router.get("/", validate({ query: TrackValidationSchemas.getManyQuery }), TrackController.getTracks);
 
-router.get("/:id", validate({ params: TrackValidationSchemas.getByIdParams }), TrackController.getTrackById);
+router.get("/:id", validate({ params: TrackValidationSchemas.idParams }), TrackController.getTrackById);
 
 router.get(
   "/:id/staff",
   protect,
   restrict(Role.ADMIN),
-  validate({ params: TrackValidationSchemas.getByIdParams }),
+  validate({ params: TrackValidationSchemas.idParams }),
   TrackController.getTrackStaff,
 );
 
@@ -32,7 +32,7 @@ router.patch(
   "/:id",
   protect,
   restrict(Role.ADMIN),
-  validate({ params: TrackValidationSchemas.getByIdParams, body: TrackValidationSchemas.updateBody }),
+  validate({ params: TrackValidationSchemas.idParams, body: TrackValidationSchemas.updateBody }),
   TrackController.updateTrack,
 );
 
@@ -40,7 +40,7 @@ router.delete(
   "/:id",
   protect,
   restrict(Role.ADMIN),
-  validate({ params: TrackValidationSchemas.getByIdParams }),
+  validate({ params: TrackValidationSchemas.idParams }),
   TrackController.deleteTrack,
 );
 

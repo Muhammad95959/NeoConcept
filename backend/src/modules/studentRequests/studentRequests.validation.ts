@@ -12,7 +12,7 @@ export class StudentRequestValidationSchemas {
       path: ["status"],
     });
 
-  static getByIdParams = z.object({
+  static idParams = z.object({
     id: z.string().uuid("Invalid request ID"),
   });
 
@@ -26,6 +26,6 @@ export class StudentRequestValidationSchemas {
 }
 
 export type GetManyQuery = z.infer<typeof StudentRequestValidationSchemas.getManyQuery>;
-export type GetByIdParams = z.infer<typeof StudentRequestValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof StudentRequestValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof StudentRequestValidationSchemas.createBody>;
 export type AnswerBody = z.infer<typeof StudentRequestValidationSchemas.answerBody>;

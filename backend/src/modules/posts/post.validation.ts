@@ -9,7 +9,7 @@ export class PostValidationSchemas {
     courseId: z.string().uuid("Invalid course ID"),
   });
 
-  static getByIdParams = z.object({
+  static idParams = z.object({
     courseId: z.string().uuid("Invalid course ID"),
     id: z.string().uuid("Invalid post ID"),
   });
@@ -27,16 +27,10 @@ export class PostValidationSchemas {
     .refine((data) => data.title || data.content, {
       message: "Title or content is required",
     });
-
-  static deleteParams = z.object({
-    courseId: z.string().uuid("Invalid course ID"),
-    id: z.string().uuid("Invalid post ID"),
-  });
 }
 
 export type GetManyQuery = z.infer<typeof PostValidationSchemas.getManyQuery>;
 export type CourseIdParams = z.infer<typeof PostValidationSchemas.courseIdParams>;
-export type GetByIdParams = z.infer<typeof PostValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof PostValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof PostValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof PostValidationSchemas.updateBody>;
-export type DeleteParams = z.infer<typeof PostValidationSchemas.deleteParams>;

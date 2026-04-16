@@ -5,7 +5,7 @@ export class ResourceValidationSchemas {
     courseId: z.string(),
   });
 
-  static getByIdParams = z.object({
+  static idParams = z.object({
     courseId: z.string(),
     id: z.string(),
   });
@@ -13,20 +13,8 @@ export class ResourceValidationSchemas {
   static uploadBody = z.object({
     courseId: z.string(),
   });
-
-  static downloadParams = z.object({
-    courseId: z.string(),
-    id: z.string(),
-  });
-
-  static deleteParams = z.object({
-    courseId: z.string(),
-    id: z.string(),
-  });
 }
 
 export type GetManyQuery = z.infer<typeof ResourceValidationSchemas.getManyQuery>;
-export type GetByIdParams = z.infer<typeof ResourceValidationSchemas.getByIdParams>;
+export type IdParams = z.infer<typeof ResourceValidationSchemas.idParams>;
 export type UploadBody = z.infer<typeof ResourceValidationSchemas.uploadBody>;
-export type DownloadParams = z.infer<typeof ResourceValidationSchemas.downloadParams>;
-export type DeleteParams = z.infer<typeof ResourceValidationSchemas.deleteParams>;
