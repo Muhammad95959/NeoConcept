@@ -5,6 +5,7 @@ export class StudentRequestModel {
   static findById(id: string) {
     return prisma.studentRequest.findUnique({
       where: { id },
+      include: { user: true },
     });
   }
 
@@ -40,6 +41,7 @@ export class StudentRequestModel {
   static findManyByCourse(courseId: string, status?: Status) {
     return prisma.studentRequest.findMany({
       where: { courseId, status },
+      include: { user: true },
     });
   }
 
