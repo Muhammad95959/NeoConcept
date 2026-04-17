@@ -4,6 +4,7 @@ export class CommentModel {
   static findMany(postId: string) {
     return prisma.comment.findMany({
       where: { postId },
+      include: { user: { select: { username: true } } },
       orderBy: { createdAt: "asc" },
     });
   }
@@ -11,6 +12,7 @@ export class CommentModel {
   static findById(postId: string, id: string) {
     return prisma.comment.findFirst({
       where: { postId, id },
+      include: { user: { select: { username: true } } },
     });
   }
 
