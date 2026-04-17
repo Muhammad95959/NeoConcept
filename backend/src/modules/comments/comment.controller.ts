@@ -20,7 +20,7 @@ export class CommentController {
     try {
       const { postId, id } = res.locals.params as IdParams;
       const comment = await CommentService.get({ postId, id });
-      
+
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: comment });
     } catch (err: any) {
       next(err);
@@ -31,7 +31,7 @@ export class CommentController {
     try {
       const { postId } = res.locals.params as PostIdParams;
       const { content } = res.locals.body as ContentBody;
-      
+
       const comment = await CommentService.create({ postId, userId: res.locals.user.id, content });
 
       res.status(201).json({ status: HTTPStatusText.SUCCESS, data: comment });
@@ -44,7 +44,7 @@ export class CommentController {
     try {
       const { postId, id } = res.locals.params as IdParams;
       const { content } = res.locals.body as ContentBody;
-      
+
       const comment = await CommentService.update({ postId, id, userId: res.locals.user.id, content });
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: comment });
@@ -57,8 +57,19 @@ export class CommentController {
     try {
       const { postId, id } = res.locals.params as IdParams;
       await CommentService.delete({ postId, id });
-      
+
       res.status(200).json({ status: HTTPStatusText.SUCCESS, message: SuccessMessages.COMMENT_DELETED });
+    } catch (err: any) {
+      next(err);
+    }
+  }
+
+  static async count(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const { postId } = res.locals.params as PostIdParams;
+      const count = await CommentService.count({ postId });
+
+      res.status(200).json({ status: HTTPStatusText.SUCCESS, data: { count } });
     } catch (err: any) {
       next(err);
     }

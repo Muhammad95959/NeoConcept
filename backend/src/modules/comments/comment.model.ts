@@ -30,4 +30,8 @@ export class CommentModel {
   static delete(id: string) {
     return prisma.comment.delete({ where: { id } });
   }
+
+  static count(postId: string) {
+    return prisma.comment.count({ where: { postId } });
+  }
 }

@@ -529,6 +529,12 @@ DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
 
 
+### get-comments-count
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments/count HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
 ### ################################################################################################
 
 

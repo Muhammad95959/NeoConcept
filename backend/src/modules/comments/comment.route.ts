@@ -9,6 +9,15 @@ import { CommentValidationSchemas } from "./comment.validation";
 const router = express.Router({ mergeParams: true });
 
 router.get(
+  "/count",
+  protect,
+  validate({ params: CommentValidationSchemas.postIdParams }),
+  checkCourseExists,
+  verifyCourseMember,
+  CommentController.count,
+);
+
+router.get(
   "/",
   protect,
   validate({ params: CommentValidationSchemas.postIdParams }),

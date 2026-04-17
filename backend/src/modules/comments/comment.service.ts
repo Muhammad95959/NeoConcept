@@ -60,4 +60,10 @@ export class CommentService {
 
     emitToPost(postId, SocketEvents.DELETED_COMMENT, { id });
   }
+
+  static async count({ postId }: GetCommentsInput) {
+    const count = await CommentModel.count(postId);
+    
+    return count;
+  }
 }

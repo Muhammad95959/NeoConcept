@@ -11,6 +11,7 @@ jest.mock("../comment.service", () => ({
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    count: jest.fn(),
   },
 }));
 
@@ -126,6 +127,21 @@ describe("CommentController", () => {
         status: HTTPStatusText.SUCCESS,
         message: SuccessMessages.COMMENT_DELETED,
       });
+    });
+  });
+
+  describe("count", () => {
+    it("returns comment count for post", async () => {
+      const req = {} as Request;
+      const res = createMockRes();
+      res.locals = { params: { postId: "p-1" } };
+      (CommentService.count as jest.Mock).mockResolvedValue(5);
+
+      await CommentController.count(req, res, next);
+
+      expect(CommentService.count).toHaveBeenCalledWith({ postId: "p-1" });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data: { count: 5 } });
     });
   });
 

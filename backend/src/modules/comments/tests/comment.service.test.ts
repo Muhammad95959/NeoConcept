@@ -10,6 +10,7 @@ jest.mock("../comment.model", () => ({
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    count: jest.fn(),
   },
 }));
 
@@ -112,6 +113,17 @@ describe("CommentService", () => {
       await CommentService.delete({ postId: "p-1", id: "c-1" });
 
       expect(CommentModel.delete).toHaveBeenCalledWith("c-1");
+    });
+  });
+
+  describe("count", () => {
+    it("returns comment count for a post", async () => {
+      (CommentModel.count as jest.Mock).mockResolvedValue(7);
+
+      const result = await CommentService.count({ postId: "p-1" });
+
+      expect(CommentModel.count).toHaveBeenCalledWith("p-1");
+      expect(result).toEqual(7);
     });
   });
 });

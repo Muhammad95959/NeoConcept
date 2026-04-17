@@ -10,6 +10,7 @@ jest.mock("../../../config/db", () => ({
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
     },
   },
 }));
@@ -75,5 +76,14 @@ describe("CommentModel", () => {
     await CommentModel.delete("c-1");
 
     expect(prisma.comment.delete).toHaveBeenCalledWith({ where: { id: "c-1" } });
+  });
+
+  it("count returns number of comments for a post", async () => {
+    (prisma.comment.count as jest.Mock).mockResolvedValue(10);
+
+    const result = await CommentModel.count("p-1");
+
+    expect(prisma.comment.count).toHaveBeenCalledWith({ where: { postId: "p-1" } });
+    expect(result).toEqual(10);
   });
 });
