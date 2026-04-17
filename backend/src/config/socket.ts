@@ -1,6 +1,7 @@
 import { Server, Socket, Namespace } from "socket.io";
 import { verifyToken } from "../utils/verifyToken";
 import { JwtPayload } from "jsonwebtoken";
+import { SocketEvents } from "../types/socketEvents";
 
 export interface AuthenticatedSocket extends Socket {
   user?: JwtPayload;
@@ -35,12 +36,12 @@ export const initSocket = (server: import("http").Server) => {
   commentsNsp.on("connection", (socket) => {
     const authSocket = socket as AuthenticatedSocket;
 
-    authSocket.on("joinPost", (postId: string) => {
+    authSocket.on(SocketEvents.JOIN_POST, (postId: string) => {
       if (!postId) return;
       authSocket.join(`post:${postId}`);
     });
 
-    authSocket.on("leavePost", (postId: string) => {
+    authSocket.on(SocketEvents.LEAVE_POST, (postId: string) => {
       if (!postId) return;
       authSocket.leave(`post:${postId}`);
     });
