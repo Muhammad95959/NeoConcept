@@ -28,34 +28,34 @@ const Navbar = ({}: IProps) => {
 
     ];
     return (
-        <nav className="bg-gradient-to-r from-[#55ADFF] to-[#666666]  text-white pb-[1px] md:mb-20 mb-10">
+        <nav className="bg-gradient-to-r from-[#55ADFF] to-[#666666]  text-white pb-px md:mb-20 mb-10">
             <div className="bg-main">
-                <div className="container mx-auto flex justify-between gap-4 items-center pt-5 md:pt-10 pb-2 md:pb-8 px-8 md:px-16">
+                <div className="container mx-auto flex justify-between gap-4 items-center pt-5 lg:pt-10 pb-2 lg:pb-8 px-8 lg:px-8 xl:px-16">
                     <div className="flex items-center">
                         <Image src="/logo.png" alt="logo" width={60} height={60} />
-                        <h1 className={`${roboto.className} font-bold text-3xl font-roboto hidden md:block`}>eoConcept</h1>
+                        <h1 className={`${roboto.className} font-bold text-3xl font-roboto hidden lg:block`}>eoConcept</h1>
                     </div>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden md:flex gap-4">
+                    <div className="hidden lg:flex gap-2 lg:gap-[0.5px] xl:gap-4">
                         {navItems.map(item => (
                             <Button key={item.label} asChild variant="ghost">
-                                <Link href={item.href} className="font-bold text-xl">{item.label}</Link>
+                                <Link href={item.href} className="font-bold text-base lg:text-base xl:text-xl">{item.label}</Link>
                             </Button>
                         ))}
                     </div>
 
-                    <div className="hidden md:flex gap-4">
-                        <Button asChild className="bg-[#191F40]/70 p-6">
-                            <Link href="/login" className="font-bold text-xl">Login</Link>
+                    <div className="hidden lg:flex gap-2 lg:gap-3 xl:gap-4">
+                        <Button asChild className="bg-[#191F40]/70 p-4 lg:p-5 xl:p-6">
+                            <Link href="/login" className="font-bold text-base lg:text-base xl:text-xl">Login</Link>
                         </Button>
-                        <Button asChild className="bg-secondary p-6">
-                            <Link href="/register" className="font-bold text-xl">Register</Link>
+                        <Button asChild className="bg-secondary p-4 lg:p-5 xl:p-6">
+                            <Link href="/register" className="font-bold text-base lg:text-base xl:text-xl">Register</Link>
                         </Button>
                     </div>
 
                     {/* Mobile Navigation */}
-                    <div className="md:hidden flex items-center">
+                    <div className="lg:hidden flex items-center">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon">

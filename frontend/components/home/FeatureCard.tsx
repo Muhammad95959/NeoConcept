@@ -10,7 +10,7 @@ interface IProps {
 }
 const FeatureCard = ({title, description, imageUrl}: IProps) => {
   return (
-      <Card className={"max-w-80 min-h-90 md:max-w-92.5 lg:min-h-64 flex flex-col justify-evenly gap-4 relative bg-[#191F40]/70 border border-[#9FCCFF]"}>
+      <Card className={"w-full max-w-80 md:max-w-none min-h-90 lg:min-h-72 flex flex-col justify-evenly gap-4 relative bg-[#191F40]/70 border border-[#9FCCFF]"}>
           <CardHeader>
               <div className={"w-12 h-12 rounded-full overflow-hidden  bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center absolute -top-6 left-7"}>
                   <Image src={imageUrl} alt={title} width={60} height={60}/>

@@ -29,9 +29,9 @@ const Hero = ({}: IProps) => {
     .then(data => console.log(data));
   }
   return (
-      <section className="container mx-auto flex flex-col md:flex-row md:justify-evenly md:items-center gap-4 text-white mb-16 md:mb-32">
+      <section className="container mx-auto flex flex-col md:flex-row md:justify-evenly md:items-center gap-4 lg:gap-8 text-white mb-16 md:mb-32">
         <motion.div
-          className="flex flex-col justify-between max-w-92 h-100"
+          className="flex flex-col justify-between max-w-92 lg:max-w-md h-100"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -49,11 +49,12 @@ const Hero = ({}: IProps) => {
           </div>
         </motion.div>
         <motion.div
+          className="lg:max-w-sm xl:max-w-none"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
         >
-          <Image alt="hero image" src="/hero_image.png" width={690} height={496} />
+          <Image alt="hero image" src="/hero_image.png" width={690} height={496} className="w-full h-auto" />
         </motion.div>
       </section>
   );

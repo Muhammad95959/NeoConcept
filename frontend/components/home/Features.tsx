@@ -35,7 +35,7 @@ const features = [
 ];
 const Features = () => {
     return (
-        <section className={"container mx-auto md:px-16 md:grid gap-10 sm:grid-cols-2 lg:grid-cols-3 flex flex-col items-center"}>
+        <section className={"container mx-auto md:px-16 lg:px-4 xl:px-16 md:grid gap-10 lg:gap-6 xl:gap-10 sm:grid-cols-2 lg:grid-cols-3 flex flex-col items-center"}>
 
                 {features.map((feature, idx) => (
                     <motion.div

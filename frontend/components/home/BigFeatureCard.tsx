@@ -33,11 +33,11 @@ const BigFeatureCard = ({ features, begin , target, image}: IProps) => {
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
                 {/* === القسم الأيسر: المحتوى النصي والزر === */}
-                <div className="flex flex-col justify-around p-8 md:p-12 order-last lg:order-first">
+                <div className="flex flex-col justify-around p-8 lg:p-6 xl:p-12 order-last lg:order-first">
 
                     <CardHeader className="p-0 mb-8 space-y-2">
                         {/* عنوان "For Students" */}
-                        <CardTitle className="w-full text-4xl font-bold tracking-wide bg-gradient-to-r from-[#91FBFF] to-[#15A1C8] bg-clip-text text-transparent border border-b-[#99D1FF] pb-2">
+                        <CardTitle className="w-full text-3xl lg:text-3xl xl:text-4xl font-bold tracking-wide bg-gradient-to-r from-[#91FBFF] to-[#15A1C8] bg-clip-text text-transparent border border-b-[#99D1FF] pb-2">
                             For {target}
                         </CardTitle>
                         {/* خط تحت العنوان - باستخدام div عادي بدلاً من CardDescription لتصميم الخط السميك */}
@@ -48,8 +48,8 @@ const BigFeatureCard = ({ features, begin , target, image}: IProps) => {
                     <CardContent className="p-0 space-y-6 flex-grow">
                         {features?.map((feature, index) => (
                             <div key={index}>
-                                <p className="text-xl font-bold text-white leading-snug">
-                                    {feature.title} <span className="font-normal text-gray-300 text-lg">{feature.description}</span>
+                                <p className="text-lg lg:text-base xl:text-xl font-bold text-white leading-snug">
+                                    {feature.title} <span className="font-normal text-gray-300 text-base lg:text-sm xl:text-lg">{feature.description}</span>
                                 </p>
                             </div>
                         ))}
@@ -69,9 +69,9 @@ const BigFeatureCard = ({ features, begin , target, image}: IProps) => {
 
                 {/* === القسم الأيمن: الرسم البياني التوضيحي (Placeholder) === */}
                 {/* هذا القسم يستخدم flexbox لمحاكاة الجانب الرسومي المضيء */}
-                <div className="relative flex items-center justify-center p-4">
+                <div className="relative flex items-center justify-center p-4 lg:p-2 xl:p-4">
                     <div
-                        className="w-full h-full min-h-[400px] rounded-xl flex items-center justify-center p-8 lg:p-12"
+                        className="w-full h-full min-h-[300px] lg:min-h-[350px] xl:min-h-[400px] rounded-xl flex items-center justify-center p-4 lg:p-6 xl:p-12"
                         // استخدام تدرج لوني أو ظل صندوقي محدد لمحاكاة توهج النيون الأزرق
                         style={{
                             backgroundColor: '#020C19',
@@ -79,7 +79,7 @@ const BigFeatureCard = ({ features, begin , target, image}: IProps) => {
                             boxShadow: '0 0 25px rgba(0, 191, 255, 0.2) inset' // ظل داخلي للتوهج
                         }}
                     >
-                        <Image alt={"student"} src={image} width={500} height={500} />
+                        <Image alt={"student"} src={image} width={500} height={500} className="w-full h-auto max-w-[280px] lg:max-w-[280px] xl:max-w-[500px]" />
                     </div>
                 </div>
 

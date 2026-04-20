@@ -28,9 +28,9 @@ const Accessibility = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
 
-                <div className="flex flex-col justify-center p-8 md:p-12 order-last lg:order-first">
+                <div className="flex flex-col justify-center p-8 lg:p-6 xl:p-12 order-last lg:order-first">
                     <CardHeader className="p-0 mb-8 space-y-2">
-                        <CardTitle className="w-full text-4xl font-bold tracking-wide text-white pb-2">
+                        <CardTitle className="w-full text-3xl lg:text-3xl xl:text-4xl font-bold tracking-wide text-white pb-2">
                             Download The <br />
                             <span className={"bg-gradient-to-r from-[#7DC9FF] to-[#C46AF8] bg-clip-text text-transparent"}>
                                 Smart E-Learning App
@@ -41,7 +41,7 @@ const Accessibility = () => {
                     </CardHeader>
 
                     {/* محتوى البطاقة - قائمة الميزات */}
-                    <CardContent className="p-0 space-y-6  text-xl font-bold">
+                    <CardContent className="p-0 space-y-6 text-lg lg:text-base xl:text-xl font-bold">
                         get our App For Free and enjoy courses, personalized learing , etc
                         <br />
                         anywhere, anytime
@@ -49,16 +49,16 @@ const Accessibility = () => {
 
 
                     <CardFooter className="flex flex-col gap-3 items-start justify-between mt-10 -ml-6">
-                        <div className={"bg-gradient-to-r from-[#7BAFFE] to-[#B854FA] p-[2px] rounded w-85"}>
+                        <div className={"bg-gradient-to-r from-[#7BAFFE] to-[#B854FA] p-[2px] rounded w-85 lg:w-72 xl:w-85"}>
                             <Link href={"/"}>
-                            <Button className={"w-full bg-[#191F40] rounded py-8 text-2xl"}>
+                            <Button className={"w-full bg-[#191F40] rounded py-8 lg:py-6 xl:py-8 text-xl lg:text-lg xl:text-2xl"}>
                                 <div className={"w-full flex gap-2 justify-start items-center"}><IoLogoGooglePlaystore className={"text-white size-7.5"}/> <span>Download For Android</span></div>
                             </Button>
                             </Link>
                         </div>
-                        <div className={"bg-gradient-to-r from-[#7BAFFE] to-[#B854FA] p-[2px] rounded w-85"}>
+                        <div className={"bg-gradient-to-r from-[#7BAFFE] to-[#B854FA] p-[2px] rounded w-85 lg:w-72 xl:w-85"}>
                             <Link href={"/"}>
-                            <Button className={"w-full bg-[#191F40] rounded py-8 text-2xl"}>
+                            <Button className={"w-full bg-[#191F40] rounded py-8 lg:py-6 xl:py-8 text-xl lg:text-lg xl:text-2xl"}>
                                 <div className={"w-full flex justify-start gap-2 items-center"}><FaAppStoreIos className={"text-white size-7.5"}/> <span>Download For IOS</span></div>
                             </Button>
                             </Link>
@@ -73,7 +73,7 @@ const Accessibility = () => {
                         className="w-full h-full min-h-[400px] rounded-xl flex items-center justify-center p-8 lg:p-12"
 
                     >
-                        <Image alt={"student"} src={"/phone.png"} width={500} height={500} />
+                        <Image alt={"student"} src={"/phone.png"} width={500} height={500} className="w-full h-auto max-w-[300px] lg:max-w-[250px] xl:max-w-[500px]" />
                     </div>
                 </div>
 
