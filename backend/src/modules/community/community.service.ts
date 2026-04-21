@@ -1,7 +1,9 @@
 import prisma from "../../config/db";
+import { emitToCommunity } from "../../config/socket";
 import CustomError from "../../types/customError";
 import { ErrorMessages } from "../../types/errorsMessages";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
+import { SocketEvents } from "../../types/socketEvents";
 import { CommunityModel } from "./community.model";
 
 interface GetMessagesQuery {
@@ -33,7 +35,8 @@ export class CommunityService {
         where.createdAt = { ...(where.createdAt || {}), gt: after };
       }
     }
-    return CommunityModel.findMany(where, { orderBy: { createdAt: "asc" } });
+    const messages = await CommunityModel.findMany(where, { orderBy: { createdAt: "asc" } });
+    return messages;
   }
 
   static async get(courseId: string, messageId: string) {
@@ -46,7 +49,12 @@ export class CommunityService {
     const course = await prisma.course.findFirst({ where: { id: courseId, deletedAt: null } });
     if (!course) throw new CustomError(ErrorMessages.COURSE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     if (!content?.trim()) throw new CustomError(ErrorMessages.INVALID_MESSAGE_CONTENT, 400, HTTPStatusText.FAIL);
-    return CommunityModel.create({ content: content.trim(), courseId, userId });
+
+    const newMessage = await CommunityModel.create({ content: content.trim(), courseId, userId });
+
+    emitToCommunity(courseId, SocketEvents.NEW_MESSAGE, newMessage);
+
+    return newMessage;
   }
 
   static async update(courseId: string, messageId: string, content: string, userId: string) {
@@ -54,13 +62,21 @@ export class CommunityService {
     if (!message) throw new CustomError(ErrorMessages.MESSAGE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     if (message.userId !== userId) throw new CustomError(ErrorMessages.UNAUTHORIZED, 401, HTTPStatusText.FAIL);
     if (!content?.trim()) throw new CustomError(ErrorMessages.INVALID_MESSAGE_CONTENT, 400, HTTPStatusText.FAIL);
-    return CommunityModel.update(messageId, { content: content.trim() });
+
+    const updatedMessage = await CommunityModel.update(messageId, { content: content.trim() });
+
+    emitToCommunity(courseId, SocketEvents.UPDATED_MESSAGE, updatedMessage);
+
+    return updatedMessage;
   }
 
   static async delete(courseId: string, messageId: string, userId: string) {
     const message = await CommunityModel.findFirst({ id: messageId, courseId, course: { deletedAt: null } });
     if (!message) throw new CustomError(ErrorMessages.MESSAGE_NOT_FOUND, 404, HTTPStatusText.FAIL);
     if (message.userId !== userId) throw new CustomError(ErrorMessages.UNAUTHORIZED, 401, HTTPStatusText.FAIL);
+
     await CommunityModel.delete(messageId);
+
+    emitToCommunity(courseId, SocketEvents.DELETED_MESSAGE, { id: messageId });
   }
 }

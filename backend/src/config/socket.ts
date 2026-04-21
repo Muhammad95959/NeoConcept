@@ -9,6 +9,7 @@ export interface AuthenticatedSocket extends Socket {
 
 let io: Server;
 let commentsNsp: Namespace;
+let communityNsp: Namespace;
 
 export const initSocket = (server: import("http").Server) => {
   io = new Server(server, {
@@ -47,12 +48,44 @@ export const initSocket = (server: import("http").Server) => {
     });
   });
 
+  communityNsp = io.of("/community");
+
+  communityNsp.use((socket, next) => {
+    const authSocket = socket as AuthenticatedSocket;
+    const token = authSocket.handshake.auth.token;
+    if (!token) return next(new Error("Unauthorized"));
+    try {
+      const decoded = verifyToken(token) as JwtPayload;
+      authSocket.user = decoded;
+      next();
+    } catch (err) {
+      next(new Error("Invalid token"));
+    }
+  });
+
+  communityNsp.on("connection", (socket) => {
+    const authSocket = socket as AuthenticatedSocket;
+
+    authSocket.on(SocketEvents.OPEN_COMMUNITY, (courseId: string) => {
+      if (!courseId) return;
+      authSocket.join(`course:${courseId}`);
+    });
+
+    authSocket.on(SocketEvents.CLOSE_COMMUNITY, (courseId: string) => {
+      if (!courseId) return;
+      authSocket.leave(`course:${courseId}`);
+    });
+  });
+
   console.log("Socket.io initialized");
 };
-
-export const getCommentsNamespace = () => commentsNsp;
 
 export const emitToPost = (postId: string, event: string, data: unknown) => {
   if (!commentsNsp) return;
   commentsNsp.to(`post:${postId}`).emit(event, data);
+};
+
+export const emitToCommunity = (courseId: string, event: string, data: unknown) => {
+  if (!communityNsp) return;
+  communityNsp.to(`course:${courseId}`).emit(event, data);
 };
