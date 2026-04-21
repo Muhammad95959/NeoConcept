@@ -12,6 +12,16 @@ export class MeetingModel {
     });
   }
 
+  static findByIdAndCourseId(id: string, courseId: string) {
+    return prisma.meeting.findFirst({
+      where: { id, courseId },
+      include: {
+        host: true,
+        participants: true,
+      },
+    });
+  }
+
   static findAllByCourse(courseId: string) {
     return prisma.meeting.findMany({
       where: { courseId },

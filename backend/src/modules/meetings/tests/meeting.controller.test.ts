@@ -40,13 +40,13 @@ describe("MeetingController", () => {
   it("getOne returns meeting by id", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { params: { id: "m-1" } };
+    res.locals = { params: { id: "m-1", courseId: "c-1" } };
     const meeting = { id: "m-1", title: "Meeting 1" };
     (MeetingService.getById as jest.Mock).mockResolvedValue(meeting);
 
     await MeetingController.getOne(req, res, next);
 
-    expect(MeetingService.getById).toHaveBeenCalledWith("m-1");
+    expect(MeetingService.getById).toHaveBeenCalledWith("m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data: meeting });
   });
 

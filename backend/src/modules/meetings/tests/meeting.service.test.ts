@@ -21,7 +21,8 @@ jest.mock("../meeting.model", () => ({
   MeetingModel: {
     create: jest.fn(),
     findById: jest.fn(),
-    findAllByUser: jest.fn(),
+    findByIdAndCourseId: jest.fn(),
+    findAllByCourse: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
     findParticipant: jest.fn(),
@@ -104,18 +105,18 @@ describe("MeetingService", () => {
   describe("getById", () => {
     it("returns meeting when found", async () => {
       const meeting = { id: "m-1", title: "Meeting" };
-      (MeetingModel.findById as jest.Mock).mockResolvedValue(meeting);
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue(meeting);
 
-      const result = await MeetingService.getById("m-1");
+      const result = await MeetingService.getById("m-1", "c-1");
 
-      expect(MeetingModel.findById).toHaveBeenCalledWith("m-1");
+      expect(MeetingModel.findByIdAndCourseId).toHaveBeenCalledWith("m-1", "c-1");
       expect(result).toEqual(meeting);
     });
 
     it("throws when meeting not found", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue(null);
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.getById("m-invalid")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.getById("m-invalid", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_NOT_FOUND,
         statusCode: 404,
       });
@@ -123,11 +124,11 @@ describe("MeetingService", () => {
 
     it("handles array id parameter", async () => {
       const meeting = { id: "m-1" };
-      (MeetingModel.findById as jest.Mock).mockResolvedValue(meeting);
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue(meeting);
 
-      const result = await MeetingService.getById(["m-1", "m-2"]);
+      const result = await MeetingService.getById(["m-1", "m-2"], "c-1");
 
-      expect(MeetingModel.findById).toHaveBeenCalledWith("m-1");
+      expect(MeetingModel.findByIdAndCourseId).toHaveBeenCalledWith("m-1", "c-1");
       expect(result).toEqual(meeting);
     });
   });

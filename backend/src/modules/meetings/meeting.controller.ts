@@ -24,8 +24,8 @@ export default class MeetingController {
 
   static async getOne(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = res.locals.params as IdParams;
-      const meeting = await MeetingService.getById(id);
+      const { id, courseId } = res.locals.params as IdParams & CourseIdParams;
+      const meeting = await MeetingService.getById(id, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, data: meeting });
     } catch (err: any) {
       next(err);

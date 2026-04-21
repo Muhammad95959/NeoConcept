@@ -53,9 +53,9 @@ export class MeetingService {
     };
   }
 
-  static async getById(id: string | string[] | undefined) {
+  static async getById(id: string | string[] | undefined, courseId: string) {
     id = Array.isArray(id) ? id[0] : id;
-    const meeting = await MeetingModel.findById(id!);
+    const meeting = await MeetingModel.findByIdAndCourseId(id!, courseId);
     if (!meeting) {
       throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
