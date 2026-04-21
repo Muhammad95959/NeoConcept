@@ -8,3 +8,4 @@ todos.md
 coverage/
 dist/
 logs/
+service-account.json

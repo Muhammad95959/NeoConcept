@@ -36,7 +36,25 @@ export class QuizService {
       ];
     }
 
-    return QuizModel.findMany(where);
+    const quizzes = await QuizModel.findMany(where);
+
+    if (role === Role.STUDENT) {
+      const attempts = await prisma.quizAttempt.findMany({
+        where: {
+          studentId: userId,
+          quizId: { in: quizzes.map((q) => q.id) },
+        },
+      });
+
+      const attemptedQuizIds = new Set(attempts.map((a) => a.quizId));
+
+      return quizzes.map((quiz) => ({
+        ...quiz,
+        isAnswered: attemptedQuizIds.has(quiz.id),
+      }));
+    }
+
+    return quizzes;
   }
 
   static async getQuiz({ courseId, id, userId, role }: GetQuizInput) {
@@ -52,7 +70,15 @@ export class QuizService {
          throw new CustomError(ErrorMessages.UNAUTHORIZED, 401, HTTPStatusText.FAIL);
     }
 
-    return quiz;
+    let isAnswered = false;
+    if (role === Role.STUDENT) {
+      const attempt = await prisma.quizAttempt.findUnique({
+        where: { quizId_studentId: { quizId: id, studentId: userId } },
+      });
+      isAnswered = !!attempt;
+    }
+
+    return { ...quiz, isAnswered };
   }
 
   static async create({ courseId, userId, title, description, durationMinutes, isPublished, questions }: CreateQuizInputService) {
