@@ -30,4 +30,5 @@ export class SuccessMessages {
   static LEFT_MEETING = "Left meeting successfully";
   static PREREQUISITES_UPDATED = "Course prerequisites updated successfully";
   static COMMENT_DELETED = "Comment deleted successfully";
+  static MESSAGE_DELETED = "Message deleted successfully";
 }

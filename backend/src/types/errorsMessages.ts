@@ -80,4 +80,7 @@ export class ErrorMessages {
   static YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS =
     "You can only request access to courses in your tracks";
   static QUIZ_NOT_FOUND = "Quiz not found";
+  static DATE_NOT_VALID = "Date is not valid";
+  static MESSAGE_NOT_FOUND = "Message not found";
+  static INVALID_MESSAGE_CONTENT = "Message content is required and cannot be empty";
 }

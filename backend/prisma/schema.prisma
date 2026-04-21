@@ -24,11 +24,6 @@ enum Status {
   REJECTED
 }
 
-enum QuestionType {
-  MULTIPLE_CHOICE
-  SHORT_ANSWER
-}
-
 enum MeetingStatus {
   SCHEDULED
   LIVE
@@ -38,6 +33,11 @@ enum MeetingStatus {
 enum MeetingRole {
   HOST
   PARTICIPANT
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
 }
 
 // ============================================================
@@ -61,17 +61,18 @@ model User {
   passwordChangedAt    DateTime?
   otpAttempts          Int       @default(0)
 
-  posts               Post[]           @relation("UserPosts")
-  resources           Resource[]       @relation("UserResources")
+  posts               Post[]             @relation("UserPosts")
+  resources           Resource[]         @relation("UserResources")
   comments            Comment[]
   staffRequests       StaffRequest[]
   studentRequests     StudentRequest[]
   courseUsers         UserCourse[]
-  createdTrack        Track?           @relation("TrackCreator")
+  createdTrack        Track?             @relation("TrackCreator")
   userTracks          UserTrack[]
-  hostedMeetings      Meeting[]        @relation("HostRelation")
+  hostedMeetings      Meeting[]          @relation("HostRelation")
   meetingParticipants Participant[]
   quizAttempts        QuizAttempt[]
+  communityMessages   CommunityMessage[]
 
   @@map("users")
 }
@@ -129,16 +130,17 @@ model Course {
   description String?
   protected   Boolean   @default(true)
 
-  track           Track                @relation(fields: [trackId], references: [id])
-  prerequisites   CoursePrerequisite[] @relation("CourseToPrerequisite")
-  requiredFor     CoursePrerequisite[] @relation("PrerequisiteToCourse")
-  courseUsers     UserCourse[]
-  staffRequests   StaffRequest[]
-  studentRequests StudentRequest[]
-  posts           Post[]
-  resources       Resource[]
-  meetings        Meeting[]
-  quizzes         Quiz[]
+  track             Track                @relation(fields: [trackId], references: [id])
+  prerequisites     CoursePrerequisite[] @relation("CourseToPrerequisite")
+  requiredFor       CoursePrerequisite[] @relation("PrerequisiteToCourse")
+  courseUsers       UserCourse[]
+  staffRequests     StaffRequest[]
+  studentRequests   StudentRequest[]
+  posts             Post[]
+  resources         Resource[]
+  meetings          Meeting[]
+  quizzes           Quiz[]
+  communityMessages CommunityMessage[]
 
   @@map("courses")
 }
@@ -320,10 +322,10 @@ model Question {
 }
 
 model Option {
-  id         String   @id @default(uuid())
+  id         String  @id @default(uuid())
   questionId String
   text       String
-  isCorrect  Boolean  @default(false)
+  isCorrect  Boolean @default(false)
 
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
@@ -361,4 +363,21 @@ model StudentAnswer {
   question Question    @relation(fields: [questionId], references: [id])
 
   @@map("student_answers")
+}
+
+// ============================================================
+// COMMUNITY
+// ============================================================
+
+model CommunityMessage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  courseId  String
+  userId    String
+  content   String
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("community_messages")
 }

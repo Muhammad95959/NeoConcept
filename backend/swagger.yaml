@@ -12,6 +12,7 @@ tags:
   - name: Tracks
   - name: Courses
   - name: Posts
+  - name: Community
   - name: Staff-Requests
   - name: Student-Requests
   - name: Comments
@@ -1363,6 +1364,183 @@ paths:
           description: Something went wrong
 
   /courses/{courseId}/posts:
+  /courses/{courseId}/community:
+    get:
+      tags:
+        - Community
+      summary: Retrieve all community messages for a course
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+            example: 2026-04-10
+        - name: before
+          in: query
+          schema:
+            type: string
+            format: date-time
+            example: 2026-04-11T00:00:00Z
+        - name: after
+          in: query
+          schema:
+            type: string
+            format: date-time
+            example: 2026-04-09T00:00:00Z
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      responses:
+        "200":
+          description: Success
+        "401":
+          description: Unauthorized
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Community
+      summary: Create a new community message
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: This is a new community message
+      responses:
+        "201":
+          description: Message created
+        "400":
+          description: Content is required
+        "401":
+          description: Unauthorized
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+  /courses/{courseId}/community/{messageId}:
+    get:
+      tags:
+        - Community
+      summary: Retrieve a specific community message
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: deadbeef-cafe-cafe-cafe-1234567890ab
+      responses:
+        "200":
+          description: Success
+        "404":
+          description: Message not found
+        "401":
+          description: Unauthorized
+        "500":
+          description: Something went wrong
+    patch:
+      tags:
+        - Community
+      summary: Update a community message (author only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: deadbeef-cafe-cafe-cafe-1234567890ab
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: This is the updated community message.
+      responses:
+        "200":
+          description: Message updated
+        "400":
+          description: Content is required
+        "401":
+          description: Unauthorized or not author
+        "404":
+          description: Message not found
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Community
+      summary: Delete a community message (author only)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: deadbeef-cafe-cafe-cafe-1234567890ab
+      responses:
+        "200":
+          description: Message deleted successfully
+        "401":
+          description: Unauthorized or not author
+        "404":
+          description: Message not found
+        "500":
+          description: Something went wrong
+
     get:
       tags:
         - Posts

@@ -10,6 +10,7 @@ import yaml from "yamljs";
 import "./config/passport";
 import authRouter from "./modules/auth/auth.route";
 import commentRouter from "./modules/comments/comment.route";
+import communityRouter from "./modules/community/community.route";
 import courseRouter from "./modules/courses/course.route";
 import meetingRouter from "./modules/meetings/meeting.route";
 import postRouter from "./modules/posts/post.routes";
@@ -52,6 +53,7 @@ app.use("/api/v1/courses/:courseId/posts", postRouter);
 app.use("/api/v1/courses/:courseId/posts/:postId/comments", commentRouter);
 app.use("/api/v1/courses/:courseId/quizzes", quizRouter);
 app.use("/api/v1/courses/:courseId/resources", resourceRouter);
+app.use("/api/v1/courses/:courseId/community", communityRouter);
 app.use(errorHandler);
 
 export default app;
