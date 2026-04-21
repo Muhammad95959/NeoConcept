@@ -28,6 +28,7 @@ describe("CommentModel", () => {
 
     expect(prisma.comment.findMany).toHaveBeenCalledWith({
       where: { postId: "p-1" },
+      include: { user: { select: { username: true } } },
       orderBy: { createdAt: "asc" },
     });
     expect(result).toEqual(rows);
@@ -41,6 +42,7 @@ describe("CommentModel", () => {
 
     expect(prisma.comment.findFirst).toHaveBeenCalledWith({
       where: { postId: "p-1", id: "c-1" },
+      include: { user: { select: { username: true } } },
     });
     expect(result).toEqual(row);
   });

@@ -36,6 +36,7 @@ describe("StudentRequestModel", () => {
 
       expect(prisma.studentRequest.findUnique).toHaveBeenCalledWith({
         where: { id: "st-1" },
+        include: { user: true },
       });
       expect(result).toEqual(request);
     });
@@ -154,6 +155,7 @@ describe("StudentRequestModel", () => {
 
       expect(prisma.studentRequest.findMany).toHaveBeenCalledWith({
         where: { courseId: "c-1", status: undefined },
+        include: { user: true },
       });
       expect(result).toEqual(requests);
     });
@@ -166,6 +168,7 @@ describe("StudentRequestModel", () => {
 
       expect(prisma.studentRequest.findMany).toHaveBeenCalledWith({
         where: { courseId: "c-1", status: Status.PENDING },
+        include: { user: true },
       });
       expect(result).toEqual(requests);
     });
