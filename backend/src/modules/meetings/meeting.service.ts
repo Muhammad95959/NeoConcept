@@ -62,8 +62,8 @@ export class MeetingService {
     return meeting;
   }
 
-  static async getUserMeetings(userId: string) {
-    return MeetingModel.findAllByUser(userId);
+  static async getMeetingsByCourse(courseId: string) {
+    return MeetingModel.findAllByCourse(courseId);
   }
 
   static async update(userId: string, meetingId: string | string[] | undefined, data: any) {

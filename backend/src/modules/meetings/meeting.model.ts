@@ -12,21 +12,11 @@ export class MeetingModel {
     });
   }
 
-  static findAllByUser(userId: string) {
+  static findAllByCourse(courseId: string) {
     return prisma.meeting.findMany({
-      where: {
-        OR: [
-          { hostId: userId },
-          {
-            participants: {
-              some: {
-                userId,
-              },
-            },
-          },
-        ],
-      },
+      where: { courseId },
       include: {
+        host: true,
         participants: true,
       },
       orderBy: { scheduledAt: "asc" },

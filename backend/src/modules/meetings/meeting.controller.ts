@@ -12,10 +12,10 @@ import {
 } from "./meeting.validation";
 
 export default class MeetingController {
-  static async getAllUser(_req: Request, res: Response, next: NextFunction) {
+  static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = res.locals.user.id;
-      const meetings = await MeetingService.getUserMeetings(userId);
+      const { courseId } = res.locals.params as CourseIdParams;
+      const meetings = await MeetingService.getMeetingsByCourse(courseId);
       res.json({ status: HTTPStatusText.SUCCESS, data: meetings });
     } catch (err: any) {
       next(err);

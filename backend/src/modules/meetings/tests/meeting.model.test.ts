@@ -81,21 +81,19 @@ describe("MeetingModel", () => {
     });
   });
 
-  describe("findAllByUser", () => {
-    it("should find all meetings for a user", async () => {
+  describe("findAllByCourse", () => {
+    it("should find all meetings for a course", async () => {
       const meetings = [
-        { id: "m-1", title: "Hosted", participants: [] },
-        { id: "m-2", title: "Invited", participants: [{ userId: "u-1" }] },
+        { id: "m-1", title: "Meeting 1", host: {}, participants: [] },
+        { id: "m-2", title: "Meeting 2", host: {}, participants: [] },
       ];
       (prisma.meeting.findMany as jest.Mock).mockResolvedValue(meetings);
 
-      const result = await MeetingModel.findAllByUser("u-1");
+      const result = await MeetingModel.findAllByCourse("c-1");
 
       expect(prisma.meeting.findMany).toHaveBeenCalledWith({
-        where: {
-          OR: [{ hostId: "u-1" }, { participants: { some: { userId: "u-1" } } }],
-        },
-        include: { participants: true },
+        where: { courseId: "c-1" },
+        include: { host: true, participants: true },
         orderBy: { scheduledAt: "asc" },
       });
       expect(result).toEqual(meetings);

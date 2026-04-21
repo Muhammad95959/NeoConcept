@@ -16,7 +16,7 @@ router.get(
   restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
   checkCourseExists,
   verifyCourseMember,
-  MeetingController.getAllUser,
+  MeetingController.getAll,
 );
 
 router.get(

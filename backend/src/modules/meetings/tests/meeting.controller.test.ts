@@ -6,7 +6,7 @@ import { SuccessMessages } from "../../../types/successMessages";
 
 jest.mock("../meeting.service", () => ({
   MeetingService: {
-    getUserMeetings: jest.fn(),
+    getMeetingsByCourse: jest.fn(),
     getById: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
@@ -64,16 +64,16 @@ describe("MeetingController", () => {
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
 
-  it("getAllUser returns user meetings", async () => {
+  it("getAll returns meetings for a course", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-1" } };
+    res.locals = { params: { courseId: "c-1" } };
     const data = [{ id: "m-1" }];
-    (MeetingService.getUserMeetings as jest.Mock).mockResolvedValue(data);
+    (MeetingService.getMeetingsByCourse as jest.Mock).mockResolvedValue(data);
 
-    await MeetingController.getAllUser(req, res, next);
+    await MeetingController.getAll(req, res, next);
 
-    expect(MeetingService.getUserMeetings).toHaveBeenCalledWith("u-1");
+    expect(MeetingService.getMeetingsByCourse).toHaveBeenCalledWith("c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
 
@@ -253,14 +253,14 @@ describe("MeetingController", () => {
     expect(next).toHaveBeenCalledWith(error);
   });
 
-  it("getAllUser error is forwarded to next", async () => {
+  it("getAll error is forwarded to next", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-1" } };
+    res.locals = { params: { courseId: "c-1" } };
     const error = new Error("getAll failed");
-    (MeetingService.getUserMeetings as jest.Mock).mockRejectedValue(error);
+    (MeetingService.getMeetingsByCourse as jest.Mock).mockRejectedValue(error);
 
-    await MeetingController.getAllUser(req, res, next);
+    await MeetingController.getAll(req, res, next);
 
     expect(next).toHaveBeenCalledWith(error);
   });
