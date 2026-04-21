@@ -24,6 +24,11 @@ enum Status {
   REJECTED
 }
 
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
+}
+
 enum MeetingStatus {
   SCHEDULED
   LIVE
@@ -66,6 +71,7 @@ model User {
   userTracks          UserTrack[]
   hostedMeetings      Meeting[]        @relation("HostRelation")
   meetingParticipants Participant[]
+  quizAttempts        QuizAttempt[]
 
   @@map("users")
 }
@@ -132,6 +138,7 @@ model Course {
   posts           Post[]
   resources       Resource[]
   meetings        Meeting[]
+  quizzes         Quiz[]
 
   @@map("courses")
 }
@@ -275,4 +282,83 @@ model Participant {
 
   @@unique([userId, meetingId])
   @@map("participants")
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+
+model Quiz {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  courseId        String
+  title           String
+  description     String?
+  durationMinutes Int
+  isPublished     Boolean  @default(false)
+
+  course    Course        @relation(fields: [courseId], references: [id])
+  questions Question[]
+  attempts  QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id           String       @id @default(uuid())
+  quizId       String
+  questionText String
+  type         QuestionType @default(MULTIPLE_CHOICE)
+  order        Int          @default(0)
+
+  quiz           Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options        Option[]
+  studentAnswers StudentAnswer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String   @id @default(uuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+// ============================================================
+// STUDENT SUBMISSION
+// ============================================================
+
+model QuizAttempt {
+  id          String    @id @default(uuid())
+  quizId      String
+  studentId   String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Float?
+
+  quiz    Quiz            @relation(fields: [quizId], references: [id])
+  student User            @relation(fields: [studentId], references: [id])
+  answers StudentAnswer[]
+
+  @@unique([quizId, studentId])
+  @@map("quiz_attempts")
+}
+
+model StudentAnswer {
+  id               String  @id @default(uuid())
+  attemptId        String
+  questionId       String
+  selectedOptionId String? // If multiple choice
+  textAnswer       String? // If short answer / essay
+
+  attempt  QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id])
+
+  @@map("student_answers")
 }

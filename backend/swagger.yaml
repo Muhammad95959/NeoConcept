@@ -15,6 +15,7 @@ tags:
   - name: Staff-Requests
   - name: Student-Requests
   - name: Comments
+  - name: Quizzes
   # - name: Resources
 
 paths:
@@ -2233,3 +2234,483 @@ paths:
   #         description: Resource deleted successfully
   #       "500":
   #         description: Something went wrong
+
+  /courses/{courseId}/quizzes:
+    get:
+      tags:
+        - Quizzes
+      summary: list all quizzes for a course
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+    post:
+      tags:
+        - Quizzes
+      summary: create a new quiz
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - durationMinutes
+              properties:
+                title:
+                  type: string
+                  example: Midterm Exam
+                description:
+                  type: string
+                  example: Covers chapters 1 to 5
+                durationMinutes:
+                  type: integer
+                  example: 60
+                isPublished:
+                  type: boolean
+                  example: false
+                questions:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      questionText:
+                        type: string
+                      type:
+                        type: string
+                        enum: [MULTIPLE_CHOICE, SHORT_ANSWER]
+                      order:
+                        type: integer
+                      options:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                            isCorrect:
+                              type: boolean
+      responses:
+        "201":
+          description: success
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors can perform this action
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{id}:
+    get:
+      tags:
+        - Quizzes
+      summary: retrieve a quiz by id
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid ID
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course
+        "404":
+          description: Course not found || Quiz not found
+        "500":
+          description: Something went wrong
+    put:
+      tags:
+        - Quizzes
+      summary: update a quiz
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Midterm Exam (Updated)
+                description:
+                  type: string
+                durationMinutes:
+                  type: integer
+                isPublished:
+                  type: boolean
+      responses:
+        "200":
+          description: success
+        "400":
+          description: Invalid input
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors can perform this action
+        "404":
+          description: Course not found || Quiz not found
+        "500":
+          description: Something went wrong
+    delete:
+      tags:
+        - Quizzes
+      summary: delete a quiz
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "204":
+          description: Deleted successfully
+        "400":
+          description: Invalid ID
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors can perform this action
+        "404":
+          description: Course not found || Quiz not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/start:
+    post:
+      tags:
+        - Quizzes
+      summary: Start a quiz attempt (student)
+      description: Initiates a timed attempt for the logged-in student. Can only be called once per quiz.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "201":
+          description: Attempt created successfully
+        "400":
+          description: Quiz is not published || You already have an attempt for this quiz
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only students can perform this action
+        "404":
+          description: Course not found || Quiz not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/submit:
+    post:
+      tags:
+        - Quizzes
+      summary: Submit quiz answers (student, one-time)
+      description: >
+        One-time monolithic submission. MCQ answers are auto-graded immediately.
+        SHORT_ANSWER responses are stored and flagged for manual instructor grading.
+        Submission is rejected if the quiz duration has elapsed.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - answers
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - questionId
+                    properties:
+                      questionId:
+                        type: string
+                        format: uuid
+                        example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                      selectedOptionId:
+                        type: string
+                        format: uuid
+                        description: Required for MULTIPLE_CHOICE questions
+                        example: b2c3d4e5-f6a7-8901-bcde-f12345678901
+                      textAnswer:
+                        type: string
+                        description: Required for SHORT_ANSWER questions
+                        example: The answer is photosynthesis
+      responses:
+        "200":
+          description: Submission successful. Returns attempt with correctCount and scorePercentage.
+        "400":
+          description: >
+            You have already submitted this quiz ||
+            Submission time has expired ||
+            Question does not belong to this quiz ||
+            Option does not belong to this question ||
+            No active attempt found. Please start the quiz first
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only students can perform this action
+        "404":
+          description: Course not found || Quiz not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/attempts/my-attempt:
+    get:
+      tags:
+        - Quizzes
+      summary: Get my quiz attempt (student)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only students can perform this action
+        "404":
+          description: Course not found || No attempt found for this quiz
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/attempts:
+    get:
+      tags:
+        - Quizzes
+      summary: List all student attempts for a quiz (instructor/assistant)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+      responses:
+        "200":
+          description: success
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors and assistants can perform this action
+        "404":
+          description: Course not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/attempts/{attemptId}/grade:
+    patch:
+      tags:
+        - Quizzes
+      summary: Manually grade a quiz attempt (instructor/assistant)
+      description: Used to assign a score to SHORT_ANSWER submissions. Score must be 0–100.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: c3d4e5f6-a7b8-9012-cdef-123456789012
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - score
+              properties:
+                score:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                  example: 85
+      responses:
+        "200":
+          description: Attempt graded successfully
+        "400":
+          description: Score out of range || Student has not submitted this quiz yet
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors and assistants can perform this action
+        "404":
+          description: Course not found || Attempt not found
+        "500":
+          description: Something went wrong
+
+  /courses/{courseId}/quizzes/{quizId}/attempts/{attemptId}:
+    delete:
+      tags:
+        - Quizzes
+      summary: Delete a student's attempt (instructor/assistant)
+      description: Permanently deletes the attempt and all associated answers, allowing the student to start again.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: d6e03f03-38bc-47ed-b0e6-3a90e6bdcbd1
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 9c816942-585d-4d23-b44b-fcb0915558fc
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: c3d4e5f6-a7b8-9012-cdef-123456789012
+      responses:
+        "204":
+          description: Attempt deleted successfully
+        "400":
+          description: Attempt does not belong to this quiz
+        "401":
+          description: Unauthorized
+        "403":
+          description: You're not a member of this course || Only instructors and assistants can perform this action
+        "404":
+          description: Course not found || Attempt not found
+        "500":
+          description: Something went wrong

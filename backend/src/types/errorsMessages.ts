@@ -79,4 +79,5 @@ export class ErrorMessages {
   static COMMENT_NOT_FOUND = "Comment not found";
   static YOU_CAN_ONLY_REQUEST_ACCESS_TO_COURSES_IN_YOUR_TRACKS =
     "You can only request access to courses in your tracks";
+  static QUIZ_NOT_FOUND = "Quiz not found";
 }

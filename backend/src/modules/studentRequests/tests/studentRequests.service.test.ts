@@ -193,3 +193,4 @@ it("delete removes pending request owned by user", async () => {
 
   expect(StudentRequestModel.delete).toHaveBeenCalledWith("st-1");
 });
+});

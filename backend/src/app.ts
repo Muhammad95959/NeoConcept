@@ -13,6 +13,7 @@ import commentRouter from "./modules/comments/comment.route";
 import courseRouter from "./modules/courses/course.route";
 import meetingRouter from "./modules/meetings/meeting.route";
 import postRouter from "./modules/posts/post.routes";
+import quizRouter from "./modules/quiz/quiz.routes";
 import resourceRouter from "./modules/resources/resource.route";
 import staffRequestRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestRouter from "./modules/studentRequests/studentRequests.routes";
@@ -49,6 +50,7 @@ app.use("/api/v1/student-requests", studentRequestRouter);
 app.use("/api/v1/courses/:courseId/meetings", meetingRouter);
 app.use("/api/v1/courses/:courseId/posts", postRouter);
 app.use("/api/v1/courses/:courseId/posts/:postId/comments", commentRouter);
+app.use("/api/v1/courses/:courseId/quizzes", quizRouter);
 app.use("/api/v1/courses/:courseId/resources", resourceRouter);
 app.use(errorHandler);
 
