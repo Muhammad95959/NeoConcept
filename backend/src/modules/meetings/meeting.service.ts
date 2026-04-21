@@ -66,21 +66,21 @@ export class MeetingService {
     return MeetingModel.findAllByCourse(courseId);
   }
 
-  static async update(userId: string, meetingId: string | string[] | undefined, data: any) {
+  static async update(userId: string, meetingId: string | string[] | undefined, courseId: string, data: any) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(userId, id!);
+    await this.checkHost(userId, id!, courseId);
     return MeetingModel.update(id!, data);
   }
 
-  static async delete(userId: string, meetingId: string | string[] | undefined) {
+  static async delete(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(userId, id!);
+    await this.checkHost(userId, id!, courseId);
     return MeetingModel.delete(id!);
   }
 
-  static async joinMeeting(userId: string, meetingId: string | string[] | undefined) {
+  static async joinMeeting(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    const meeting = await MeetingModel.findById(id!);
+    const meeting = await MeetingModel.findByIdAndCourseId(id!, courseId);
     if (!meeting) throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
 
     if (meeting.status === "ENDED") throw new CustomError(ErrorMessages.MEETING_ENDED, 400, HTTPStatusText.FAIL);
@@ -103,8 +103,11 @@ export class MeetingService {
     };
   }
 
-  static async leaveMeeting(userId: string, meetingId: string | string[] | undefined) {
+  static async leaveMeeting(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
+    const meeting = await MeetingModel.findByIdAndCourseId(id!, courseId);
+    if (!meeting) throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
+
     const participant = await MeetingModel.findParticipant(userId, id!);
 
     if (!participant) {
@@ -118,9 +121,9 @@ export class MeetingService {
     return MeetingModel.removeParticipant(userId, id!);
   }
 
-  static async checkHost(userId: string, meetingId: string | string[] | undefined) {
+  static async checkHost(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    const meeting = await MeetingModel.findById(id!);
+    const meeting = await MeetingModel.findByIdAndCourseId(id!, courseId);
     if (!meeting) {
       throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
     }
@@ -133,12 +136,17 @@ export class MeetingService {
     }
   }
 
-  static async checkParticipant(userId: string, meetingId: string | string[] | undefined) {
+  static async checkParticipant(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     if (!meetingId) {
       throw new CustomError(ErrorMessages.MEETING_ID_MUST_BE_PROVIDED, 404, HTTPStatusText.FAIL);
     }
 
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
+    const meeting = await MeetingModel.findByIdAndCourseId(id, courseId);
+    if (!meeting) {
+      throw new CustomError(ErrorMessages.MEETING_NOT_FOUND, 404, HTTPStatusText.FAIL);
+    }
+
     const participant = await MeetingModel.findParticipant(userId, id);
 
     if (!participant) {
@@ -146,13 +154,13 @@ export class MeetingService {
     }
   }
 
-  static async startMeeting(userId: string, meetingId: string | string[] | undefined) {
+  static async startMeeting(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     if (!meetingId) {
       throw new CustomError(ErrorMessages.MEETING_ID_MUST_BE_PROVIDED, 404, HTTPStatusText.FAIL);
     }
 
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(userId, id);
+    await this.checkHost(userId, id, courseId);
 
     return prisma.meeting.update({
       where: { id },
@@ -160,13 +168,13 @@ export class MeetingService {
     });
   }
 
-  static async endMeeting(userId: string, meetingId: string | string[] | undefined) {
+  static async endMeeting(userId: string, meetingId: string | string[] | undefined, courseId: string) {
     if (!meetingId) {
       throw new CustomError(ErrorMessages.MEETING_ID_MUST_BE_PROVIDED, 404, HTTPStatusText.FAIL);
     }
 
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(userId, id);
+    await this.checkHost(userId, id, courseId);
 
     return prisma.meeting.update({
       where: { id },
@@ -178,9 +186,10 @@ export class MeetingService {
     hostId: string,
     meetingId: string | string[] | undefined,
     userId: string | string[] | undefined,
+    courseId: string,
   ) {
     const id = Array.isArray(meetingId) ? meetingId[0] : meetingId;
-    await this.checkHost(hostId, id!);
+    await this.checkHost(hostId, id!, courseId);
     if (!userId) {
       throw new CustomError(ErrorMessages.USER_ID_MUST_BE_PROVIDED, 404, HTTPStatusText.FAIL);
     }

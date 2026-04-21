@@ -45,9 +45,9 @@ export default class MeetingController {
 
   static async update(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = res.locals.params as IdParams;
+      const { id, courseId } = res.locals.params as IdParams & CourseIdParams;
       const body = res.locals.body as UpdateBody;
-      const meeting = await MeetingService.update(res.locals.user.id, id, body);
+      const meeting = await MeetingService.update(res.locals.user.id, id, courseId, body);
       res.json({ status: HTTPStatusText.SUCCESS, data: meeting });
     } catch (err: any) {
       next(err);
@@ -56,8 +56,8 @@ export default class MeetingController {
 
   static async delete(_req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = res.locals.params as IdParams;
-      await MeetingService.delete(res.locals.user.id, id);
+      const { id, courseId } = res.locals.params as IdParams & CourseIdParams;
+      await MeetingService.delete(res.locals.user.id, id, courseId);
       res.json({
         status: HTTPStatusText.SUCCESS,
         message: SuccessMessages.DELETED_MEETING,
@@ -70,9 +70,9 @@ export default class MeetingController {
   static async join(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
-      const { meetingId } = res.locals.params as MeetingIdParams;
+      const { meetingId, courseId } = res.locals.params as MeetingIdParams & CourseIdParams;
 
-      const result = await MeetingService.joinMeeting(userId, meetingId);
+      const result = await MeetingService.joinMeeting(userId, meetingId, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, data: result });
     } catch (err) {
       next(err);
@@ -82,9 +82,9 @@ export default class MeetingController {
   static async leave(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
-      const { meetingId } = res.locals.params as MeetingIdParams;
+      const { meetingId, courseId } = res.locals.params as MeetingIdParams & CourseIdParams;
 
-      const result = await MeetingService.leaveMeeting(userId, meetingId);
+      const result = await MeetingService.leaveMeeting(userId, meetingId, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, data: result });
     } catch (err) {
       next(err);
@@ -94,9 +94,9 @@ export default class MeetingController {
   static async removeParticipant(_req: Request, res: Response, next: NextFunction) {
     try {
       const hostId = res.locals.user.id;
-      const { meetingId, userId } = res.locals.params as RemoveParticipantParams;
+      const { meetingId, userId, courseId } = res.locals.params as RemoveParticipantParams & CourseIdParams;
 
-      const result = await MeetingService.removeParticipant(hostId, meetingId, userId);
+      const result = await MeetingService.removeParticipant(hostId, meetingId, userId, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, data: result });
     } catch (err) {
       next(err);
@@ -106,8 +106,8 @@ export default class MeetingController {
   static async startMeeting(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
-      const { meetingId } = res.locals.params as MeetingIdParams;
-      const meeting = await MeetingService.startMeeting(userId, meetingId);
+      const { meetingId, courseId } = res.locals.params as MeetingIdParams & CourseIdParams;
+      const meeting = await MeetingService.startMeeting(userId, meetingId, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, meeting });
     } catch (err) {
       next(err);
@@ -117,8 +117,8 @@ export default class MeetingController {
   static async checkHost(_req: Request, res: Response, next: NextFunction) {
     try {
       const userId = res.locals.user.id;
-      const { meetingId } = res.locals.params as MeetingIdParams;
-      await MeetingService.checkHost(userId, meetingId);
+      const { meetingId, courseId } = res.locals.params as MeetingIdParams & CourseIdParams;
+      await MeetingService.checkHost(userId, meetingId, courseId);
       res.json({ status: HTTPStatusText.SUCCESS, isHost: true });
     } catch (err) {
       next(err);

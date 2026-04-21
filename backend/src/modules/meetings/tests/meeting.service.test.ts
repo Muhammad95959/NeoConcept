@@ -138,9 +138,9 @@ describe("MeetingService", () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (MeetingModel.update as jest.Mock).mockResolvedValue({ id: "m-1", title: "Updated" });
 
-      const result = await MeetingService.update("u-host", "m-1", { title: "Updated" });
+      const result = await MeetingService.update("u-host", "m-1", "c-1", { title: "Updated" });
 
-      expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1");
+      expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1", "c-1");
       expect(MeetingModel.update).toHaveBeenCalledWith("m-1", { title: "Updated" });
       expect(result).toEqual({ id: "m-1", title: "Updated" });
     });
@@ -151,9 +151,9 @@ describe("MeetingService", () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (MeetingModel.delete as jest.Mock).mockResolvedValue({ id: "m-1" });
 
-      const result = await MeetingService.delete("u-host", "m-1");
+      const result = await MeetingService.delete("u-host", "m-1", "c-1");
 
-      expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1");
+      expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1", "c-1");
       expect(MeetingModel.delete).toHaveBeenCalledWith("m-1");
       expect(result).toEqual({ id: "m-1" });
     });
@@ -161,44 +161,44 @@ describe("MeetingService", () => {
 
   describe("joinMeeting", () => {
     it("throws when meeting not found", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue(null);
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.joinMeeting("u-1", "m-invalid")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.joinMeeting("u-1", "m-invalid", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_NOT_FOUND,
         statusCode: 404,
       });
     });
 
     it("throws when meeting has ended", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue({ id: "m-1", status: "ENDED" });
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", status: "ENDED" });
 
-      await expect(MeetingService.joinMeeting("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.joinMeeting("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_ENDED,
         statusCode: 400,
       });
     });
 
     it("throws when meeting not started", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue({ id: "m-1", status: "SCHEDULED" });
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", status: "SCHEDULED" });
 
-      await expect(MeetingService.joinMeeting("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.joinMeeting("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_NOT_STARTED,
         statusCode: 400,
       });
     });
 
     it("throws when user already in meeting", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue({ id: "m-1", status: "LIVE" });
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", status: "LIVE" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "PARTICIPANT" });
 
-      await expect(MeetingService.joinMeeting("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.joinMeeting("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.USER_ALREADY_IN_MEETING,
         statusCode: 400,
       });
     });
 
     it("adds participant and returns join payload", async () => {
-      (MeetingModel.findById as jest.Mock).mockResolvedValue({
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({
         id: "m-1",
         channelName: "ch-live",
         status: "LIVE",
@@ -207,7 +207,7 @@ describe("MeetingService", () => {
       (stringToUid as jest.Mock).mockReturnValue(777);
       (generateAgoraToken as jest.Mock).mockReturnValue("join-token");
 
-      const result = await MeetingService.joinMeeting("u-join", "m-1");
+      const result = await MeetingService.joinMeeting("u-join", "m-1", "c-1");
 
       expect(MeetingModel.addParticipant).toHaveBeenCalledWith({ userId: "u-join", meetingId: "m-1" });
       expect(result).toEqual({
@@ -222,28 +222,31 @@ describe("MeetingService", () => {
 
   describe("leaveMeeting", () => {
     it("throws when participant not found", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.leaveMeeting("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.leaveMeeting("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.PARTICIPANT_NOT_FOUND,
         statusCode: 400,
       });
     });
 
     it("throws when host tries to leave", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "HOST" });
 
-      await expect(MeetingService.leaveMeeting("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.leaveMeeting("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.HOST_CANNOT_LEAVE_MEETING,
         statusCode: 400,
       });
     });
 
     it("removes participant when not host", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "PARTICIPANT" });
       (MeetingModel.removeParticipant as jest.Mock).mockResolvedValue({});
 
-      const result = await MeetingService.leaveMeeting("u-1", "m-1");
+      const result = await MeetingService.leaveMeeting("u-1", "m-1", "c-1");
 
       expect(MeetingModel.removeParticipant).toHaveBeenCalledWith("u-1", "m-1");
       expect(result).toEqual({});
@@ -252,27 +255,38 @@ describe("MeetingService", () => {
 
   describe("checkHost", () => {
     it("throws when participant not found", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue(null);
+
+      await expect(MeetingService.checkHost("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
+        message: ErrorMessages.MEETING_NOT_FOUND,
+        statusCode: 404,
+      });
+    });
+
+    it("throws when participant not host", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", hostId: "u-other" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.checkHost("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.checkHost("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.ONLY_HOST_CAN_PERFORM_THIS_ACTION,
         statusCode: 403,
       });
     });
 
     it("throws when user is not host", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", hostId: "u-other" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "PARTICIPANT" });
 
-      await expect(MeetingService.checkHost("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.checkHost("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.ONLY_HOST_CAN_PERFORM_THIS_ACTION,
         statusCode: 403,
       });
     });
 
     it("succeeds when user is host", async () => {
-      (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "HOST" });
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1", hostId: "u-host" });
 
-      const result = await MeetingService.checkHost("u-host", "m-1");
+      const result = await MeetingService.checkHost("u-host", "m-1", "c-1");
 
       expect(result).toBeUndefined();
     });
@@ -280,16 +294,17 @@ describe("MeetingService", () => {
 
   describe("checkParticipant", () => {
     it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.checkParticipant("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.checkParticipant("u-1", undefined, "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         statusCode: 404,
       });
     });
 
     it("throws when participant not found", async () => {
+      (MeetingModel.findByIdAndCourseId as jest.Mock).mockResolvedValue({ id: "m-1" });
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.checkParticipant("u-1", "m-1")).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.checkParticipant("u-1", "m-1", "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.PARTICIPANT_NOT_FOUND,
         statusCode: 403,
       });
@@ -298,7 +313,7 @@ describe("MeetingService", () => {
 
   describe("startMeeting", () => {
     it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.startMeeting("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.startMeeting("u-1", undefined, "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         statusCode: 404,
       });
@@ -308,7 +323,7 @@ describe("MeetingService", () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (prisma.meeting.update as jest.Mock).mockResolvedValue({ id: "m-1", status: "LIVE" });
 
-      const result = await MeetingService.startMeeting("u-host", "m-1");
+      const result = await MeetingService.startMeeting("u-host", "m-1", "c-1");
 
       expect(prisma.meeting.update).toHaveBeenCalledWith({
         where: { id: "m-1" },
@@ -320,7 +335,7 @@ describe("MeetingService", () => {
 
   describe("endMeeting", () => {
     it("throws when meeting id is missing", async () => {
-      await expect(MeetingService.endMeeting("u-1", undefined)).rejects.toMatchObject<Partial<CustomError>>({
+      await expect(MeetingService.endMeeting("u-1", undefined, "c-1")).rejects.toMatchObject<Partial<CustomError>>({
         message: ErrorMessages.MEETING_ID_MUST_BE_PROVIDED,
         statusCode: 404,
       });
@@ -344,7 +359,7 @@ describe("MeetingService", () => {
     it("throws when user id is missing", async () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
 
-      await expect(MeetingService.removeParticipant("u-host", "m-1", undefined)).rejects.toMatchObject<
+      await expect(MeetingService.removeParticipant("u-host", "m-1", undefined, "c-1")).rejects.toMatchObject<
         Partial<CustomError>
       >({
         message: ErrorMessages.USER_ID_MUST_BE_PROVIDED,
@@ -356,7 +371,7 @@ describe("MeetingService", () => {
       jest.spyOn(MeetingService, "checkHost").mockResolvedValue(undefined);
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue(null);
 
-      await expect(MeetingService.removeParticipant("u-host", "m-1", "u-not-found")).rejects.toMatchObject<
+      await expect(MeetingService.removeParticipant("u-host", "m-1", "u-not-found", "c-1")).rejects.toMatchObject<
         Partial<CustomError>
       >({
         message: ErrorMessages.PARTICIPANT_NOT_FOUND,
@@ -369,7 +384,7 @@ describe("MeetingService", () => {
       (MeetingModel.findParticipant as jest.Mock).mockResolvedValue({ role: "PARTICIPANT" });
       (MeetingModel.removeParticipant as jest.Mock).mockResolvedValue({});
 
-      const result = await MeetingService.removeParticipant("u-host", "m-1", "u-remove");
+      const result = await MeetingService.removeParticipant("u-host", "m-1", "u-remove", "c-1");
 
       expect(MeetingModel.removeParticipant).toHaveBeenCalledWith("u-remove", "m-1");
       expect(result).toEqual({});

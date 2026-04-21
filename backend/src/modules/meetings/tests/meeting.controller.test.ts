@@ -80,13 +80,13 @@ describe("MeetingController", () => {
   it("update returns updated meeting payload", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" }, params: { id: "m-1" }, body: { title: "Updated" } };
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1", courseId: "c-1" }, body: { title: "Updated" } };
     const updatedMeeting = { id: "m-1", title: "Updated" };
     (MeetingService.update as jest.Mock).mockResolvedValue(updatedMeeting);
 
     await MeetingController.update(req, res, next);
 
-    expect(MeetingService.update).toHaveBeenCalledWith("u-host", "m-1", { title: "Updated" });
+    expect(MeetingService.update).toHaveBeenCalledWith("u-host", "m-1", "c-1", { title: "Updated" });
     expect(res.json).toHaveBeenCalledWith({
       status: HTTPStatusText.SUCCESS,
       data: updatedMeeting,
@@ -96,37 +96,37 @@ describe("MeetingController", () => {
   it("join returns join data", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1", courseId: "c-1" } };
     const data = { token: "abc" };
     (MeetingService.joinMeeting as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.join(req, res, next);
 
-    expect(MeetingService.joinMeeting).toHaveBeenCalledWith("u-join", "m-1");
+    expect(MeetingService.joinMeeting).toHaveBeenCalledWith("u-join", "m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
 
   it("leave returns leave payload", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1" } };
+    res.locals = { user: { id: "u-join" }, params: { meetingId: "m-1", courseId: "c-1" } };
     const data = { left: true };
     (MeetingService.leaveMeeting as jest.Mock).mockResolvedValue(data);
 
     await MeetingController.leave(req, res, next);
 
-    expect(MeetingService.leaveMeeting).toHaveBeenCalledWith("u-join", "m-1");
+    expect(MeetingService.leaveMeeting).toHaveBeenCalledWith("u-join", "m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, data });
   });
 
   it("delete returns deleted message", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" }, params: { id: "m-1" } };
+    res.locals = { user: { id: "u-host" }, params: { id: "m-1", courseId: "c-1" } };
 
     await MeetingController.delete(req, res, next);
 
-    expect(MeetingService.delete).toHaveBeenCalledWith("u-host", "m-1");
+    expect(MeetingService.delete).toHaveBeenCalledWith("u-host", "m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({
       status: HTTPStatusText.SUCCESS,
       message: SuccessMessages.DELETED_MEETING,
@@ -136,24 +136,24 @@ describe("MeetingController", () => {
   it("startMeeting returns meeting object", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1", courseId: "c-1" } };
     const meeting = { id: "m-1", status: "LIVE" };
     (MeetingService.startMeeting as jest.Mock).mockResolvedValue(meeting);
 
     await MeetingController.startMeeting(req, res, next);
 
-    expect(MeetingService.startMeeting).toHaveBeenCalledWith("u-host", "m-1");
+    expect(MeetingService.startMeeting).toHaveBeenCalledWith("u-host", "m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, meeting });
   });
 
   it("checkHost returns isHost true", async () => {
     const req = {} as Request;
     const res = createMockRes();
-    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1" } };
+    res.locals = { user: { id: "u-host" }, params: { meetingId: "m-1", courseId: "c-1" } };
 
     await MeetingController.checkHost(req, res, next);
 
-    expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1");
+    expect(MeetingService.checkHost).toHaveBeenCalledWith("u-host", "m-1", "c-1");
     expect(res.json).toHaveBeenCalledWith({ status: HTTPStatusText.SUCCESS, isHost: true });
   });
 
