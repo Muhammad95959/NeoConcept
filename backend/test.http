@@ -1,12 +1,629 @@
+### authorize
+
+GET http://localhost:9595/api/v1/auth HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwMDQ0MywiZXhwIjoxNzc2MDg2ODQzfQ.A5xHJQ-yrUAmovxqyFX4nhAkoptDgAoX8tAOPor87jM; Path=/; HttpOnly; SameSite=Lax
+
+
+### signup
+
+POST http://localhost:9595/api/v1/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "student@gmail.com",
+  "password": "password",
+  "role": "STUDENT",
+  "username": "Muhammad Hefzey"
+}
+
+
+### login
+
+POST http://localhost:9595/api/v1/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "student@gmail.com",
+  "password": "password"
+}
+
+
+### logout
+
+GET http://localhost:9595/api/v1/auth/logout HTTP/1.1
+
+
+### resend-confirmation-email
+
+POST http://localhost:9595/api/v1/auth/resend-confirmation-email HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com"
+}
+
+
+### forgot-password
+
+POST http://localhost:9595/api/v1/auth/forgot-password HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com"
+}
+
+
+### verify-otp
+
+POST http://localhost:9595/api/v1/auth/verify-otp HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com",
+  "otp": "709046"
+}
+
+
+### reset-password
+
+PATCH http://localhost:9595/api/v1/auth/reset-password HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "muhammadhefzey@gmail.com",
+  "newPassword": "newPassword",
+  "otp": "709046"
+}
+
+
+### ################################################################################################
+
+
+### update-user
+
+PATCH http://localhost:9595/api/v1/user HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "password": "password",
+  "username": "Amr Hefzey"
+}
+
+
+### delete-user
+
+DELETE http://localhost:9595/api/v1/user HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-user-tracks
+
+GET http://localhost:9595/api/v1/user/tracks HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### select-track
+
+PATCH http://localhost:9595/api/v1/user/select-track HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "trackId": "6f761acf-65c0-4ec1-aea1-e2ea77f22ebe"
+}
+
+
+### quit-track
+
+PATCH http://localhost:9595/api/v1/user/quit-track HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "trackId": "b01d48f4-f9c0-4f0f-844c-db22d40e9b00"
+}
+
+
+### get-user-courses
+
+GET http://localhost:9595/api/v1/user/courses HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### join-course
+
+PATCH http://localhost:9595/api/v1/user/join-course HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "courseId": "7320efc6-6891-484c-a798-f11c17a6a116"
+}
+
+
+### quit-course
+
+PATCH http://localhost:9595/api/v1/user/quit-course HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "courseId": "021d3cce-bffd-410a-9cf1-41590fde94b2"
+}
+
+
+### get-user-staff-requests
+
+GET http://localhost:9595/api/v1/user/staff-requests HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-user-student-requests
+
+GET http://localhost:9595/api/v1/user/student-requests?status=APPROVED HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-tracks
+
+GET http://localhost:9595/api/v1/tracks HTTP/1.1
+
+
+### get-track
+
+GET http://localhost:9595/api/v1/tracks/e681df02-9ef1-413e-b4e5-d31f92cc331e HTTP/1.1
+
+
+### get-track-staff
+
+GET http://localhost:9595/api/v1/tracks/e681df02-9ef1-413e-b4e5-d31f92cc331e/staff HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-track
+
+POST http://localhost:9595/api/v1/tracks HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "domain": "test",
+  "language": "test",
+  "learningOutcomes": [
+    "test"
+  ],
+  "level": "test",
+  "longDescription": "test",
+  "name": "track 1",
+  "pricingModel": "test",
+  "relatedJobs": [
+    "test"
+  ],
+  "shortDescription": "test",
+  "targetAudience": "test"
+}
+
+
+### update-track
+
+PATCH http://localhost:9595/api/v1/tracks/31a60f16-17ce-4abf-b03a-41d30a34cd42 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "name": "new track 1",
+  "shortDescription": "new description"
+}
+
+
+### delete-track
+
+DELETE http://localhost:9595/api/v1/tracks/fe273d94-65c8-4b46-925d-23e14db72043 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-courses
+
+GET http://localhost:9595/api/v1/courses?track=6f761acf-65c0-4ec1-aea1-e2ea77f22ebe HTTP/1.1
+
+
+### get-course
+
+GET http://localhost:9595/api/v1/courses/c12d2c91-929a-47f6-a860-8c2cbff53422 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-course
+
+POST http://localhost:9595/api/v1/courses HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "assistantIds": [],
+  "description": "a test course",
+  "instructorIds": [],
+  "name": "test course 1",
+  "prerequisiteIds": [],
+  "protect": false,
+  "trackId": "6f761acf-65c0-4ec1-aea1-e2ea77f22ebe"
+}
+
+
+### update-course
+
+PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "description": "a test course",
+  "name": "new test course 1"
+}
+
+
+### update-course-prerequisites
+
+PUT http://localhost:9595/api/v1/courses/c12d2c91-929a-47f6-a860-8c2cbff53422/prerequisites HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "prerequisiteIds": [
+    "021d3cce-bffd-410a-9cf1-41590fde94b2",
+    "e56fbd7a-c616-4b83-aa41-63a09073d91b"
+  ]
+}
+
+
+### update-course-staff
+
+PUT http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/staff HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "assistantIds": [],
+  "instructorIds": [
+    "3174ef6b-9236-4bcc-8867-206abf75f526"
+  ],
+  "trackId": "6f761acf-65c0-4ec1-aea1-e2ea77f22ebe"
+}
+
+
+### delete-course
+
+DELETE http://localhost:9595/api/v1/courses/246810c2-0361-4f16-bddb-f6c49568dbdf HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-posts
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-post
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-post
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "content": "post content",
+  "title": "post 1"
+}
+
+
+### update-post
+
+PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "content": "new post content",
+  "title": "new post 1"
+}
+
+
+### delete-post
+
+DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-resources
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/resources HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### upload-resource
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/resources/upload HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+Content-Type: application/json
+
+{
+  "courseId": "021d3cce-bffd-410a-9cf1-41590fde94b2"
+}
+
+
+### delete-resource
+
+DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/resources/1 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-staff-requests
+
+GET http://localhost:9595/api/v1/staff-requests HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-staff-request
+
+GET http://localhost:9595/api/v1/staff-requests/fab0a9e9-38e3-461c-bd51-2a9b5ec36ad5 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-staff-request
+
+POST http://localhost:9595/api/v1/staff-requests HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "courseId": "021d3cce-bffd-410a-9cf1-41590fde94b2",
+  "message": "I would like to join this course."
+}
+
+
+### update-staff-request
+
+PATCH http://localhost:9595/api/v1/staff-requests/7ab295bd-9c03-403b-bfcc-7bc3a11ea944 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "message": "I would like to join this course because I am very interested in its content."
+}
+
+
+### answer-staff-request
+
+PATCH http://localhost:9595/api/v1/staff-requests/7ab295bd-9c03-403b-bfcc-7bc3a11ea944/answer HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "status": "APPROVED"
+}
+
+
+### delete-staff-request
+
+DELETE http://localhost:9595/api/v1/staff-requests/fab0a9e9-38e3-461c-bd51-2a9b5ec36ad5 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-student-requests
+
+GET http://localhost:9595/api/v1/student-requests?courseId=021d3cce-bffd-410a-9cf1-41590fde94b2 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-student-request
+
+GET http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a21d8c9e26 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-student-request
+
+POST http://localhost:9595/api/v1/student-requests HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "courseId": "fb108099-66c7-4baf-a035-4eb54b42e962",
+  "message": "I would like to join this course."
+}
+
+
+### update-student-request
+
+PATCH http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a21d8c9e26 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "message": "I would like to join this course because I am very interested in its content."
+}
+
+
+### answer-student-request
+
+PATCH http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a21d8c9e26/answer HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "status": "APPROVED"
+}
+
+
+### delete-student-request
+
+DELETE http://localhost:9595/api/v1/student-requests/85186b96-ea01-4f42-a743-25a21d8c9e26 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-comments
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-comment
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments/1 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-comment
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "content": "This is a comment"
+}
+
+
+### update-comment
+
+PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments/1 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "content": "Updated comment content"
+}
+
+
+### delete-comment
+
+DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments/1 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-comments-count
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/posts/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/comments/count HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-user-meetings
+
+GET http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-user-meeting
+
+GET http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-meeting
+
+POST http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "channelName": "channel 1",
+  "title": "meeting 1"
+}
+
+
+### update-meeting
+
+PUT http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "channelName": "new channel 1",
+  "title": "new meeting 1"
+}
+
+
+### delete-meeting
+
+DELETE http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### join-meeting
+
+POST http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243/join HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+
+### leave-meeting
+
+POST http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243/leave HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+
+### start-meeting
+
+POST http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243/start HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### check-host
+
+GET http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243/checkHost HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### remove-participant
+
+DELETE http://localhost:9595/api/v1/courses/7320efc6-6891-484c-a798-f11c17a6a116/meetings/73f17573-8067-4337-b659-8fb66866e243/remove-participant/5b799bba-bbee-47de-be7a-5e9b8e1018d8 HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMxNzRlZjZiLTkyMzYtNGJjYy04ODY3LTIwNmFiZjc1ZjUyNiIsImlhdCI6MTc3NjAwNjEzMywiZXhwIjoxNzc2MDkyNTMzfQ.bU3E3RSyI9CWpfhaudIm7wXNSoDIXOeqfW0JFse98wE; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
 ### get-community-messages
+
 GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/community?date=2026-04-10 HTTP/1.1
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
 
+
 ### get-community-message
+
 GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/community/deadbeef-cafe-cafe-cafe-1234567890ab HTTP/1.1
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
 
+
 ### create-community-message
+
 POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/community HTTP/1.1
 Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
@@ -15,7 +632,9 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA
   "content": "Test community message"
 }
 
+
 ### update-community-message
+
 PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/community/deadbeef-cafe-cafe-cafe-1234567890ab HTTP/1.1
 Content-Type: application/json
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
@@ -24,6 +643,120 @@ Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA
   "content": "Updated community message"
 }
 
+
 ### delete-community-message
+
 DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/community/deadbeef-cafe-cafe-cafe-1234567890ab HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### ################################################################################################
+
+
+### get-quizzes
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-quiz
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### create-quiz
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "description": "quiz description",
+  "durationMinutes": 30,
+  "isPublished": false,
+  "title": "quiz 1",
+  "questions": [
+    {
+      "text": "What is 2+2?",
+      "type": "MULTIPLE_CHOICE",
+      "options": [
+        { "text": "3", "isCorrect": false },
+        { "text": "4", "isCorrect": true },
+        { "text": "5", "isCorrect": false }
+      ]
+    },
+    {
+      "text": "What is the capital of France?",
+      "type": "SHORT_ANSWER",
+      "answer": "Paris"
+    }
+  ]
+}
+
+
+### update-quiz
+
+PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "description": "updated quiz description",
+  "title": "updated quiz 1"
+}
+
+
+### delete-quiz
+
+DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### start-quiz-attempt
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/start HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+
+### submit-quiz-attempt
+
+POST http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/submit HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "answers": [
+    { "questionId": "question-uuid-1", "answer": "4" },
+    { "questionId": "question-uuid-2", "answer": "Paris" }
+  ]
+}
+
+
+### get-my-quiz-attempt
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/attempts/my-attempt HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViNzk5YmJhLWJiZWUtNDdkZS1iZTdhLTVlOWI4ZTEwMThkOCIsImlhdCI6MTc3NjAwNjMyNiwiZXhwIjoxNzc2MDkyNzI2fQ.sePiB3AZXgLtbUlFWBy9Zy-SP9fYugeA3n6I5junN9o; Path=/; HttpOnly; SameSite=Lax
+
+
+### get-quiz-attempts
+
+GET http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/attempts HTTP/1.1
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+
+### manual-grade-quiz-attempt
+
+PATCH http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/attempts/attempt-uuid/grade HTTP/1.1
+Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
+
+{
+  "score": 10
+}
+
+
+### delete-quiz-attempt
+
+DELETE http://localhost:9595/api/v1/courses/021d3cce-bffd-410a-9cf1-41590fde94b2/quizzes/eb2d6cda-9f6f-4d5e-aa2a-b7cbeb2512ce/attempts/attempt-uuid HTTP/1.1
 Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc3MTZjMWQzLWQ2NzEtNDA0Yi05NjhhLTZkNTUzY2NhMTcxYSIsImlhdCI6MTc3NjAwMDM2NiwiZXhwIjoxNzc2MDg2NzY2fQ.8in2Evp00-Q3FxdDm5A9QUjHELbQOu9bS_S9hcbKY3E; Path=/; HttpOnly; SameSite=Lax
