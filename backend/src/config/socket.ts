@@ -65,13 +65,42 @@ export const initSocket = (server: import("http").Server) => {
 
   communityNsp.on("connection", (socket) => {
     const authSocket = socket as AuthenticatedSocket;
+    const eventCounts = new Map<string, { count: number; resetAt: number }>();
+    const MAX_EVENTS = 30; 
+    const WINDOW_MS = 60 * 1000;
+
+    // Helper to check rate limit
+    const checkRateLimit = (eventName: string): boolean => {
+      const now = Date.now();
+      let eventData = eventCounts.get(eventName);
+
+      if (!eventData || now > eventData.resetAt) {
+        eventCounts.set(eventName, { count: 1, resetAt: now + WINDOW_MS });
+        return true;
+      }
+
+      if (eventData.count >= MAX_EVENTS) {
+        return false; // Rate limit exceeded
+      }
+
+      eventData.count++;
+      return true;
+    };
 
     authSocket.on(SocketEvents.OPEN_COMMUNITY, (courseId: string) => {
+      if (!checkRateLimit(SocketEvents.OPEN_COMMUNITY)) {
+        authSocket.disconnect();
+        return;
+      }
       if (!courseId) return;
       authSocket.join(`course:${courseId}`);
     });
 
     authSocket.on(SocketEvents.CLOSE_COMMUNITY, (courseId: string) => {
+      if (!checkRateLimit(SocketEvents.CLOSE_COMMUNITY)) {
+        authSocket.disconnect();
+        return;
+      }
       if (!courseId) return;
       authSocket.leave(`course:${courseId}`);
     });
