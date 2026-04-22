@@ -5,12 +5,9 @@ export class MeetingValidationSchemas {
     courseId: z.string().uuid("Invalid course ID"),
   });
 
-  static meetingIdParams = z.object({
-    meetingId: z.string().uuid("Invalid meeting ID"),
-  });
-
   static idParams = z.object({
-    id: z.string().uuid("Invalid ID"),
+    courseId: z.string().uuid("Invalid course ID"),
+    id: z.string().uuid("Invalid meeting ID"),
   });
 
   static createBody = z.object({
@@ -51,13 +48,13 @@ export class MeetingValidationSchemas {
   });
 
   static removeParticipantParams = z.object({
-    meetingId: z.string().min(1, "Meeting ID is required"),
+    id: z.string().uuid("Invalid meeting ID"),
     userId: z.string().min(1, "User ID is required"),
+    courseId: z.string().uuid("Invalid course ID"),
   });
 }
 
 export type CourseIdParams = z.infer<typeof MeetingValidationSchemas.courseIdParams>;
-export type MeetingIdParams = z.infer<typeof MeetingValidationSchemas.meetingIdParams>;
 export type IdParams = z.infer<typeof MeetingValidationSchemas.idParams>;
 export type CreateBody = z.infer<typeof MeetingValidationSchemas.createBody>;
 export type UpdateBody = z.infer<typeof MeetingValidationSchemas.updateBody>;

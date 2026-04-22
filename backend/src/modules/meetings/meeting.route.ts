@@ -13,7 +13,7 @@ const router = Router({ mergeParams: true });
 router.get(
   "/",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  validate({ params: MeetingValidationSchemas.courseIdParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.getAll,
@@ -22,7 +22,7 @@ router.get(
 router.get(
   "/:id",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
@@ -32,7 +32,7 @@ router.get(
 router.post(
   "/",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({ params: MeetingValidationSchemas.courseIdParams, body: MeetingValidationSchemas.createBody }),
   checkCourseExists,
   verifyCourseMember,
@@ -42,7 +42,7 @@ router.post(
 router.put(
   "/:id",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({ body: MeetingValidationSchemas.updateBody, params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
@@ -52,7 +52,7 @@ router.put(
 router.delete(
   "/:id",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
@@ -60,46 +60,46 @@ router.delete(
 );
 
 router.post(
-  "/:meetingId/join",
+  "/:id/join",
   protect,
-  validate({ params: MeetingValidationSchemas.meetingIdParams }),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.join,
 );
 
 router.post(
-  "/:meetingId/leave",
+  "/:id/leave",
   protect,
-  validate({ params: MeetingValidationSchemas.meetingIdParams }),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.leave,
 );
 
 router.post(
-  "/:meetingId/start",
+  "/:id/start",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
-  validate({ params: MeetingValidationSchemas.meetingIdParams }),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.startMeeting,
 );
 
 router.get(
-  "/:meetingId/checkHost",
+  "/:id/checkHost",
   protect,
-  validate({ params: MeetingValidationSchemas.meetingIdParams }),
+  validate({ params: MeetingValidationSchemas.idParams }),
   checkCourseExists,
   verifyCourseMember,
   MeetingController.checkHost,
 );
 
 router.delete(
-  "/:meetingId/remove-participant",
+  "/:id/remove-participant",
   protect,
-  restrict(Role.INSTRUCTOR, Role.INSTRUCTOR),
+  restrict(Role.INSTRUCTOR, Role.ASSISTANT),
   validate({ params: MeetingValidationSchemas.removeParticipantParams }),
   checkCourseExists,
   verifyCourseMember,
