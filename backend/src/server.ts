@@ -1,3 +1,11 @@
+import tracer from "dd-trace";
+
+// Initializing the Datadog tracer to enable distributed tracing for the application.
+tracer.init({
+  service: "neoconcept-backend",
+  env: "development",
+});
+
 import app from "./app";
 import { initSocket } from "./config/socket";
 

@@ -51,6 +51,7 @@
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "dd-trace": "^5.98.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
     "google-auth-library": "^10.6.2",

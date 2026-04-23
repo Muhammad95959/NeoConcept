@@ -12,6 +12,7 @@ const getLogLevel = (status: number): "error" | "warn" | "info" | "debug" => {
   return "info";
 };
 
+// This function serializes an object to a JSON string, truncating it if it exceeds a certain length to prevent excessively long log messages.
 const serializeObject = (value: Record<string, unknown>): string => {
   const serialized = JSON.stringify(value);
 
@@ -45,28 +46,42 @@ const formatLogMessage = (
 };
 
 // Create a morgan middleware that uses the custom format function and log level based on status code.
-export const requestLogger = morgan((tokens, req, res) => {
-  // Extract relevant information from the request and response using morgan tokens.
-  const expressReq = req as Request;
-  const method = tokens.method?.(req, res) || "UNKNOWN";
-  const url = tokens.url?.(req, res) || "/";
-  const status = tokens.status?.(req, res) || String(res.statusCode || 200);
-  const contentLength = tokens.res?.(req, res, "content-length");
-  const responseTime = parseFloat(tokens["response-time"]?.(req, res) || "0");
-  const params = expressReq.params as Record<string, unknown>;
-  const query = expressReq.query as Record<string, unknown>;
-  const ip = tokens["remote-addr"]?.(req, res) || expressReq.socket.remoteAddress || "unknown";
-  const userAgent = tokens["user-agent"]?.(req, res) || "";
-  const requestId = expressReq.get("x-request-id") || "";
+export const requestLogger = morgan(
+  (tokens, req, res) => {
+    // Extract relevant information from the request and response using morgan tokens.
+    const expressReq = req as Request;
+    const method = tokens.method?.(req, res) || "UNKNOWN";
+    const url = tokens.url?.(req, res) || "/";
+    const status = tokens.status?.(req, res) || String(res.statusCode || 200);
+    const contentLength = tokens.res?.(req, res, "content-length");
+    const responseTime = parseFloat(tokens["response-time"]?.(req, res) || "0");
+    const params = expressReq.params as Record<string, unknown>;
+    const query = expressReq.query as Record<string, unknown>;
+    const ip = tokens["remote-addr"]?.(req, res) || expressReq.socket.remoteAddress || "unknown";
+    const userAgent = tokens["user-agent"]?.(req, res) || "";
+    const requestId = expressReq.get("x-request-id") || "";
 
-  const statusCode = Number.parseInt(status, 10) || res.statusCode || 500;
-  const logLevel = getLogLevel(statusCode);
+    const statusCode = Number.parseInt(status, 10) || res.statusCode || 500;
+    const logLevel = getLogLevel(statusCode);
 
-  const message = formatLogMessage(method, url, statusCode, responseTime, ip, userAgent, requestId, contentLength, params, query);
+    const message = formatLogMessage(
+      method,
+      url,
+      statusCode,
+      responseTime,
+      ip,
+      userAgent,
+      requestId,
+      contentLength,
+      params,
+      query,
+    );
 
-  logger[logLevel](message);
+    logger[logLevel](message);
 
-  return null;
-}, {
-  skip: (req) => req.url?.startsWith("/api-docs") ?? false,
-});
+    return null;
+  },
+  {
+    skip: (req) => req.url?.startsWith("/api-docs") ?? false,
+  },
+);
