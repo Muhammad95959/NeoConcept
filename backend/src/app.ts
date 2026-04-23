@@ -20,6 +20,7 @@ import staffRequestRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestRouter from "./modules/studentRequests/studentRequests.routes";
 import trackRouter from "./modules/tracks/tracks.routes";
 import userRouter from "./modules/users/user.route";
+import { requestLogger } from "./middlewares/requestLogger";
 import { errorHandler } from "./utils/errorHandler";
 const app = express();
 
@@ -36,6 +37,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(requestLogger);
 
 app.use("/api-docs", swaggerUi.serve, (req: Request, res: Response, next: NextFunction) => {
   const swaggerDocument = yaml.parse(fs.readFileSync("./swagger.yaml", "utf8"));
