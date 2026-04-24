@@ -25,7 +25,7 @@ pnpm prisma generate  # Regenerate Prisma client after schema changes
 ## API
 - Entry: `src/server.ts` + `src/app.ts`
 - Base: `/api/v1/`
-- Routes: `auth`, `user`, `tracks`, `courses`, `staff-requests`, `student-requests`
+- Routes: `auth`, `users`, `tracks`, `courses`, `community`, `posts`, `comments`, `resources`, `meetings`, `quiz`, `staff-requests`, `student-requests`
 - Nested under courses: `meetings`, `posts`, `comments`, `resources`
 - Swagger docs: `/api-docs` (reads `swagger.yaml`)
 - CORS whitelist: `http://localhost:3000` only
