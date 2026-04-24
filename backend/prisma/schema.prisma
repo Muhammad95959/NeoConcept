@@ -40,6 +40,19 @@ enum QuestionType {
   SHORT_ANSWER
 }
 
+enum NotificationType {
+  NEW_POST
+  NEW_COMMENT
+  PENDING_STAFF_REQUEST
+  ANSWERED_STAFF_REQUEST
+  PENDING_STUDENT_REQUEST
+  ANSWERED_STUDENT_REQUEST
+  SCHEDULED_MEETING
+  LIVE_MEETING
+  ENDED_MEETING
+  OTHER
+}
+
 // ============================================================
 // USER
 // ============================================================
@@ -61,18 +74,19 @@ model User {
   passwordChangedAt    DateTime?
   otpAttempts          Int       @default(0)
 
-  posts               Post[]             @relation("UserPosts")
-  resources           Resource[]         @relation("UserResources")
-  comments            Comment[]
-  staffRequests       StaffRequest[]
-  studentRequests     StudentRequest[]
-  courseUsers         UserCourse[]
-  createdTrack        Track?             @relation("TrackCreator")
-  userTracks          UserTrack[]
-  hostedMeetings      Meeting[]          @relation("HostRelation")
-  meetingParticipants Participant[]
-  quizAttempts        QuizAttempt[]
-  communityMessages   CommunityMessage[]
+  posts                  Post[]                  @relation("UserPosts")
+  resources              Resource[]              @relation("UserResources")
+  comments               Comment[]
+  staffRequests          StaffRequest[]
+  studentRequests        StudentRequest[]
+  courseUsers            UserCourse[]
+  createdTrack           Track?                  @relation("TrackCreator")
+  userTracks             UserTrack[]
+  hostedMeetings         Meeting[]               @relation("HostRelation")
+  meetingParticipants    Participant[]
+  quizAttempts           QuizAttempt[]
+  communityMessages      CommunityMessage[]
+  notificationRecipients NotificationRecipient[]
 
   @@map("users")
 }
@@ -380,4 +394,28 @@ model CommunityMessage {
   course Course @relation(fields: [courseId], references: [id])
 
   @@map("community_messages")
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id        String           @id @default(uuid())
+  createdAt DateTime         @default(now())
+  content   String
+  type      NotificationType
+  data      Json?
+
+  recipients NotificationRecipient[]
+}
+
+model NotificationRecipient {
+  id             String  @id @default(uuid())
+  notificationId String
+  userId         String
+  read           Boolean @default(false)
+
+  notification Notification @relation(fields: [notificationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
 }
