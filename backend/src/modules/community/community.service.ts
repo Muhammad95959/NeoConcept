@@ -10,15 +10,20 @@ interface GetMessagesQuery {
   date?: string;
   before?: string;
   after?: string;
+  page?: number;
+  limit?: number;
 }
 
 export class CommunityService {
+  static DEFAULT_PAGE_SIZE = 20;
+
   static async getMany(courseId: string, query: GetMessagesQuery = {}) {
     const where: any = { courseId, course: { deletedAt: null } };
+    const { page = 1, limit = this.DEFAULT_PAGE_SIZE } = query;
+
     if (query.date) {
       const day = new Date(query.date);
       if (isNaN(day.getTime())) throw new CustomError(ErrorMessages.DATE_NOT_VALID, 400, HTTPStatusText.FAIL);
-      // Set day start and end
       where.createdAt = {
         gte: new Date(day.setHours(0, 0, 0, 0)),
         lte: new Date(day.setHours(23, 59, 59, 999)),
@@ -35,7 +40,13 @@ export class CommunityService {
         where.createdAt = { ...(where.createdAt || {}), gt: after };
       }
     }
-    const messages = await CommunityModel.findMany(where, { orderBy: { createdAt: "asc" } });
+
+    const messages = await CommunityModel.findMany(where, {
+      orderBy: { createdAt: "asc" },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
     return messages;
   }
 

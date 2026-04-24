@@ -18,6 +18,7 @@ jest.mock("../community.model", () => ({
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
+    count: jest.fn(),
   },
 }));
 jest.mock("../../../config/socket", () => ({
@@ -32,12 +33,26 @@ describe("CommunityService", () => {
   describe("getMany", () => {
     it("fetches messages for course", async () => {
       (CommunityModel.findMany as jest.Mock).mockResolvedValue([{ id: "m-1" }]);
+      (CommunityModel.count as jest.Mock).mockResolvedValue(1);
       const result = await CommunityService.getMany("c-1", {});
       expect(CommunityModel.findMany).toHaveBeenCalledWith(
         { courseId: "c-1", course: { deletedAt: null } },
-        { orderBy: { createdAt: "asc" } }
+        { orderBy: { createdAt: "asc" }, skip: 0, take: 20 }
       );
-      expect(result).toEqual([{ id: "m-1" }]);
+      expect(result).toEqual({
+        messages: [{ id: "m-1" }],
+        pagination: { page: 1, limit: 20, total: 1, totalPages: 1 },
+      });
+    });
+    it("uses pagination params", async () => {
+      (CommunityModel.findMany as jest.Mock).mockResolvedValue([{ id: "m-1" }]);
+      (CommunityModel.count as jest.Mock).mockResolvedValue(41);
+      const result = await CommunityService.getMany("c-1", { page: 2, limit: 10 });
+      expect(CommunityModel.findMany).toHaveBeenCalledWith(
+        { courseId: "c-1", course: { deletedAt: null } },
+        { orderBy: { createdAt: "asc" }, skip: 10, take: 10 }
+      );
+      expect(result.pagination).toEqual({ page: 2, limit: 10, total: 41, totalPages: 5 });
     });
     it("throws on invalid date param", async () => {
       await expect(

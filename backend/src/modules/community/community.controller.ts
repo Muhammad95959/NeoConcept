@@ -2,13 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { CommunityService } from "./community.service";
 import { HTTPStatusText } from "../../types/HTTPStatusText";
 import { SuccessMessages } from "../../types/successMessages";
-import { CourseIdParams, MessageBody, IdParams } from "./community.validation";
+import { CourseIdParams, MessageBody, IdParams, GetManyQuery } from "./community.validation";
 
 export class CommunityController {
   static async getMany(_req: Request, res: Response, next: NextFunction) {
     try {
       const { courseId } = res.locals.params as CourseIdParams;
-      const messages = await CommunityService.getMany(courseId);
+      const query = res.locals.query as GetManyQuery;
+      const messages = await CommunityService.getMany(courseId, query);
 
       res.status(200).json({ status: HTTPStatusText.SUCCESS, data: messages });
     } catch (err) {

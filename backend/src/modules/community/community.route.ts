@@ -11,7 +11,10 @@ const router = express.Router({ mergeParams: true });
 router.get(
   "/",
   protect,
-  validate({ params: CommunityValidationSchemas.courseIdParams }),
+  validate({
+    params: CommunityValidationSchemas.courseIdParams,
+    query: CommunityValidationSchemas.getManyQuery,
+  }),
   checkCourseExists,
   verifyCourseMember,
   CommunityController.getMany,
