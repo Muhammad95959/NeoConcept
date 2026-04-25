@@ -11,7 +11,6 @@ export async function protect(req: Request, res: Response, next: NextFunction) {
     } else if (req.cookies.jwt) {
       token = req.cookies.jwt;
     }
-
     const user = await verifyToken(token);
 
     res.locals.user = user;

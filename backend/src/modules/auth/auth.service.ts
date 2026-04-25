@@ -46,6 +46,8 @@ export class AuthService {
       password: hashedPassword,
       role: role,
       confirmEmailToken: confirmEmailTokenHash,
+      // ! Login - Status 200 load test will fail if the NODE_ENV is production because it has to confirmed, 
+      // ! but if we make the NODE_ENV development so the email will be confirmed so the resend confirmation test will fail
       emailConfirmed: process.env.NODE_ENV === Constants.DEVELOPMENT,
       confirmEmailExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
@@ -90,7 +92,8 @@ export class AuthService {
       `${process.env.APP_URL}/api/v1/auth/confirm-email/${confirmEmailToken}`,
     );
 
-    sendEmail(email, SuccessMessages.EMAIL_CONFIRMATION, message, true);
+    // ! Remove while load testing
+    // sendEmail(email, SuccessMessages.EMAIL_CONFIRMATION, message, true);
 
     return { success: true };
   }

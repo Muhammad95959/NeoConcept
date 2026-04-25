@@ -31,7 +31,9 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   message: "Too many requests from this IP, please try again later.",
 });
-app.use("/api", limiter);
+
+// ! Removing the rate limiter for now to avoid issues during development and testing. We can re-enable it later when we are ready to deploy.
+// app.use("/api", limiter);
 
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());

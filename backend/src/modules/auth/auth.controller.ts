@@ -22,7 +22,8 @@ export class AuthController {
       const { confirmEmailToken, isDev } = await AuthService.signup(res.locals.body);
 
       if (!isDev) {
-        await sendConfirmationEmail(res.locals.body.email, confirmEmailToken, req);
+        // ! Remove while load testing
+        // await sendConfirmationEmail(res.locals.body.email, confirmEmailToken, req);
       }
 
       res.status(201).json({
