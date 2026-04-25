@@ -112,7 +112,7 @@ export class AuthService {
       throw new CustomError(ErrorMessages.EMAIL_NOT_CONFIRMED, 403, HTTPStatusText.FAIL);
     }
 
-    const token = signToken(user.id);
+    const token = signToken({ id: user.id, username: user.username });
 
     return {
       token,
@@ -252,7 +252,7 @@ export class AuthService {
       user = await AuthModel.createUserWithGoogle(email!, name!, googleId!, role);
     }
 
-    const token = signToken(user.id);
+    const token = signToken({ id: user.id, username: user.username });
 
     return { token, user: safeUserData(user) };
   }

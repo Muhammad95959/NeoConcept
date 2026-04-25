@@ -10,4 +10,11 @@ export class SocketEvents {
   static readonly NEW_MESSAGE = "newMessage"
   static readonly UPDATED_MESSAGE = "updatedMessage"
   static readonly DELETED_MESSAGE = "deletedMessage"
+
+  // Active users and typing indicators
+  static readonly USER_JOINED = "userJoined"
+  static readonly USER_LEFT = "userLeft"
+  static readonly GET_ACTIVE_USERS = "getActiveUsers"
+  static readonly ACTIVE_USERS = "activeUsers"
+  static readonly USER_TYPING = "userTyping"
 }
