@@ -12,9 +12,37 @@ export const TEST_USER = {
 };
 
 let authCookie = null;
+let testUserRegistered = false;
+
+function ensureTestUserRegistered() {
+  if (testUserRegistered) return;
+
+  const signupPayload = JSON.stringify({
+    email: TEST_USER.email,
+    password: TEST_USER.password,
+    username: TEST_USER.username,
+    role: 'ADMIN', // Registering as admin to ensure we have permissions for all test scenarios
+  });
+
+  const signupResponse = http.post(`${API_BASE_URL}/auth/signup`, signupPayload, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    timeout: '10s',
+  });
+
+  // 201: created, 409: already exists.
+  check(signupResponse, {
+    'test user signup is 201 or 409': (r) => r.status === 201 || r.status === 409,
+  });
+
+  testUserRegistered = true;
+}
 
 // The login function will be used across multiple test modules to authenticate and store the session cookie for subsequent requests.
 export function login() {
+  ensureTestUserRegistered();
+
   // Payload for login request
   const loginPayload = JSON.stringify({
     email: TEST_USER.email,
@@ -30,7 +58,6 @@ export function login() {
   };
 
   const response = http.post(`${API_BASE_URL}/auth/login`, loginPayload, params);
-
   // Checking the response status to ensure login was successful
   check(response, {
     'login status is 200': (r) => r.status === 200,

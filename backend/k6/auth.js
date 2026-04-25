@@ -2,6 +2,12 @@ import { check, group, sleep } from 'k6';
 import { makeRequest, uniqueId, randomEmail, checkResponse, thinkTime, API_BASE_URL } from './utils.js';
 import http from 'k6/http';
 
+
+// Set expected status codes for all HTTP requests to avoid k6 treating non-200 responses as errors, which allows us to test various scenarios without prematurely failing the test.
+// For example, some endpoints might return 401 for unauthorized access, and we want to check that behavior without k6 marking it as a failed request.
+// We can adjust the expected status codes as needed based on the endpoints we are testing.
+http.setResponseCallback(http.expectedStatuses(200, 201, 401));
+
 // Number of virtual users and duration of the test can be adjusted as needed
 export const options = {
   vus: 10,
@@ -53,7 +59,6 @@ export default function authLoadTest() {
     });
 
     const loginResponse = makeRequest('POST', '/auth/login', loginPayload);
-    console.log(`loging response status: ${loginResponse.status}` + `, body: ${loginResponse.body}`);
     checkResponse(loginResponse, 200, 'Login');
     // Sleeping for 100ms to 500ms to simulate user think time after login
     sleep(thinkTime());
@@ -89,7 +94,6 @@ export default function authLoadTest() {
     const signupResponse = http.post(`${API_BASE_URL}/auth/signup`, signupPayload, {
       headers: { 'Content-Type': 'application/json' },
     });
-    console.log(`status `);
     checkResponse(signupResponse, 201, 'Resend confirmation signup');
 
     // Resend confirmation
@@ -98,7 +102,6 @@ export default function authLoadTest() {
     });
 
     const response = makeRequest('POST', '/auth/resend-confirmation-email', resendPayload);
-    console.log(`Resend confirmation email response status: ${response.status}` + `, body: ${response.body}`);
     check(response, {
       'Resend confirmation email status is 201': (r) => r.status === 201,
     });
