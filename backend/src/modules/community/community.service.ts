@@ -41,14 +41,14 @@ export class CommunityService {
         where.createdAt = { ...(where.createdAt || {}), gt: after };
       }
     }
-
-    const messages = await CommunityModel.findMany(where, {
-      orderBy: { createdAt: "asc" },
+    //get limit from last not new ones
+    var messages = await CommunityModel.findMany(where, {
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
       include: { user: { select: { username: true } } },
     });
-
+    messages= messages.reverse();
     return messages;
   }
 
