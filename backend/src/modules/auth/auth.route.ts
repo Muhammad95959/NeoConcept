@@ -84,7 +84,8 @@ router.get(
     session: false,
   }),
   (req, res) => {
-    const token = signToken((req.user as User).id);
+    const user = req.user as User;
+    const token = signToken({ id: user.id, username: user.username });
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === Constants.PRODUCTION,

@@ -43,7 +43,9 @@ export class CommunityController {
 
   static async update(_req: Request, res: Response, next: NextFunction) {
     try {
+      console.log("Updating message... with params:", res.locals.params, "and body:", res.locals.body);
       const { courseId, messageId } = res.locals.params as IdParams;
+      console.log("Extracted courseId:", courseId, "messageId:", messageId);
       const { content } = res.locals.body as MessageBody;
        const userId = res.locals.user.id;
       const updatedMessage = await CommunityService.update(courseId, messageId, content, userId);

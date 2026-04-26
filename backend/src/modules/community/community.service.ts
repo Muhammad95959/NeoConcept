@@ -1,3 +1,4 @@
+import { includes } from "zod";
 import prisma from "../../config/db";
 import { emitToCommunity } from "../../config/socket";
 import CustomError from "../../types/customError";
@@ -40,13 +41,14 @@ export class CommunityService {
         where.createdAt = { ...(where.createdAt || {}), gt: after };
       }
     }
-
-    const messages = await CommunityModel.findMany(where, {
-      orderBy: { createdAt: "asc" },
+    //get limit from last not new ones
+    var messages = await CommunityModel.findMany(where, {
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      include: { user: { select: { username: true } } },
     });
-
+    messages= messages.reverse();
     return messages;
   }
 
@@ -62,7 +64,6 @@ export class CommunityService {
     if (!content?.trim()) throw new CustomError(ErrorMessages.INVALID_MESSAGE_CONTENT, 400, HTTPStatusText.FAIL);
 
     const newMessage = await CommunityModel.create({ content: content.trim(), courseId, userId });
-
     emitToCommunity(courseId, SocketEvents.NEW_MESSAGE, newMessage);
 
     return newMessage;
