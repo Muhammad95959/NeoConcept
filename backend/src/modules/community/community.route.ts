@@ -41,11 +41,12 @@ router.post(
 router.patch(
   "/:messageId",
   protect,
-  validate({ params: CommunityValidationSchemas.courseIdParams, body: CommunityValidationSchemas.messageBody }),
+  validate({ params: CommunityValidationSchemas.idParams, body: CommunityValidationSchemas.messageBody }), // <--- CORRECT SCHEMA
   checkCourseExists,
   verifyCourseMember,
   CommunityController.update,
 );
+
 
 router.delete(
   "/:messageId",
