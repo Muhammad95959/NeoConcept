@@ -181,6 +181,8 @@ model UserCourse {
   course Course @relation(fields: [courseId], references: [id])
 
   @@id([userId, courseId])
+  @@index([courseId, joinedAt])
+  @@index([courseId, roleInCourse])
   @@map("user_courses")
 }
 
@@ -318,6 +320,7 @@ model Quiz {
   questions Question[]
   attempts  QuizAttempt[]
 
+  @@index([courseId])
   @@map("quizzes")
 }
 
@@ -363,6 +366,8 @@ model QuizAttempt {
   answers StudentAnswer[]
 
   @@unique([quizId, studentId])
+  @@index([quizId, score])
+  @@index([startedAt])
   @@map("quiz_attempts")
 }
 
@@ -393,6 +398,7 @@ model CommunityMessage {
   user   User   @relation(fields: [userId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
 
+  @@index([courseId, createdAt])
   @@map("community_messages")
 }
 

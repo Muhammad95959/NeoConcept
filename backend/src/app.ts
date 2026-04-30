@@ -20,6 +20,7 @@ import staffRequestRouter from "./modules/staffRequests/staffRequests.routes";
 import studentRequestRouter from "./modules/studentRequests/studentRequests.routes";
 import trackRouter from "./modules/tracks/tracks.routes";
 import userRouter from "./modules/users/user.route";
+import analyticsRouter from "./modules/analytics/analytics.route";
 import { requestLogger } from "./middlewares/requestLogger";
 import { errorHandler } from "./utils/errorHandler";
 const app = express();
@@ -58,6 +59,7 @@ app.use("/api/v1/courses/:courseId/posts/:postId/comments", commentRouter);
 app.use("/api/v1/courses/:courseId/quizzes", quizRouter);
 app.use("/api/v1/courses/:courseId/resources", resourceRouter);
 app.use("/api/v1/courses/:courseId/community", communityRouter);
+app.use("/api/v1/courses/:courseId/analytics", analyticsRouter);
 app.use(errorHandler);
 
 export default app;
